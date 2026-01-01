@@ -23,8 +23,8 @@
     <div class="container">
         <div class="row align-items-center g-4 g-lg-5">
             <div class="col-lg-6 mb-4 mb-lg-0">
-                <div class="video-wrapper" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15);">
-                    <img src="{{ asset('assets/img/photos/video2.jpg') }}" alt="Artfauj" class="img-fluid w-100" style="display: block;">
+                <div class="video-wrapper" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); aspect-ratio: 16/9;">
+                    <img src="{{ asset('assets/img/photos/video2.jpg') }}" alt="Artfauj" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                     <a class="btn-play" href="https://www.youtube.com/watch?v=MLpWrANjFbI" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; text-decoration: none;">
                         <div class="play-button" style="width: 80px; height: 80px; background: rgba(255,255,255,0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="color: #000; margin-left: 3px;">
@@ -206,7 +206,7 @@
                 <div class="founder-card" style="background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
                     <div class="row g-0">
                         <div class="col-lg-5">
-                            <div class="founder-image" style="height: 100%; min-height: 400px; background-image: url('{{ asset('assets/img/team/founder.jpg') }}'); background-size: cover; background-position: center;"></div>
+                            <div class="founder-image" style="height: 100%; min-height: 500px; background-image: url('{{ asset('assets/img/team/founder.jpg') }}'); background-size: cover; background-position: center top;"></div>
                         </div>
                         <div class="col-lg-7">
                             <div class="founder-content" style="padding: 60px 50px;">
@@ -278,7 +278,7 @@
         }
         
         .founder-image {
-            min-height: 350px !important;
+            min-height: 400px !important;
         }
     }
     
@@ -316,7 +316,7 @@
         }
         
         .founder-image {
-            min-height: 300px !important;
+            min-height: 350px !important;
         }
         
         .founder-content h3 {
@@ -331,6 +331,10 @@
         .play-button svg {
             width: 28px !important;
             height: 28px !important;
+        }
+        
+        .video-wrapper {
+            aspect-ratio: 4/3 !important;
         }
     }
     

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Contact Us - Clothing Shop')
+@section('title', 'Contact Us - Artfauj')
 
 @section('content')
 <!--== Start Page Title Area ==-->
@@ -33,6 +33,7 @@
                             <div class="col-lg-12">
                                 <div class="section-title">
                                     <h2 class="title">Contact us for any questions</h2>
+                                    <p class="subtitle">Every drape whispers elegance</p>
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -69,7 +70,7 @@
             <div class="col-lg-5">
                 <div class="contact-info-wrapper">
                     <div class="section-title">
-                        <h2 class="title">Get info</h2>
+                        <h2 class="title">Get in Touch</h2>
                     </div>
                     <div class="contact-info-content">
                         <div class="align-top">
@@ -78,35 +79,19 @@
                                     <i class="lastudioicon lastudioicon-pin-3-2"></i>
                                 </div>
                                 <div class="content">
-                                    <h4>Moren Store 1</h4>
-                                    <p>PO Box 16122 Collins Street West Victoria 8007 Australia</p>
-                                </div>
-                            </div>
-                            <div class="contact-info-item">
-                                <div class="icon">
-                                    <span><i class="lastudioicon lastudioicon-pin-3-2"></i></span>
-                                </div>
-                                <div class="content">
-                                    <h4>Moren Store 2</h4>
-                                    <p>8134 Budd Rd Terre Haute, In 3548</p>
+                                    <h4>Artfauj Registered Office</h4>
+                                    <p>F 316, Ananta Swagatam,<br>Bill Kalali Road,<br>Vadodara - 391410</p>
                                 </div>
                             </div>
                         </div>
                         <div class="align-bottom">
-                            <div class="contact-info-item info-item2">
-                                <div class="icon">
-                                    <span><i class="lastudioicon lastudioicon-mail"></i></span>
-                                </div>
-                                <div class="content">
-                                    <p>info@moren.com</p>
-                                </div>
-                            </div>
                             <div class="contact-info-item">
                                 <div class="icon">
                                     <span><i class="lastudioicon lastudioicon-phone-call-2"></i></span>
                                 </div>
                                 <div class="content">
-                                    <p>+354-354-4861</p>
+                                    <p>+91 94267 24282</p>
+                                    <p>+91 94294 08688</p>
                                 </div>
                             </div>
                             <div class="contact-info-item social-icons-item mb-0 pb-0">
@@ -121,6 +106,20 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Taglines Section -->
+                    {{-- <div class="taglines-section" style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-left: 3px solid #333;">
+                        <h5 style="margin-bottom: 15px; font-weight: 600;">Our Heritage</h5>
+                        <ul style="list-style: none; padding: 0; font-size: 14px; line-height: 1.8; color: #555;">
+                            <li style="margin-bottom: 8px;">✦ Saree swag, unstoppable spirit</li>
+                            <li style="margin-bottom: 8px;">✦ Saree, but make it savage</li>
+                            <li style="margin-bottom: 8px;">✦ Turning traditions into trends</li>
+                            <li style="margin-bottom: 8px;">✦ A saree is poetry woven in threads</li>
+                            <li style="margin-bottom: 8px;">✦ Grace in folds, strength in spirit</li>
+                            <li style="margin-bottom: 8px;">✦ Saree: it's my statement</li>
+                            <li style="margin-bottom: 8px;">✦ Not just fabric, it's heritage</li>
+                        </ul>
+                    </div> --}}
                 </div>
             </div>
         </div>
@@ -130,7 +129,7 @@
 
 <!--== Start Map Area ==-->
 <div class="contact-map-area">
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8402891185374!2d144.95373631590425!3d-37.81720974201477!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4c2b349649%3A0xb6899234e561db11!2sEnvato!5e0!3m2!1sen!2ssg!4v1607294780661!5m2!1sen!2ssg"></iframe>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3691.5447824536945!2d73.1627!3d22.3039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDE4JzE0LjAiTiA3M8KwMDknNDUuNyJF!5e0!3m2!1sen!2sin!4v1234567890!5m2!1sen!2sin" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
 </div>
 <!--== End Map Area ==-->
 @endsection

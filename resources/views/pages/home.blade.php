@@ -82,7 +82,7 @@
                 <div class="swiper-slide">
                     <div class="slider-item">
                         <div class="thumb">
-                            <div class="bg-thumb bg-overlay bg-img" data-bg-img="{{ asset('assets/img/slider/cs1-s1.jpg') }}"></div>
+                            <div class="bg-thumb bg-overlay bg-img" data-bg-img="{{ asset('assets/img/about/2.jpg') }}"></div>
                         </div>
                         <div class="slider-content-area">
                             <div class="content">
