@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\SareeController as AdminSareeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,21 +14,47 @@ use App\Http\Controllers\HomeController;
 // Home Page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// For now, we'll use simple view routes for other pages
-// You can convert these to controllers later
-
+// Static Pages
 Route::view('/about', 'pages.about')->name('about');
 Route::view('/contact', 'pages.contact')->name('contact');
-Route::view('/privacy-policy', 'pages.privacy-policy')->name('privacy');
-Route::view('/terms-conditions', 'pages.terms-conditions')->name('terms');
-Route::view('/shipping-info', 'pages.shipping-info')->name('shipping');
-Route::view('/returns-exchanges', 'pages.returns-exchanges')->name('returns');
 
-// Shop routes (placeholder - we'll implement these later)
+// Shop routes
 Route::view('/shop', 'pages.shop')->name('shop');
 Route::view('/shop-collections', 'pages.shop-collections')->name('collections');
 Route::view('/shop-single-product', 'pages.shop-single-product')->name('product.show');
 Route::view('/shop-cart', 'pages.shop-cart')->name('cart');
 Route::view('/shop-checkout', 'pages.shop-checkout')->name('checkout');
-Route::view('/shop-wishlist', 'pages.shop-wishlist')->name('wishlist');
-Route::view('/login', 'pages.login')->name('login');
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
+
+// Guest only routes (redirect if authenticated)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
+});
+
+// Authenticated only routes
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    // Admin Dashboard
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+
+    // Saree Management
+    Route::resource('sarees', AdminSareeController::class);
+});

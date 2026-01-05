@@ -266,9 +266,7 @@
                                                 <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View">
                                                     <i class="lastudioicon-search-zoom-in"></i>
                                                 </a>
-                                                <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ route('wishlist') }}" title="Add to wishlist">
-                                                    <i class="lastudioicon-heart-2"></i>
-                                                </a>
+                                        
                                                 <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="#" title="Add to compare">
                                                     <i class="lastudioicon-compare"></i>
                                                 </a>
@@ -326,9 +324,7 @@
                                                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fringilla quis ipsum enim viverra. Enim in morbi tincidunt ante luctus tincidunt integer. Sed adipiscing vehicula.</p>
                                                 <div class="product-action-btn">
                                                     <a class="btn-add-cart btn-theme" href="{{ route('cart') }}">Add to cart</a>
-                                                    <a class="btn-wishlist" href="{{ route('wishlist') }}">
-                                                        <i class="lastudioicon-heart-2"></i>
-                                                    </a>
+                                                   
                                                     <a class="btn-compare" href="#">
                                                         <i class="lastudioicon-compare"></i>
                                                     </a>
