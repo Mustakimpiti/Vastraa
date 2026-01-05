@@ -28,8 +28,7 @@
                     <div class="widget-item">
                         <nav class="widget-menu-wrap">
                             <ul class="nav-menu nav">
-                                <li><a href="{{ url('/privacy-policy') }}">PRIVACY POLICY</a></li>
-                                <li><a href="{{ url('/terms-conditions') }}">TERMS & CONDITIONS</a></li>
+                                
                                 <li><a href="{{ url('/about') }}">ABOUT</a></li>
                             </ul>
                         </nav>
@@ -39,8 +38,7 @@
                     <div class="widget-item mt-xs-20">
                         <nav class="widget-menu-wrap">
                             <ul class="nav-menu nav">
-                                <li><a href="{{ url('/shipping-info') }}">SHIPPING INFO</a></li>
-                                <li><a href="{{ url('/returns-exchanges') }}">RETURNS / EXCHANGES</a></li>
+                                
                                 <li><a href="{{ url('/contact') }}">CONTACT</a></li>
                             </ul>
                         </nav>

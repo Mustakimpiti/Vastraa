@@ -17,8 +17,8 @@
                                     <div class="col-md-8 col-lg-5 m-auto">
                                         <div class="content">
                                             <div class="inner-content">
-                                                <h2>NEW IN</h2>
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fringilla quis ipsum enim viverra Enim in morbi tincidunt ante luctus</p>
+                                                <h2 style="font-size: 2.5rem;">EVERY DRAPE WHISPERS</h2>
+                                                <p style="font-size: 0.95rem;">Grace wrapped in tradition. A saree is poetry woven in threads, turning traditions into trends with unstoppable spirit.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -36,8 +36,8 @@
                                     <div class="col-md-8 col-lg-5 m-auto">
                                         <div class="content">
                                             <div class="inner-content">
-                                                <h2>NEW IN</h2>
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fringilla quis ipsum enim viverra Enim in morbi tincidunt ante luctus</p>
+                                                <h2 style="font-size: 2.5rem;">SAREE SWAG, UNSTOPPABLE SPIRIT</h2>
+                                                <p style="font-size: 0.95rem;">Not just fabric, it's heritage. Grace in folds, strength in spirit. Saree: it's my statement.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -55,8 +55,8 @@
                                     <div class="col-md-8 col-lg-5 m-auto">
                                         <div class="content">
                                             <div class="inner-content">
-                                                <h2>NEW IN</h2>
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fringilla quis ipsum enim viverra Enim in morbi tincidunt ante luctus</p>
+                                                <h2 style="font-size: 2.5rem;">SAREE, BUT MAKE IT SAVAGE</h2>
+                                                <p style="font-size: 0.95rem;">Turning traditions into trends. Every thread tells a story of grace, elegance, and timeless beauty.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -79,38 +79,41 @@
     <div class="collection-slider-content">
         <div class="swiper-container collection-slider-container">
             <div class="swiper-wrapper">
+                @forelse($featuredCollections as $collection)
                 <div class="swiper-slide">
                     <div class="slider-item">
                         <div class="thumb">
-                            <div class="bg-thumb bg-overlay bg-img" data-bg-img="{{ asset('assets/img/about/2.jpg') }}"></div>
+                            <div class="bg-thumb bg-overlay bg-img" data-bg-img="{{ $collection->banner_image ? asset('storage/' . $collection->banner_image) : asset('assets/img/about/2.JPG') }}"></div>
                         </div>
                         <div class="slider-content-area">
                             <div class="content">
                                 <div class="inner-content">
-                                    <span>Collection 2022</span>
-                                    <h2>The spectacle before us was indeed sublime</h2>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fringilla quis ipsum enim viverra. Enim in morbi tincidunt ante luctus tincidunt integer. Sed adipiscing vehicula.</p>
+                                    <span>{{ $collection->name }}</span>
+                                    <h2 style="font-size: 2rem;">{{ $collection->description ?? 'Grace Wrapped in Tradition' }}</h2>
+                                    <p style="font-size: 0.9rem;">{{ $collection->short_description ?? 'Experience the perfect blend of heritage and modern aesthetics. Our sarees are not just fabric, they\'re a celebration of culture and craftsmanship.' }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                @empty
                 <div class="swiper-slide">
                     <div class="slider-item">
                         <div class="thumb">
-                            <div class="bg-thumb bg-overlay bg-img" data-bg-img="{{ asset('assets/img/slider/h1-s1.jpg') }}"></div>
+                            <div class="bg-thumb bg-overlay bg-img" data-bg-img="{{ asset('assets/img/about/2.JPG') }}"></div>
                         </div>
                         <div class="slider-content-area">
                             <div class="content">
                                 <div class="inner-content">
-                                    <span>Collection 2022</span>
-                                    <h2>The spectacle before us was indeed sublime</h2>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fringilla quis ipsum enim viverra. Enim in morbi tincidunt ante luctus tincidunt integer. Sed adipiscing vehicula.</p>
+                                    <span>Heritage Collection 2024</span>
+                                    <h2 style="font-size: 2rem;">A Saree is Poetry Woven in Threads</h2>
+                                    <p style="font-size: 0.9rem;">Discover our exclusive collection where tradition meets contemporary elegance. Each saree is carefully curated to embody grace in folds and strength in spirit.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                @endforelse
             </div>
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
@@ -126,219 +129,84 @@
             <div class="col-md-8 col-lg-6 m-auto">
                 <div class="section-title text-center" data-aos="fade-up" data-aos-duration="1000">
                     <h2 class="title">Best Sellers</h2>
-                    <h5 class="subtitle">COLLECTION 2022</h5>
+                    <h5 class="subtitle">TURNING TRADITIONS INTO TRENDS</h5>
                 </div>
             </div>
         </div>
         <div class="row row-gutter-60" data-aos="fade-up" data-aos-duration="1000">
+            @forelse($bestSellers as $saree)
             <div class="col-sm-6 col-lg-4">
                 <div class="product-item">
                     <div class="product-thumb">
-                        <a href="{{ url('/shop-single-product') }}">
-                            <img src="{{ asset('assets/img/shop/d1-1.jpg') }}" alt="Moren-Shop">
-                            <span class="bg-thumb" data-bg-img="{{ asset('assets/img/shop/d1-2.jpg') }}"></span>
+                        <a href="{{ route('product.show', $saree->slug) }}">
+                            <img src="{{ $saree->featured_image ? asset('storage/' . $saree->featured_image) : asset('assets/img/shop/default.jpg') }}" alt="{{ $saree->name }}">
+                            @if($saree->images->count() > 0)
+                            <span class="bg-thumb" data-bg-img="{{ asset('storage/' . $saree->images->first()->image_path) }}"></span>
+                            @endif
                             <span class="thumb-overlay"></span>
                         </a>
-                        <div class="product-action">
-                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Wishlist">
+                        @if($saree->hasDiscount())
+                        <span class="badge">-{{ $saree->getDiscountPercentage() }}%</span>
+                        @endif
+                        @if($saree->is_new_arrival)
+                        <span class="badge badge-new">NEW</span>
+                        @endif
+                        {{-- <div class="product-action">
+                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="{{ route('product.show', $saree->slug) }}" title="Quick View">
                                 <i class="lastudioicon-search-zoom-in"></i>
                             </a>
-                            <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="{{ url('/shop-compare') }}" title="Add to compare">
-                                <i class="lastudioicon-compare"></i>
-                            </a>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="product-info">
                         <div class="content-inner">
-                            <h4 class="title"><a href="{{ url('/shop-single-product') }}">Strapless crop top</a></h4>
+                            <h4 class="title"><a href="{{ route('product.show', $saree->slug) }}">{{ $saree->name }}</a></h4>
                             <div class="prices">
-                                <span class="price">£49.90</span>
+                                @if($saree->hasDiscount())
+                                    <span class="price-old">₹{{ number_format($saree->price, 2) }}</span>
+                                    <span class="price">₹{{ number_format($saree->sale_price, 2) }}</span>
+                                @else
+                                    <span class="price">₹{{ number_format($saree->price, 2) }}</span>
+                                @endif
                             </div>
+                            @if($saree->avg_rating > 0)
+                            <div class="rating">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $saree->avg_rating)
+                                    <i class="lastudioicon-star-rate"></i>
+                                    @else
+                                    <i class="lastudioicon-star-rate-empty"></i>
+                                    @endif
+                                @endfor
+                                <span>({{ $saree->total_reviews }})</span>
+                            </div>
+                            @endif
                         </div>
                         <div class="product-info-action">
-                            <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ url('/shop-wishlist') }}" title="Add to wishlist">
+                            <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ route('wishlist.add', $saree->id) }}" title="Add to wishlist">
                                 <i class="lastudioicon-heart-2"></i>
                             </a>
-                            <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ url('/shop-cart') }}" title="Add to cart">
-                                <i class="lastudioicon-bag-3"></i>
-                            </a>
+                            <form action="{{ route('cart.add') }}" method="POST" style="display: inline;">
+                                @csrf
+                                <input type="hidden" name="saree_id" value="{{ $saree->id }}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="action-cart ht-tooltip" data-tippy-content="Add to cart" title="Add to cart" style="background: none; border: none; cursor: pointer;">
+                                    <i class="lastudioicon-bag-3"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-4">
-                <div class="product-item">
-                    <div class="product-thumb">
-                        <a href="{{ url('/shop-single-product') }}">
-                            <img src="{{ asset('assets/img/shop/5.jpg') }}" alt="Moren-Shop">
-                            <span class="thumb-overlay"></span>
-                        </a>
-                        <div class="product-action">
-                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Wishlist">
-                                <i class="lastudioicon-search-zoom-in"></i>
-                            </a>
-                            <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="{{ url('/shop-compare') }}" title="Add to compare">
-                                <i class="lastudioicon-compare"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="content-inner">
-                            <h4 class="title"><a href="{{ url('/shop-single-product') }}">Strapless crop top</a></h4>
-                            <div class="prices">
-                                <span class="price">£19.90</span>
-                            </div>
-                        </div>
-                        <div class="product-info-action">
-                            <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ url('/shop-wishlist') }}" title="Add to wishlist">
-                                <i class="lastudioicon-heart-2"></i>
-                            </a>
-                            <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ url('/shop-cart') }}" title="Add to cart">
-                                <i class="lastudioicon-bag-3"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-4">
-                <div class="product-item">
-                    <div class="product-thumb">
-                        <a href="{{ url('/shop-single-product') }}">
-                            <img src="{{ asset('assets/img/shop/6.jpg') }}" alt="Moren-Shop">
-                            <span class="thumb-overlay"></span>
-                        </a>
-                        <div class="product-action">
-                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Wishlist">
-                                <i class="lastudioicon-search-zoom-in"></i>
-                            </a>
-                            <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="{{ url('/shop-compare') }}" title="Add to compare">
-                                <i class="lastudioicon-compare"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="content-inner">
-                            <h4 class="title"><a href="{{ url('/shop-single-product') }}">Blue wide-leg jeans</a></h4>
-                            <div class="prices">
-                                <span class="price">£35.90</span>
-                            </div>
-                        </div>
-                        <div class="product-info-action">
-                            <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ url('/shop-wishlist') }}" title="Add to wishlist">
-                                <i class="lastudioicon-heart-2"></i>
-                            </a>
-                            <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ url('/shop-cart') }}" title="Add to cart">
-                                <i class="lastudioicon-bag-3"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-4">
-                <div class="product-item">
-                    <div class="product-thumb">
-                        <a href="{{ url('/shop-single-product') }}">
-                            <img src="{{ asset('assets/img/shop/7.jpg') }}" alt="Moren-Shop">
-                            <span class="thumb-overlay"></span>
-                        </a>
-                        <div class="product-action">
-                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Wishlist">
-                                <i class="lastudioicon-search-zoom-in"></i>
-                            </a>
-                            <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="{{ url('/shop-compare') }}" title="Add to compare">
-                                <i class="lastudioicon-compare"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="content-inner">
-                            <h4 class="title"><a href="{{ url('/shop-single-product') }}">Shorts with turn-up hems</a></h4>
-                            <div class="prices">
-                                <span class="price">£19.90</span>
-                            </div>
-                        </div>
-                        <div class="product-info-action">
-                            <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ url('/shop-wishlist') }}" title="Add to wishlist">
-                                <i class="lastudioicon-heart-2"></i>
-                            </a>
-                            <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ url('/shop-cart') }}" title="Add to cart">
-                                <i class="lastudioicon-bag-3"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-4">
-                <div class="product-item">
-                    <div class="product-thumb">
-                        <a href="{{ url('/shop-single-product') }}">
-                            <img src="{{ asset('assets/img/shop/8.jpg') }}" alt="Moren-Shop">
-                            <span class="thumb-overlay"></span>
-                        </a>
-                        <div class="product-action">
-                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Wishlist">
-                                <i class="lastudioicon-search-zoom-in"></i>
-                            </a>
-                            <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="{{ url('/shop-compare') }}" title="Add to compare">
-                                <i class="lastudioicon-compare"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="content-inner">
-                            <h4 class="title"><a href="{{ url('/shop-single-product') }}">Buttoned Waistcoat</a></h4>
-                            <div class="prices">
-                                <span class="price">£45.90</span>
-                            </div>
-                        </div>
-                        <div class="product-info-action">
-                            <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ url('/shop-wishlist') }}" title="Add to wishlist">
-                                <i class="lastudioicon-heart-2"></i>
-                            </a>
-                            <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ url('/shop-cart') }}" title="Add to cart">
-                                <i class="lastudioicon-bag-3"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-4">
-                <div class="product-item">
-                    <div class="product-thumb">
-                        <a href="{{ url('/shop-single-product') }}">
-                            <img src="{{ asset('assets/img/shop/9.jpg') }}" alt="Moren-Shop">
-                            <span class="thumb-overlay"></span>
-                        </a>
-                        <div class="product-action">
-                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Wishlist">
-                                <i class="lastudioicon-search-zoom-in"></i>
-                            </a>
-                            <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="{{ url('/shop-compare') }}" title="Add to compare">
-                                <i class="lastudioicon-compare"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="content-inner">
-                            <h4 class="title"><a href="{{ url('/shop-single-product') }}">Printed surplice blouse</a></h4>
-                            <div class="prices">
-                                <span class="price">£17.90</span>
-                            </div>
-                        </div>
-                        <div class="product-info-action">
-                            <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ url('/shop-wishlist') }}" title="Add to wishlist">
-                                <i class="lastudioicon-heart-2"></i>
-                            </a>
-                            <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ url('/shop-cart') }}" title="Add to cart">
-                                <i class="lastudioicon-bag-3"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @empty
             <div class="col-md-12 text-center">
-                <a href="{{ url('/shop') }}" class="btn-theme btn-black btn-border btn-padding mt-20">View more</a>
+                <p>No sarees available at the moment. Please check back soon!</p>
             </div>
+            @endforelse
+            @if($bestSellers->count() > 0)
+            <div class="col-md-12 text-center">
+                <a href="{{ route('shop') }}" class="btn-theme btn-black btn-border btn-padding mt-20">View more</a>
+            </div>
+            @endif
         </div>
     </div>
 </section>
@@ -351,10 +219,10 @@
             <div class="col-md-12">
                 <div class="divider-about-content">
                     <div class="divider-content" data-aos="fade-up" data-aos-duration="1000">
-                        <span>About Us</span>
+                        <span>Our Story</span>
                         <img class="logo-divider" src="{{ asset('assets/img/logo-main.svg') }}" alt="Logo">
-                        <p>Liber adolescens eos cu. Eu vix habeo rebum elaboraret, ei usu vero ullum. Eam id nobis deleniti persecuti, mazim habemus repudiare ea vim. Ea iriure commune inciderint.</p>
-                        <a href="{{ url('/about') }}" class="btn-theme btn-black btn-border">Read more</a>
+                        <p>Where every drape whispers tales of heritage. We believe a saree is not just fabric—it's heritage, poetry woven in threads. Experience grace wrapped in tradition, where each fold celebrates the timeless elegance of Indian craftsmanship.</p>
+                        <a href="{{ route('about') }}" class="btn-theme btn-black btn-border">Read more</a>
                     </div>
                     <div class="video-content" data-aos="fade-up" data-aos-duration="1000">
                         <div class="thumb">
@@ -380,8 +248,8 @@
         <div class="row">
             <div class="col-md-8 col-lg-6 m-auto">
                 <div class="section-title text-center" data-aos="fade-up" data-aos-duration="1000">
-                    <h2 class="title">Trends</h2>
-                    <h5 class="subtitle">AS SEEN ON SOCIAL MEDIA</h5>
+                    <h2 class="title">Saree Trends</h2>
+                    <h5 class="subtitle">SAREE: IT'S MY STATEMENT</h5>
                 </div>
             </div>
         </div>
@@ -390,6 +258,15 @@
                 <div class="gallery-trends-content">
                     <div class="swiper-container gallery-trends-container">
                         <div class="swiper-wrapper">
+                            @forelse($trendingSarees as $saree)
+                            <div class="swiper-slide">
+                                <div class="slider-item">
+                                    <a href="{{ route('product.show', $saree->slug) }}">
+                                        <div class="bg-thumb" data-bg-img="{{ $saree->featured_image ? asset('storage/' . $saree->featured_image) : asset('assets/img/gallery/t1.jpg') }}"></div>
+                                    </a>
+                                </div>
+                            </div>
+                            @empty
                             <div class="swiper-slide">
                                 <div class="slider-item">
                                     <div class="bg-thumb" data-bg-img="{{ asset('assets/img/gallery/t1.jpg') }}"></div>
@@ -410,6 +287,7 @@
                                     <div class="bg-thumb" data-bg-img="{{ asset('assets/img/gallery/t4.jpg') }}"></div>
                                 </div>
                             </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -433,8 +311,8 @@
                             </svg>
                         </span>
                         <div class="inner-content">
-                            <h4 class="title">NEW DISCOUNT</h4>
-                            <p>Lorem ipsum dolor sit amet, id pericula appe llantur eam, mea.</p>
+                            <h4 class="title">EXCLUSIVE OFFERS</h4>
+                            <p>Grace in folds, elegance in every thread. Discover special discounts on our handpicked saree collections.</p>
                         </div>
                     </div>
                 </div>
@@ -451,8 +329,8 @@
                             </svg>
                         </span>
                         <div class="inner-content">
-                            <h4 class="title">GIFT VOUCHERS</h4>
-                            <p>Lorem ipsum dolor sit amet, id pericula appe llantur eam, mea.</p>
+                            <h4 class="title">HERITAGE GIFT CARDS</h4>
+                            <p>Share the gift of tradition. Perfect for those who appreciate the timeless beauty of sarees.</p>
                         </div>
                     </div>
                 </div>
@@ -469,8 +347,8 @@
                             </svg>
                         </span>
                         <div class="inner-content">
-                            <h4 class="title">FREE DELIVERY</h4>
-                            <p>Lorem ipsum dolor sit amet, id pericula appe llantur eam, mea.</p>
+                            <h4 class="title">NATIONWIDE DELIVERY</h4>
+                            <p>Bringing heritage to your doorstep. Free delivery on all saree orders across the country.</p>
                         </div>
                     </div>
                 </div>
@@ -480,3 +358,16 @@
 </section>
 <!--== End Featured Area Wrapper ==-->
 @endsection
+<style>.product-item .product-thumb img {
+    width: 100%;
+    height: 400px; /* Set fixed height */
+    object-fit: cover; /* Crops image to fill container */
+    object-position: center; /* Centers the image */
+}
+
+/* For hover image */
+.product-item .product-thumb .bg-thumb {
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+}</style>

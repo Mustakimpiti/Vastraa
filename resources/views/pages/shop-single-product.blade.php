@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Product Details - Clothing Shop')
+@section('title', $saree->name . ' - Saree Shop')
 
 @section('content')
 <!--== Start Page Title Area ==-->
@@ -11,8 +11,10 @@
                 <div class="page-title-content content-style-2">
                     <div class="bread-crumbs">
                         <a href="{{ route('home') }}">Home<span class="breadcrumb-sep">></span></a>
-                        <a href="{{ route('shop') }}">Uncategorized<span class="breadcrumb-sep">></span></a>
-                        <span class="active">Product Simple</span>
+                        @if($saree->collection)
+                        <a href="{{ route('collections') }}">{{ $saree->collection->name }}<span class="breadcrumb-sep">></span></a>
+                        @endif
+                        <span class="active">{{ $saree->name }}</span>
                     </div>
                 </div>
             </div>
@@ -30,30 +32,28 @@
                     <div class="product-dec-slider-right">
                         <div class="single-product-thumb">
                             <div class="single-product-thumb-slider">
+                                @if($saree->featured_image)
                                 <div class="zoom zoom-hover">
                                     <div class="thumb-item">
-                                        <a class="lightbox-image" data-fancybox="gallery" href="{{ asset('assets/img/shop/details/1.jpg') }}">
-                                            <img src="{{ asset('assets/img/shop/details/1.jpg') }}" alt="Image-HasTech">
+                                        <a class="lightbox-image" data-fancybox="gallery" href="{{ asset('storage/' . $saree->featured_image) }}">
+                                            <img src="{{ asset('storage/' . $saree->featured_image) }}" alt="{{ $saree->name }}">
                                         </a>
                                     </div>
                                 </div>
+                                @endif
+
+                                @foreach($saree->images as $image)
                                 <div class="zoom zoom-hover">
                                     <div class="thumb-item">
-                                        <a class="lightbox-image" data-fancybox="gallery" href="{{ asset('assets/img/shop/details/2.jpg') }}">
-                                            <img src="{{ asset('assets/img/shop/details/2.jpg') }}" alt="Image-HasTech">
+                                        <a class="lightbox-image" data-fancybox="gallery" href="{{ asset('storage/' . $image->image_path) }}">
+                                            <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $saree->name }}">
                                         </a>
                                     </div>
                                 </div>
-                                <div class="zoom zoom-hover">
-                                    <div class="thumb-item">
-                                        <a class="lightbox-image" data-fancybox="gallery" href="{{ asset('assets/img/shop/details/3.jpg') }}">
-                                            <img src="{{ asset('assets/img/shop/details/3.jpg') }}" alt="Image-HasTech">
-                                        </a>
-                                    </div>
-                                </div>
+                                @endforeach
                             </div>
                             <div class="product-gallery-actions">
-                                <a class="lightbox-image" data-fancybox="gallery" href="{{ asset('assets/img/shop/details/1.jpg') }}">
+                                <a class="lightbox-image" data-fancybox="gallery" href="{{ asset('storage/' . $saree->featured_image) }}">
                                     <i class="lastudioicon-full-screen"></i>
                                 </a>
                             </div>
@@ -62,15 +62,17 @@
                     <div class="product-dec-slider-left">
                         <div class="single-product-nav">
                             <div class="single-product-nav-slider">
+                                @if($saree->featured_image)
                                 <div class="nav-item">
-                                    <img src="{{ asset('assets/img/shop/details/nav1.jpg') }}" alt="Image-HasTech">
+                                    <img src="{{ asset('storage/' . $saree->featured_image) }}" alt="{{ $saree->name }}">
                                 </div>
+                                @endif
+
+                                @foreach($saree->images as $image)
                                 <div class="nav-item">
-                                    <img src="{{ asset('assets/img/shop/details/nav2.jpg') }}" alt="Image-HasTech">
+                                    <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $saree->name }}">
                                 </div>
-                                <div class="nav-item">
-                                    <img src="{{ asset('assets/img/shop/details/nav3.jpg') }}" alt="Image-HasTech">
-                                </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -78,27 +80,48 @@
             </div>
             <div class="col-lg-6">
                 <div class="single-product-info">
-                    <h4 class="title">Product Simple</h4>
+                    <h4 class="title">{{ $saree->name }}</h4>
+                    
                     <div class="product-rating">
                         <div class="ratting-icons">
-                            <i class="lastudioicon-star-rate-1"></i>
-                            <i class="lastudioicon-star-rate-1"></i>
-                            <i class="lastudioicon-star-rate-1"></i>
-                            <i class="lastudioicon-star-rate-1"></i>
-                            <i class="lastudioicon-star-rate-1"></i>
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= $saree->avg_rating)
+                                <i class="lastudioicon-star-rate-1"></i>
+                                @else
+                                <i class="lastudioicon-star-rate-2"></i>
+                                @endif
+                            @endfor
                         </div>
                         <div class="review">
-                            <a href="#productReview">(1 customer review)</a>
-                            <p><span></span>99 in stock</p>
+                            <a href="#productReview">({{ $saree->total_reviews }} customer {{ $saree->total_reviews == 1 ? 'review' : 'reviews' }})</a>
+                            <p>
+                                <span></span>
+                                @if($saree->isInStock())
+                                    {{ $saree->stock_quantity }} in stock
+                                @else
+                                    <span class="text-danger">Out of stock</span>
+                                @endif
+                            </p>
                         </div>
                     </div>
+
                     <div class="prices">
-                        <span class="price">£49.90</span>
+                        @if($saree->hasDiscount())
+                            <span class="price-old">₹{{ number_format($saree->price, 2) }}</span>
+                            <span class="price">₹{{ number_format($saree->sale_price, 2) }}</span>
+                            <span class="badge badge-sale">-{{ $saree->getDiscountPercentage() }}%</span>
+                        @else
+                            <span class="price">₹{{ number_format($saree->price, 2) }}</span>
+                        @endif
                     </div>
-                    <p class="product-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fringilla quis ipsum enim viverra. Enim in morbi tincidunt ante luctus tincidunt integer. Sed adipiscing vehicula.</p>
+
+                    <p class="product-desc">{{ $saree->short_description ?? $saree->description }}</p>
+
+                    @if($saree->isInStock())
                     <div class="quick-product-action">
-                        <form action="#" method="post">
+                        <form action="{{ route('cart.add') }}" method="post">
                             @csrf
+                            <input type="hidden" name="saree_id" value="{{ $saree->id }}">
                             <div class="action-top">
                                 <div class="pro-qty-area">
                                     <div class="pro-qty">
@@ -107,49 +130,65 @@
                                 </div>
                                 <button type="submit" class="btn-theme btn-black">Add to cart</button>
                             </div>
+                           
                         </form>
-                        <div class="action-bottom">
-                            <a class="btn-wishlist" href="{{ route('wishlist') }}">
-                                <i class="labtn-icon labtn-icon-wishlist"></i>Add to wishlist
-                            </a>
-                            <a class="btn-compare" href="#">
-                                <i class="labtn-icon labtn-icon-compare"></i>Add to compare
-                            </a>
-                        </div>
                     </div>
+                    @else
+                    <div class="alert alert-warning">
+                        This saree is currently out of stock. Please check back later.
+                    </div>
+                    @endif
+
                     <div class="product-ratting">
                         <div class="product-sku">
-                            SKU: <span>REF. LA-276</span>
+                            SKU: <span>{{ $saree->sku ?? 'N/A' }}</span>
                         </div>
                     </div>
+
+                    @if($saree->collection)
                     <div class="product-categorys">
                         <div class="product-category">
-                            Category: <span>Uncategorized</span>
+                            Collection: <span>{{ $saree->collection->name }}</span>
                         </div>
                     </div>
+                    @endif
+
+                    @if(!empty($colors) && count($colors) > 0)
                     <div class="widget">
-                        <h3 class="title">Tags:</h3>
+                        <h3 class="title">Colors:</h3>
                         <div class="widget-tags">
                             <ul>
-                                <li><a href="{{ route('shop') }}">Blazer,</a></li>
-                                <li><a href="{{ route('shop') }}">Fashion,</a></li>
-                                <li><a href="{{ route('shop') }}">wordpress,</a></li>
+                                @foreach($colors as $color)
+                                <li><a href="#">{{ $color }},</a></li>
+                                @endforeach
                             </ul>
                         </div>
                     </div>
+                    @endif
+
                     <div class="product-social-info">
-                        <a href="#"><span class="lastudioicon-b-facebook"></span></a>
-                        <a href="#"><span class="lastudioicon-b-twitter"></span></a>
-                        <a href="#"><span class="lastudioicon-b-linkedin"></span></a>
-                        <a href="#"><span class="lastudioicon-b-pinterest"></span></a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}" target="_blank">
+                            <span class="lastudioicon-b-facebook"></span>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url={{ urlencode(url()->current()) }}&text={{ urlencode($saree->name) }}" target="_blank">
+                            <span class="lastudioicon-b-twitter"></span>
+                        </a>
+                        <a href="https://pinterest.com/pin/create/button/?url={{ urlencode(url()->current()) }}&description={{ urlencode($saree->name) }}" target="_blank">
+                            <span class="lastudioicon-b-pinterest"></span>
+                        </a>
                     </div>
+
                     <div class="product-nextprev">
-                        <a href="#">
+                        @if($previousProduct ?? false)
+                        <a href="{{ route('product.show', $previousProduct->slug) }}">
                             <i class="lastudioicon-arrow-left"></i>
                         </a>
-                        <a href="#">
+                        @endif
+                        @if($nextProduct ?? false)
+                        <a href="{{ route('product.show', $nextProduct->slug) }}">
                             <i class="lastudioicon-arrow-right"></i>
                         </a>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -169,47 +208,76 @@
                             <button class="nav-link active" id="product-desc-tab" data-bs-toggle="tab" data-bs-target="#productDesc" type="button" role="tab" aria-controls="productDesc" aria-selected="true">Description</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="product-review-tab" data-bs-toggle="tab" data-bs-target="#productReview" type="button" role="tab" aria-controls="productReview" aria-selected="false">Reviews (1)</button>
+                            <button class="nav-link" id="product-review-tab" data-bs-toggle="tab" data-bs-target="#productReview" type="button" role="tab" aria-controls="productReview" aria-selected="false">Reviews ({{ $saree->total_reviews }})</button>
                         </li>
+                        @if($saree->care_instructions && count($saree->care_instructions) > 0)
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="product-care-tab" data-bs-toggle="tab" data-bs-target="#productCare" type="button" role="tab" aria-controls="productCare" aria-selected="false">Care Instructions</button>
+                        @endif
+                        @if($saree->fabric || $saree->length || $saree->blouse_length || $saree->work_type || $saree->occasion || $saree->pattern)
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="product-specs-tab" data-bs-toggle="tab" data-bs-target="#productSpecs" type="button" role="tab" aria-controls="productSpecs" aria-selected="false">Specifications</button>
+                        </li>
+                        @endif
                     </ul>
                     <div class="tab-content product-description-tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="productDesc" role="tabpanel" aria-labelledby="product-desc-tab">
                             <div class="product-desc">
                                 <div class="product-desc-row">
+                                    @if($saree->featured_image)
                                     <div class="product-thumb">
-                                        <img src="{{ asset('assets/img/shop/93.jpg') }}" alt="Moren-Shop">
+                                        <img src="{{ asset('storage/' . $saree->featured_image) }}" alt="{{ $saree->name }}">
                                     </div>
+                                    @endif
                                     <div class="product-content">
-                                        <h4>Made with love</h4>
-                                        <p>Donec accumsan auctor iaculis. Sed suscipit arcu ligula, at egestas magna molestie a. Proin ac ex maximus, ultrices justo eget, sodales orci. Aliquam egestas libero ac turpis pharetra, in vehicula lacus scelerisque. Vestibulum ut sem laoreet, feugiat tellus at.</p>
-                                        <p>Duis efficitur gravida tincidunt. Nam sodales vel odio at sollicitudin. Vestibulum sed rutrum nisl. Nulla diam arcu, facilisis nec blandit non, interdum et orci. Nam aliquam lorem vitae risus molestie convallis.</p>
+                                        <h4>{{ $saree->name }}</h4>
+                                        <p>{!! nl2br(e($saree->description)) !!}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="tab-pane fade" id="productReview" role="tabpanel" aria-labelledby="product-review-tab">
                             <div class="product-review">
                                 <div class="product-review-comments">
-                                    <h4 class="title">1 review for <span>Product Simple</span></h4>
+                                    <h4 class="title">{{ $saree->total_reviews }} {{ $saree->total_reviews == 1 ? 'review' : 'reviews' }} for <span>{{ $saree->name }}</span></h4>
+                                    
+                                    @forelse($saree->approvedReviews as $review)
                                     <div class="comment-item">
                                         <div class="thumb">
-                                            <img src="{{ asset('assets/img/icons/s1.jpg') }}" alt="Moren-Shop">
+                                            <img src="{{ asset('assets/img/icons/s1.jpg') }}" alt="{{ $review->name }}">
                                         </div>
                                         <div class="content">
                                             <div class="rating">
-                                                <span class="lastudioicon-star-rate-1"></span>
-                                                <span class="lastudioicon-star-rate-1"></span>
-                                                <span class="lastudioicon-star-rate-1"></span>
-                                                <span class="lastudioicon-star-rate-1"></span>
-                                                <span class="lastudioicon-star-rate-1"></span>
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    @if($i <= $review->rating)
+                                                    <span class="lastudioicon-star-rate-1"></span>
+                                                    @else
+                                                    <span class="lastudioicon-star-rate-2"></span>
+                                                    @endif
+                                                @endfor
                                             </div>
-                                            <h5 class="meta"><span>Agnes Wilson </span> – December 24, 2020</h5>
-                                            <span class="review">There are no reviews yet.</span>
+                                            <h5 class="meta">
+                                                <span>{{ $review->name }}</span> – {{ $review->created_at->format('F d, Y') }}
+                                            </h5>
+                                            <span class="review">{{ $review->comment }}</span>
                                         </div>
                                     </div>
+                                    @empty
+                                    <p>There are no reviews yet.</p>
+                                    @endforelse
                                 </div>
+
                                 <div class="product-review-form">
                                     <h3 class="title">Add a review</h3>
+                                    
+                                    @if(session('success'))
+                                    <div class="alert alert-success">
+                                        {{ session('success') }}
+                                    </div>
+                                    @endif
+
+                                    @auth
                                     <div class="rating">
                                         <span class="rating-title">Your rating *</span>
                                         <span class="lastudioicon-star-rate-2"></span>
@@ -218,8 +286,9 @@
                                         <span class="lastudioicon-star-rate-2"></span>
                                         <span class="lastudioicon-star-rate-2"></span>
                                     </div>
-                                    <form action="#" method="post">
+                                    <form action="{{ route('product.review', $saree->slug) }}" method="post">
                                         @csrf
+                                        <input type="hidden" name="rating" id="rating-value" value="5">
                                         <div class="review-form-content">
                                             <div class="row">
                                                 <div class="col-md-12">
@@ -238,9 +307,62 @@
                                             </div>
                                         </div>
                                     </form>
+                                    @else
+                                    <p>You must be <a href="{{ route('login') }}">logged in</a> to post a review.</p>
+                                    @endauth
                                 </div>
                             </div>
                         </div>
+
+                        @if($saree->care_instructions && count($saree->care_instructions) > 0)
+                        <div class="tab-pane fade" id="productCare" role="tabpanel" aria-labelledby="product-care-tab">
+                            <div class="product-care">
+                                <h4>Care Instructions</h4>
+                                <ul>
+                                    @foreach($saree->care_instructions as $instruction)
+                                    <li>{{ $instruction }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($saree->fabric || $saree->length || $saree->blouse_length || $saree->work_type || $saree->occasion || $saree->pattern)
+                        <div class="tab-pane fade" id="productSpecs" role="tabpanel" aria-labelledby="product-specs-tab">
+                            <div class="product-desc">
+                                <div class="product-content">
+                                    <h4>Product Specifications</h4>
+                                    @if($saree->fabric)
+                                    <p><strong>Fabric:</strong> {{ ucfirst($saree->fabric) }}</p>
+                                    @endif
+                                    
+                                    @if($saree->length)
+                                    <p><strong>Saree Length:</strong> {{ $saree->length }} meters</p>
+                                    @endif
+                                    
+                                    @if($saree->blouse_length)
+                                    <p><strong>Blouse Length:</strong> {{ $saree->blouse_length }} meters</p>
+                                    @endif
+                                    
+                                    @if($saree->blouse_included !== null)
+                                    <p><strong>Blouse:</strong> {{ $saree->blouse_included ? 'Included' : 'Not Included' }}</p>
+                                    @endif
+                                    
+                                    @if($saree->work_type)
+                                    <p><strong>Work Type:</strong> {{ ucfirst($saree->work_type) }}</p>
+                                    @endif
+                                    
+                                    @if($saree->occasion)
+                                    <p><strong>Occasion:</strong> {{ ucfirst($saree->occasion) }}</p>
+                                    @endif
+                                    
+                                    @if($saree->pattern)
+                                    <p><strong>Pattern:</strong> {{ ucfirst($saree->pattern) }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -263,15 +385,17 @@
             <div class="col-12">
                 <div class="swiper-container product4-slider-container">
                     <div class="swiper-wrapper">
-                        {{-- Related Product 1 --}}
+                        @forelse($relatedProducts as $relatedSaree)
                         <div class="swiper-slide">
-                            <!-- Start Product Item -->
                             <div class="product-item">
                                 <div class="product-thumb">
-                                    <a href="#">
-                                        <img src="{{ asset('assets/img/shop/9.jpg') }}" alt="Moren-Shop">
+                                    <a href="{{ route('product.show', $relatedSaree->slug) }}">
+                                        <img src="{{ $relatedSaree->featured_image ? asset('storage/' . $relatedSaree->featured_image) : asset('assets/img/shop/default.jpg') }}" alt="{{ $relatedSaree->name }}">
                                         <span class="thumb-overlay"></span>
                                     </a>
+                                    @if($relatedSaree->hasDiscount())
+                                    <span class="badge">-{{ $relatedSaree->getDiscountPercentage() }}%</span>
+                                    @endif
                                     <div class="product-action action-style3">
                                         <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ route('cart') }}" title="Add to cart">
                                             <i class="lastudioicon-shopping-cart-3"></i>
@@ -279,9 +403,7 @@
                                         <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View">
                                             <i class="lastudioicon-search-zoom-in"></i>
                                         </a>
-                                        <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ route('wishlist') }}" title="Add to wishlist">
-                                            <i class="lastudioicon-heart-2"></i>
-                                        </a>
+                                      
                                         <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="#" title="Add to compare">
                                             <i class="lastudioicon-compare"></i>
                                         </a>
@@ -289,125 +411,24 @@
                                 </div>
                                 <div class="product-info info-style3">
                                     <div class="content-inner">
-                                        <h4 class="title"><a href="#">Printed surplice blouse</a></h4>
+                                        <h4 class="title"><a href="{{ route('product.show', $relatedSaree->slug) }}">{{ $relatedSaree->name }}</a></h4>
                                         <div class="prices">
-                                            <span class="price">£17.90</span>
+                                            @if($relatedSaree->hasDiscount())
+                                                <span class="price-old">₹{{ number_format($relatedSaree->price, 2) }}</span>
+                                                <span class="price">₹{{ number_format($relatedSaree->sale_price, 2) }}</span>
+                                            @else
+                                                <span class="price">₹{{ number_format($relatedSaree->price, 2) }}</span>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- End Product Item -->
                         </div>
-
-                        {{-- Related Product 2 --}}
-                        <div class="swiper-slide">
-                            <!-- Start Product Item -->
-                            <div class="product-item">
-                                <div class="product-thumb">
-                                    <a href="#">
-                                        <img src="{{ asset('assets/img/shop/83.jpg') }}" alt="Moren-Shop">
-                                        <span class="bg-thumb" data-bg-img="{{ asset('assets/img/shop/84.jpg') }}"></span>
-                                        <span class="thumb-overlay"></span>
-                                    </a>
-                                    <div class="product-action action-style3">
-                                        <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ route('cart') }}" title="Add to cart">
-                                            <i class="lastudioicon-shopping-cart-3"></i>
-                                        </a>
-                                        <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View">
-                                            <i class="lastudioicon-search-zoom-in"></i>
-                                        </a>
-                                        <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ route('wishlist') }}" title="Add to wishlist">
-                                            <i class="lastudioicon-heart-2"></i>
-                                        </a>
-                                        <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="#" title="Add to compare">
-                                            <i class="lastudioicon-compare"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info info-style3">
-                                    <div class="content-inner">
-                                        <h4 class="title"><a href="#">Double Breasted Blazer</a></h4>
-                                        <div class="prices">
-                                            <span class="price">£39.90</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Product Item -->
+                        @empty
+                        <div class="col-12 text-center">
+                            <p>No related products found.</p>
                         </div>
-
-                        {{-- Related Product 3 --}}
-                        <div class="swiper-slide">
-                            <!-- Start Product Item -->
-                            <div class="product-item">
-                                <div class="product-thumb">
-                                    <a href="#">
-                                        <img src="{{ asset('assets/img/shop/80.jpg') }}" alt="Moren-Shop">
-                                        <span class="bg-thumb" data-bg-img="{{ asset('assets/img/shop/81.jpg') }}"></span>
-                                        <span class="thumb-overlay"></span>
-                                    </a>
-                                    <div class="product-action action-style3">
-                                        <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ route('cart') }}" title="Add to cart">
-                                            <i class="lastudioicon-shopping-cart-3"></i>
-                                        </a>
-                                        <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View">
-                                            <i class="lastudioicon-search-zoom-in"></i>
-                                        </a>
-                                        <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ route('wishlist') }}" title="Add to wishlist">
-                                            <i class="lastudioicon-heart-2"></i>
-                                        </a>
-                                        <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="#" title="Add to compare">
-                                            <i class="lastudioicon-compare"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info info-style3">
-                                    <div class="content-inner">
-                                        <h4 class="title"><a href="#">Product Variable</a></h4>
-                                        <div class="prices">
-                                            <span class="price">£39.90</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Product Item -->
-                        </div>
-
-                        {{-- Related Product 4 --}}
-                        <div class="swiper-slide">
-                            <!-- Start Product Item -->
-                            <div class="product-item">
-                                <div class="product-thumb">
-                                    <a href="#">
-                                        <img src="{{ asset('assets/img/shop/3.jpg') }}" alt="Moren-Shop">
-                                        <span class="thumb-overlay"></span>
-                                    </a>
-                                    <div class="product-action action-style3">
-                                        <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ route('cart') }}" title="Add to cart">
-                                            <i class="lastudioicon-shopping-cart-3"></i>
-                                        </a>
-                                        <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View">
-                                            <i class="lastudioicon-search-zoom-in"></i>
-                                        </a>
-                                        <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ route('wishlist') }}" title="Add to wishlist">
-                                            <i class="lastudioicon-heart-2"></i>
-                                        </a>
-                                        <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="#" title="Add to compare">
-                                            <i class="lastudioicon-compare"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-info info-style3">
-                                    <div class="content-inner">
-                                        <h4 class="title"><a href="#">Short lilac ruffled dress</a></h4>
-                                        <div class="prices">
-                                            <span class="price">£29.90</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Product Item -->
-                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -415,4 +436,68 @@
     </div>
 </section>
 <!--== End Products Area Wrapper ==-->
+
+@push('scripts')
+<script>
+// Star rating functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.rating .lastudioicon-star-rate-2');
+    const ratingInput = document.getElementById('rating-value');
+    
+    if (stars.length > 0 && ratingInput) {
+        stars.forEach((star, index) => {
+            star.addEventListener('click', function() {
+                const rating = 5 - index;
+                ratingInput.value = rating;
+                
+                stars.forEach((s, i) => {
+                    if (i >= index) {
+                        s.classList.remove('lastudioicon-star-rate-2');
+                        s.classList.add('lastudioicon-star-rate-1');
+                    } else {
+                        s.classList.remove('lastudioicon-star-rate-1');
+                        s.classList.add('lastudioicon-star-rate-2');
+                    }
+                });
+            });
+        });
+    }
+});
+</script>
+@endpush
+
 @endsection
+
+<style>
+.prices {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.price-old {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.price {
+    color: #000;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.badge-sale {
+    background: linear-gradient(135deg, #d4af37 0%, #f9d77e 50%, #d4af37 100%);
+    color: #ffffff !important;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);  /* Stronger shadow for better readability */
+}
+</style>
