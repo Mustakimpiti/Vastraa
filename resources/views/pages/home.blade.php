@@ -341,19 +341,50 @@
     </section>
     <!--== End Featured Area Wrapper ==-->
 @endsection
-
 <style>
 .product-item .product-thumb img {
     width: 100%;
-    height: 400px; /* Set fixed height */
-    object-fit: cover; /* Crops image to fill container */
-    object-position: center; /* Centers the image */
+    height: 400px;
+    object-fit: cover;
+    object-position: center;
 }
 
-/* For hover image */
 .product-item .product-thumb .bg-thumb {
     height: 400px;
     background-size: cover;
     background-position: center;
+}
+
+/* Saree Trends Section - Force height */
+.gallery-trends-area .swiper-slide {
+    height: 350px !important;
+}
+
+.gallery-trends-area .slider-item {
+    height: 350px !important;
+}
+
+.gallery-trends-area .slider-item .bg-thumb {
+    height: 350px !important;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .gallery-trends-area .swiper-slide,
+    .gallery-trends-area .slider-item,
+    .gallery-trends-area .slider-item .bg-thumb {
+        height: 250px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .gallery-trends-area .swiper-slide,
+    .gallery-trends-area .slider-item,
+    .gallery-trends-area .slider-item .bg-thumb {
+        height: 200px !important;
+    }
 }
 </style>
