@@ -80,9 +80,9 @@
                                 </div>
                             @endauth
 
-                            <!-- Cart Icon with Dynamic Count -->
+                            <!-- Cart Icon with Dynamic Count - FIXED: Direct navigation -->
                             <div class="header-action-cart">
-                                <a href="{{ route('cart.index') }}" class="btn-cart cart-icon">
+                                <a href="{{ route('cart.index') }}" class="btn-cart direct-cart-link" onclick="event.stopPropagation();">
                                     @php
                                         $cartCount = \App\Models\Cart::where(function($query) {
                                             if (Auth::check()) {
@@ -223,9 +223,33 @@
         right: -10px;
     }
 }
+
+/* Prevent cart slider from opening - force direct navigation */
+.direct-cart-link {
+    pointer-events: auto !important;
+}
 </style>
 
 <script>
+// Prevent any cart slider/offcanvas from opening
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove cart slider triggers
+    const cartLink = document.querySelector('.direct-cart-link');
+    if (cartLink) {
+        // Remove any data attributes that might trigger modals/offcanvas
+        cartLink.removeAttribute('data-bs-toggle');
+        cartLink.removeAttribute('data-toggle');
+        cartLink.removeAttribute('data-offcanvas');
+        
+        // Add click handler to ensure direct navigation
+        cartLink.addEventListener('click', function(e) {
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            // Let the default link behavior work
+        }, true);
+    }
+});
+
 // Function to update cart count dynamically
 function updateCartCount() {
     fetch('{{ route("cart.count") }}')
