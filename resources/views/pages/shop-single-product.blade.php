@@ -213,6 +213,7 @@
                         @if($saree->care_instructions && count($saree->care_instructions) > 0)
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="product-care-tab" data-bs-toggle="tab" data-bs-target="#productCare" type="button" role="tab" aria-controls="productCare" aria-selected="false">Care Instructions</button>
+                        </li>
                         @endif
                         @if($saree->fabric || $saree->length || $saree->blouse_length || $saree->work_type || $saree->occasion || $saree->pattern)
                         <li class="nav-item" role="presentation">
@@ -260,11 +261,11 @@
                                             <h5 class="meta">
                                                 <span>{{ $review->name }}</span> – {{ $review->created_at->format('F d, Y') }}
                                             </h5>
-                                            <span class="review">{{ $review->comment }}</span>
+                                            <p class="review">{{ $review->comment }}</p>
                                         </div>
                                     </div>
                                     @empty
-                                    <p>There are no reviews yet.</p>
+                                    <p>There are no reviews yet. Be the first to review this product!</p>
                                     @endforelse
                                 </div>
 
@@ -272,36 +273,60 @@
                                     <h3 class="title">Add a review</h3>
                                     
                                     @if(session('success'))
-                                    <div class="alert alert-success">
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
                                         {{ session('success') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    @endif
+
+                                    @if(session('error'))
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        {{ session('error') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    @endif
+
+                                    @if($errors->any())
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <ul class="mb-0">
+                                            @foreach($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                     </div>
                                     @endif
 
                                     @auth
-                                    <div class="rating">
+                                    <div class="rating-input-wrapper">
                                         <span class="rating-title">Your rating *</span>
-                                        <span class="lastudioicon-star-rate-2"></span>
-                                        <span class="lastudioicon-star-rate-2"></span>
-                                        <span class="lastudioicon-star-rate-2"></span>
-                                        <span class="lastudioicon-star-rate-2"></span>
-                                        <span class="lastudioicon-star-rate-2"></span>
+                                        <div class="rating-stars" id="rating-stars">
+                                            <span class="star lastudioicon-star-rate-2" data-rating="1"></span>
+                                            <span class="star lastudioicon-star-rate-2" data-rating="2"></span>
+                                            <span class="star lastudioicon-star-rate-2" data-rating="3"></span>
+                                            <span class="star lastudioicon-star-rate-2" data-rating="4"></span>
+                                            <span class="star lastudioicon-star-rate-2" data-rating="5"></span>
+                                        </div>
+                                        <span class="rating-label" id="rating-label">Please select a rating</span>
                                     </div>
-                                    <form action="{{ route('product.review', $saree->slug) }}" method="post">
+
+                                    <form action="{{ route('product.review', $saree->slug) }}" method="post" id="reviewForm">
                                         @csrf
-                                        <input type="hidden" name="rating" id="rating-value" value="5">
+                                        <input type="hidden" name="rating" id="rating-value" value="">
                                         <div class="review-form-content">
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label for="reviewFormTextarea">Your review *</label>
-                                                        <textarea class="form-control" id="reviewFormTextarea" name="comment" rows="7" required></textarea>
+                                                        <textarea class="form-control" id="reviewFormTextarea" name="comment" rows="7" placeholder="Write your review here..." required>{{ old('comment') }}</textarea>
+                                                        <small class="form-text text-muted">Minimum 10 characters</small>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
-                                                        <button class="btn btn-theme btn-black" type="submit">Submit</button>
+                                                        <button class="btn btn-theme btn-black" type="submit">Submit Review</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -435,26 +460,79 @@
 <script>
 // Star rating functionality
 document.addEventListener('DOMContentLoaded', function() {
-    const stars = document.querySelectorAll('.rating .lastudioicon-star-rate-2');
+    const stars = document.querySelectorAll('#rating-stars .star');
     const ratingInput = document.getElementById('rating-value');
+    const ratingLabel = document.getElementById('rating-label');
+    const reviewForm = document.getElementById('reviewForm');
     
     if (stars.length > 0 && ratingInput) {
+        const ratingLabels = [
+            'Please select a rating',
+            'Poor',
+            'Fair',
+            'Good',
+            'Very Good',
+            'Excellent'
+        ];
+        
+        // Click handler for stars
         stars.forEach((star, index) => {
             star.addEventListener('click', function() {
-                const rating = 5 - index;
+                const rating = parseInt(this.getAttribute('data-rating'));
                 ratingInput.value = rating;
                 
-                stars.forEach((s, i) => {
-                    if (i >= index) {
-                        s.classList.remove('lastudioicon-star-rate-2');
-                        s.classList.add('lastudioicon-star-rate-1');
-                    } else {
-                        s.classList.remove('lastudioicon-star-rate-1');
-                        s.classList.add('lastudioicon-star-rate-2');
-                    }
-                });
+                // Update star display
+                updateStars(rating);
+                
+                // Update label
+                ratingLabel.textContent = ratingLabels[rating];
+                ratingLabel.style.color = '#d4af37';
+            });
+            
+            // Hover effect
+            star.addEventListener('mouseenter', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                updateStars(rating, true);
             });
         });
+        
+        // Reset to selected rating on mouse leave
+        document.getElementById('rating-stars').addEventListener('mouseleave', function() {
+            const currentRating = parseInt(ratingInput.value) || 0;
+            updateStars(currentRating);
+        });
+        
+        function updateStars(rating, isHover = false) {
+            stars.forEach((star, index) => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                
+                if (starRating <= rating) {
+                    star.classList.remove('lastudioicon-star-rate-2');
+                    star.classList.add('lastudioicon-star-rate-1');
+                    if (isHover) {
+                        star.classList.add('hover');
+                    } else {
+                        star.classList.remove('hover');
+                    }
+                } else {
+                    star.classList.remove('lastudioicon-star-rate-1', 'hover');
+                    star.classList.add('lastudioicon-star-rate-2');
+                }
+            });
+        }
+        
+        // Form validation
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', function(e) {
+                if (!ratingInput.value) {
+                    e.preventDefault();
+                    alert('Please select a rating before submitting your review.');
+                    ratingLabel.textContent = 'Please select a rating';
+                    ratingLabel.style.color = '#dc3545';
+                    return false;
+                }
+            });
+        }
     }
 });
 </script>
@@ -492,6 +570,76 @@ document.addEventListener('DOMContentLoaded', function() {
     font-weight: 700;
     display: inline-block;
     box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);  /* Stronger shadow for better readability */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Review Star Rating Styles */
+.rating-input-wrapper {
+    margin-bottom: 20px;
+}
+
+.rating-title {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #333;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 8px;
+}
+
+.rating-stars .star {
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #ddd;
+}
+
+.rating-stars .star:hover,
+.rating-stars .star.hover {
+    transform: scale(1.1);
+}
+
+.rating-stars .star.lastudioicon-star-rate-1 {
+    color: #d4af37;
+}
+
+.rating-label {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    font-style: italic;
+}
+
+.alert {
+    margin-bottom: 20px;
+}
+
+.form-control:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+.product-review-form .form-group {
+    margin-bottom: 20px;
+}
+
+.product-review-form label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.product-review-comments .comment-item {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.product-review-comments .comment-item:last-child {
+    border-bottom: none;
 }
 </style>

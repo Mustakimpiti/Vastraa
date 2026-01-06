@@ -28,8 +28,11 @@ class ProductController extends Controller
         ->where('is_active', true)
         ->firstOrFail();
 
-        // Increment view count
-        $saree->increment('views');
+        // Increment view count (only once per session)
+        if (!session()->has('viewed_saree_' . $saree->id)) {
+            $saree->increment('views');
+            session()->put('viewed_saree_' . $saree->id, true);
+        }
 
         // Get related products from the same collection or similar attributes
         $relatedProducts = Saree::where('is_active', true)
@@ -65,13 +68,26 @@ class ProductController extends Controller
                 ->get();
         }
 
+        // Get previous and next products for navigation
+        $previousProduct = Saree::where('is_active', true)
+            ->where('id', '<', $saree->id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $nextProduct = Saree::where('is_active', true)
+            ->where('id', '>', $saree->id)
+            ->orderBy('id', 'asc')
+            ->first();
+
         // Parse colors array
         $colors = is_array($saree->colors) ? $saree->colors : [];
 
         return view('pages.shop-single-product', compact(
             'saree',
             'relatedProducts',
-            'colors'
+            'colors',
+            'previousProduct',
+            'nextProduct'
         ));
     }
 
@@ -94,6 +110,13 @@ class ProductController extends Controller
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string|min:10|max:1000',
+        ], [
+            'rating.required' => 'Please select a rating.',
+            'rating.min' => 'Rating must be between 1 and 5 stars.',
+            'rating.max' => 'Rating must be between 1 and 5 stars.',
+            'comment.required' => 'Please write a review comment.',
+            'comment.min' => 'Review must be at least 10 characters long.',
+            'comment.max' => 'Review must not exceed 1000 characters.',
         ]);
 
         // Check if user already reviewed this product
@@ -107,7 +130,7 @@ class ProductController extends Controller
         }
 
         // Create the review
-        $review = Review::create([
+        Review::create([
             'saree_id' => $saree->id,
             'user_id' => Auth::id(),
             'name' => Auth::user()->name,

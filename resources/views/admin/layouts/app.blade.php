@@ -24,11 +24,16 @@
             padding: 12px 20px;
             border-radius: 4px;
             margin: 5px 10px;
+            transition: all 0.3s ease;
         }
         .admin-sidebar .nav-link:hover,
         .admin-sidebar .nav-link.active {
             background: #34495e;
             color: white;
+        }
+        .admin-sidebar .nav-link i {
+            margin-right: 8px;
+            width: 20px;
         }
         .admin-content {
             padding: 30px;
@@ -62,6 +67,14 @@
             padding: 5px 10px;
             border-radius: 4px;
         }
+        .pending-badge {
+            background: #f39c12;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
     </style>
 
     @stack('styles')
@@ -88,6 +101,33 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ Request::is('admin/reviews*') ? 'active' : '' }}" 
+                               href="{{ route('admin.reviews.index') }}">
+                                <i class="fa fa-star"></i> Reviews
+                                @php
+                                    $pendingCount = \App\Models\Review::where('is_approved', false)->count();
+                                @endphp
+                                @if($pendingCount > 0)
+                                    <span class="pending-badge">{{ $pendingCount }}</span>
+                                @endif
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fa fa-users"></i> Customers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fa fa-shopping-cart"></i> Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fa fa-cog"></i> Settings
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
                             <a class="nav-link" href="{{ route('home') }}" target="_blank">
                                 <i class="fa fa-external-link"></i> View Site
                             </a>
@@ -102,8 +142,11 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h3>@yield('page-title', 'Dashboard')</h3>
                         <div>
-                            <span class="me-3">Welcome, Admin</span>
-                            <a href="{{ route('login') }}" class="btn btn-sm btn-outline-danger">Logout</a>
+                            <span class="me-3">Welcome, {{ Auth::user()->name ?? 'Admin' }}</span>
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
+                            </form>
                         </div>
                     </div>
                 </div>
