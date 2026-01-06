@@ -400,13 +400,7 @@
                                         <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ route('cart') }}" title="Add to cart">
                                             <i class="lastudioicon-shopping-cart-3"></i>
                                         </a>
-                                        <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View">
-                                            <i class="lastudioicon-search-zoom-in"></i>
-                                        </a>
-                                      
-                                        <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="#" title="Add to compare">
-                                            <i class="lastudioicon-compare"></i>
-                                        </a>
+                                        
                                     </div>
                                 </div>
                                 <div class="product-info info-style3">

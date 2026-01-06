@@ -46,23 +46,41 @@ class ShopController extends Controller
             $query->where('work_type', $request->work_type);
         }
 
-        // Price range filter
-        if ($request->filled('min_price')) {
-            $query->where(function($q) use ($request) {
-                $q->where('sale_price', '>=', $request->min_price)
-                  ->orWhere(function($q2) use ($request) {
+        // Price range filter - FIXED
+        if ($request->filled('min_price') && $request->filled('max_price')) {
+            $minPrice = (float) $request->min_price;
+            $maxPrice = (float) $request->max_price;
+            
+            $query->where(function($q) use ($minPrice, $maxPrice) {
+                // Check sale_price if it exists and is not null
+                $q->where(function($q2) use ($minPrice, $maxPrice) {
+                    $q2->whereNotNull('sale_price')
+                       ->where('sale_price', '>=', $minPrice)
+                       ->where('sale_price', '<=', $maxPrice);
+                })
+                // Otherwise check regular price
+                ->orWhere(function($q2) use ($minPrice, $maxPrice) {
+                    $q2->whereNull('sale_price')
+                       ->where('price', '>=', $minPrice)
+                       ->where('price', '<=', $maxPrice);
+                });
+            });
+        } elseif ($request->filled('min_price')) {
+            $minPrice = (float) $request->min_price;
+            $query->where(function($q) use ($minPrice) {
+                $q->where('sale_price', '>=', $minPrice)
+                  ->orWhere(function($q2) use ($minPrice) {
                       $q2->whereNull('sale_price')
-                         ->where('price', '>=', $request->min_price);
+                         ->where('price', '>=', $minPrice);
                   });
             });
-        }
-
-        if ($request->filled('max_price')) {
-            $query->where(function($q) use ($request) {
-                $q->where('sale_price', '<=', $request->max_price)
-                  ->orWhere(function($q2) use ($request) {
+        } elseif ($request->filled('max_price')) {
+            $maxPrice = (float) $request->max_price;
+            $query->where(function($q) use ($maxPrice) {
+                $q->where('sale_price', '<=', $maxPrice)
+                  ->orWhere(function($q2) use ($maxPrice) {
                       $q2->whereNull('sale_price')
-                         ->where('price', '<=', $request->max_price);
+                         ->where('price', '<=', $maxPrice);
                   });
             });
         }
@@ -109,14 +127,14 @@ class ShopController extends Controller
             ->orderBy('name')
             ->get();
 
-        // Fixed: Properly filter and ensure we return collections
+        // Get distinct filter values
         $fabrics = Saree::where('is_active', true)
             ->whereNotNull('fabric')
             ->where('fabric', '!=', '')
             ->distinct()
             ->pluck('fabric')
             ->filter(function($value) {
-                return !empty($value);
+                return !empty(trim($value));
             })
             ->sort()
             ->values();
@@ -127,7 +145,7 @@ class ShopController extends Controller
             ->distinct()
             ->pluck('occasion')
             ->filter(function($value) {
-                return !empty($value);
+                return !empty(trim($value));
             })
             ->sort()
             ->values();
@@ -138,15 +156,19 @@ class ShopController extends Controller
             ->distinct()
             ->pluck('work_type')
             ->filter(function($value) {
-                return !empty($value);
+                return !empty(trim($value));
             })
             ->sort()
             ->values();
 
         // Price range
         $priceRange = [
-            'min' => Saree::where('is_active', true)->min('price') ?? 0,
-            'max' => Saree::where('is_active', true)->max('price') ?? 10000,
+            'min' => Saree::where('is_active', true)
+                ->selectRaw('MIN(COALESCE(sale_price, price)) as min_price')
+                ->value('min_price') ?? 0,
+            'max' => Saree::where('is_active', true)
+                ->selectRaw('MAX(COALESCE(sale_price, price)) as max_price')
+                ->value('max_price') ?? 10000,
         ];
 
         return view('pages.shop', compact(
