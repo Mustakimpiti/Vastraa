@@ -36,8 +36,8 @@
                                 @if($saree->featured_image)
                                 <div class="zoom zoom-hover">
                                     <div class="thumb-item">
-                                        <a class="lightbox-image" data-fancybox="gallery" href="{{ asset('storage/' . $saree->featured_image) }}">
-                                            <img src="{{ asset('storage/' . $saree->featured_image) }}" alt="{{ $saree->name }}">
+                                        <a class="lightbox-image" data-fancybox="gallery" href="{{ asset($saree->featured_image) }}">
+                                            <img src="{{ asset($saree->featured_image) }}" alt="{{ $saree->name }}">
                                         </a>
                                     </div>
                                 </div>
@@ -47,15 +47,15 @@
                                 @foreach($saree->images as $image)
                                 <div class="zoom zoom-hover">
                                     <div class="thumb-item">
-                                        <a class="lightbox-image" data-fancybox="gallery" href="{{ asset('storage/' . $image->image_path) }}">
-                                            <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $saree->name }}">
+                                        <a class="lightbox-image" data-fancybox="gallery" href="{{ asset($image->image_path) }}">
+                                            <img src="{{ asset($image->image_path) }}" alt="{{ $saree->name }}">
                                         </a>
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
                             <div class="product-gallery-actions">
-                                <a class="lightbox-image" data-fancybox="gallery" href="{{ asset('storage/' . $saree->featured_image) }}">
+                                <a class="lightbox-image" data-fancybox="gallery" href="{{ asset($saree->featured_image) }}">
                                     <i class="lastudioicon-full-screen"></i>
                                 </a>
                             </div>
@@ -67,14 +67,14 @@
                                 <!-- Featured Image Thumbnail -->
                                 @if($saree->featured_image)
                                 <div class="nav-item">
-                                    <img src="{{ asset('storage/' . $saree->featured_image) }}" alt="{{ $saree->name }}">
+                                    <img src="{{ asset($saree->featured_image) }}" alt="{{ $saree->name }}">
                                 </div>
                                 @endif
 
                                 <!-- Gallery Images Thumbnails -->
                                 @foreach($saree->images as $image)
                                 <div class="nav-item">
-                                    <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $saree->name }}">
+                                    <img src="{{ asset($image->image_path) }}" alt="{{ $saree->name }}">
                                 </div>
                                 @endforeach
                             </div>
@@ -230,7 +230,7 @@
                                 <div class="product-desc-row">
                                     @if($saree->featured_image)
                                     <div class="product-thumb">
-                                        <img src="{{ asset('storage/' . $saree->featured_image) }}" alt="{{ $saree->name }}">
+                                        <img src="{{ asset($saree->featured_image) }}" alt="{{ $saree->name }}">
                                     </div>
                                     @endif
                                     <div class="product-content">
@@ -248,9 +248,6 @@
                                     
                                     @forelse($saree->approvedReviews as $review)
                                     <div class="comment-item">
-                                        <div class="thumb">
-                                            <img src="{{ asset('assets/img/icons/s1.jpg') }}" alt="{{ $review->name }}">
-                                        </div>
                                         <div class="content">
                                             <div class="rating">
                                                 @for($i = 1; $i <= 5; $i++)
@@ -418,7 +415,12 @@
                             <div class="product-item">
                                 <div class="product-thumb">
                                     <a href="{{ route('product.show', $relatedSaree->slug) }}">
-                                        <img src="{{ $relatedSaree->featured_image ? asset('storage/' . $relatedSaree->featured_image) : asset('assets/img/shop/default.jpg') }}" alt="{{ $relatedSaree->name }}">
+                                        @php
+                                            $imageUrl = $relatedSaree->featured_image 
+                                                ? asset($relatedSaree->featured_image) 
+                                                : asset('assets/img/shop/default.jpg');
+                                        @endphp
+                                        <img src="{{ $imageUrl }}" alt="{{ $relatedSaree->name }}">
                                         <span class="thumb-overlay"></span>
                                     </a>
                                     @if($relatedSaree->hasDiscount())
@@ -573,6 +575,42 @@ document.addEventListener('DOMContentLoaded', function() {
     display: inline-block;
     box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Product Description Image Size Control */
+.product-desc .product-thumb {
+    max-width: 300px;
+    margin-right: 30px;
+    flex-shrink: 0;
+}
+
+.product-desc .product-thumb img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.product-desc .product-desc-row {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.product-desc .product-content {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .product-desc .product-desc-row {
+        flex-direction: column;
+    }
+    
+    .product-desc .product-thumb {
+        max-width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
 }
 
 /* Review Star Rating Styles */

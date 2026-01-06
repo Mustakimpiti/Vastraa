@@ -31,16 +31,16 @@
                     @foreach($sarees as $saree)
                     <tr>
                         <td>
-                            @if($saree->featured_image)
-                                <img src="{{ asset('storage/' . $saree->featured_image) }}" 
-                                     alt="{{ $saree->name }}" 
-                                     class="saree-img-thumb">
-                            @else
-                                <div class="saree-img-thumb bg-secondary d-flex align-items-center justify-content-center">
-                                    <i class="fa fa-image text-white"></i>
-                                </div>
-                            @endif
-                        </td>
+    @if($saree->featured_image)
+        <img src="{{ asset($saree->featured_image) }}" 
+             alt="{{ $saree->name }}" 
+             class="saree-img-thumb">
+    @else
+        <div class="saree-img-thumb bg-secondary d-flex align-items-center justify-content-center">
+            <i class="fa fa-image text-white"></i>
+        </div>
+    @endif
+</td>
                         <td>
                             <strong>{{ $saree->name }}</strong><br>
                             <small class="text-muted">{{ $saree->collection->name ?? 'No Collection' }}</small>

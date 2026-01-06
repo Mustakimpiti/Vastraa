@@ -83,7 +83,7 @@
                 <div class="swiper-slide">
                     <div class="slider-item">
                         <div class="thumb">
-                            <div class="bg-thumb bg-overlay bg-img" data-bg-img="{{ $collection->banner_image ? asset('storage/' . $collection->banner_image) : asset('assets/img/about/2.JPG') }}"></div>
+                            <div class="bg-thumb bg-overlay bg-img" data-bg-img="{{ $collection->banner_image ? asset($collection->banner_image) : asset('assets/img/about/2.JPG') }}"></div>
                         </div>
                         <div class="slider-content-area">
                             <div class="content">
@@ -139,9 +139,9 @@
                 <div class="product-item">
                     <div class="product-thumb">
                         <a href="{{ route('product.show', $saree->slug) }}">
-                            <img src="{{ $saree->featured_image ? asset('storage/' . $saree->featured_image) : asset('assets/img/shop/default.jpg') }}" alt="{{ $saree->name }}">
+                            <img src="{{ $saree->featured_image ? asset($saree->featured_image) : asset('assets/img/shop/default.jpg') }}" alt="{{ $saree->name }}">
                             @if($saree->images->count() > 0)
-                            <span class="bg-thumb" data-bg-img="{{ asset('storage/' . $saree->images->first()->image_path) }}"></span>
+                            <span class="bg-thumb" data-bg-img="{{ asset($saree->images->first()->image_path) }}"></span>
                             @endif
                             <span class="thumb-overlay"></span>
                         </a>
@@ -262,7 +262,7 @@
                             <div class="swiper-slide">
                                 <div class="slider-item">
                                     <a href="{{ route('product.show', $saree->slug) }}">
-                                        <div class="bg-thumb" data-bg-img="{{ $saree->featured_image ? asset('storage/' . $saree->featured_image) : asset('assets/img/gallery/t1.jpg') }}"></div>
+                                        <div class="bg-thumb" data-bg-img="{{ $saree->featured_image ? asset($saree->featured_image) : asset('assets/img/gallery/t1.jpg') }}"></div>
                                     </a>
                                 </div>
                             </div>
@@ -358,7 +358,9 @@
 </section>
 <!--== End Featured Area Wrapper ==-->
 @endsection
-<style>.product-item .product-thumb img {
+
+<style>
+.product-item .product-thumb img {
     width: 100%;
     height: 400px; /* Set fixed height */
     object-fit: cover; /* Crops image to fill container */
@@ -370,4 +372,5 @@
     height: 400px;
     background-size: cover;
     background-position: center;
-}</style>
+}
+</style>

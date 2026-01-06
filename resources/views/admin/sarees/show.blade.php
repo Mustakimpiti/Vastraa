@@ -118,41 +118,41 @@
             </div>
         </div>
 
-        <!-- Gallery Images -->
-        @if($saree->images && $saree->images->count() > 0)
-        <div class="card mb-4">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Gallery Images ({{ $saree->images->count() }})</h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    @foreach($saree->images as $image)
-                    <div class="col-md-4">
-                        <div class="position-relative">
-                            <img src="{{ asset('storage/' . $image->image_path) }}" 
-                                 class="img-fluid rounded shadow-sm gallery-image" 
-                                 alt="{{ $saree->name }}"
-                                 style="cursor: pointer; width: 100%; height: 200px; object-fit: cover;"
-                                 data-bs-toggle="modal" 
-                                 data-bs-target="#imageModal"
-                                 data-image="{{ asset('storage/' . $image->image_path) }}">
-                            <span class="badge bg-primary position-absolute" 
-                                  style="top: 10px; left: 10px;">
-                                Order: {{ $image->sort_order }}
-                            </span>
-                            @if($image->is_primary)
-                            <span class="badge bg-success position-absolute" 
-                                  style="top: 10px; right: 10px;">
-                                Primary
-                            </span>
-                            @endif
-                        </div>
-                    </div>
-                    @endforeach
+<!-- Gallery Images -->
+@if($saree->images && $saree->images->count() > 0)
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Gallery Images ({{ $saree->images->count() }})</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            @foreach($saree->images as $image)
+            <div class="col-md-4">
+                <div class="position-relative">
+                    <img src="{{ asset($image->image_path) }}" 
+                         class="img-fluid rounded shadow-sm gallery-image" 
+                         alt="{{ $saree->name }}"
+                         style="cursor: pointer; width: 100%; height: 200px; object-fit: cover;"
+                         data-bs-toggle="modal" 
+                         data-bs-target="#imageModal"
+                         data-image="{{ asset($image->image_path) }}">
+                    <span class="badge bg-primary position-absolute" 
+                          style="top: 10px; left: 10px;">
+                        Order: {{ $image->sort_order }}
+                    </span>
+                    @if($image->is_primary)
+                    <span class="badge bg-success position-absolute" 
+                          style="top: 10px; right: 10px;">
+                        Primary
+                    </span>
+                    @endif
                 </div>
             </div>
+            @endforeach
         </div>
-        @endif
+    </div>
+</div>
+@endif
 
         <!-- Statistics -->
         <div class="card mb-4">
@@ -186,23 +186,23 @@
 
     <!-- Sidebar -->
     <div class="col-md-4">
-        <!-- Featured Image -->
-        @if($saree->featured_image)
-        <div class="card mb-4">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Featured Image</h5>
-            </div>
-            <div class="card-body">
-                <img src="{{ asset('storage/' . $saree->featured_image) }}" 
-                     class="img-fluid rounded shadow-sm" 
-                     alt="{{ $saree->name }}"
-                     style="cursor: pointer;"
-                     data-bs-toggle="modal" 
-                     data-bs-target="#imageModal"
-                     data-image="{{ asset('storage/' . $saree->featured_image) }}">
-            </div>
-        </div>
-        @endif
+<!-- Featured Image -->
+@if($saree->featured_image)
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Featured Image</h5>
+    </div>
+    <div class="card-body">
+        <img src="{{ asset($saree->featured_image) }}" 
+             class="img-fluid rounded shadow-sm" 
+             alt="{{ $saree->name }}"
+             style="cursor: pointer;"
+             data-bs-toggle="modal" 
+             data-bs-target="#imageModal"
+             data-image="{{ asset($saree->featured_image) }}">
+    </div>
+</div>
+@endif
 
         <!-- Pricing & Stock -->
         <div class="card mb-4">

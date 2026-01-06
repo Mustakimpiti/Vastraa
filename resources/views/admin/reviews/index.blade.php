@@ -8,14 +8,40 @@
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">All Reviews</h5>
         <div>
-            <span class="badge bg-warning me-2">
-                {{ $reviews->where('is_approved', false)->count() }} Pending
-            </span>
-            <span class="badge bg-success">
-                {{ $reviews->where('is_approved', true)->count() }} Approved
-            </span>
+            <!-- Filter Buttons -->
+            <a href="{{ route('admin.reviews.index') }}" 
+               class="btn btn-sm {{ !request('status') ? 'btn-primary' : 'btn-outline-primary' }}">
+                All ({{ \App\Models\Review::count() }})
+            </a>
+            <a href="{{ route('admin.reviews.index', ['status' => 'pending']) }}" 
+               class="btn btn-sm {{ request('status') == 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
+                Pending ({{ \App\Models\Review::where('is_approved', false)->count() }})
+            </a>
+            <a href="{{ route('admin.reviews.index', ['status' => 'approved']) }}" 
+               class="btn btn-sm {{ request('status') == 'approved' ? 'btn-success' : 'btn-outline-success' }}">
+                Approved ({{ \App\Models\Review::where('is_approved', true)->count() }})
+            </a>
         </div>
     </div>
+    
+    <!-- Search Bar -->
+    <div class="card-body border-bottom">
+        <form action="{{ route('admin.reviews.index') }}" method="GET" class="row g-3">
+            <div class="col-md-10">
+                <input type="text" 
+                       name="search" 
+                       class="form-control" 
+                       placeholder="Search by product name, customer name, or comment..." 
+                       value="{{ request('search') }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fa fa-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+
     <div class="card-body">
         @if($reviews->count() > 0)
         <div class="table-responsive">
@@ -37,7 +63,8 @@
                         <td>
                             <div class="d-flex align-items-center">
                                 @if($review->saree->featured_image)
-                                    <img src="{{ asset('storage/' . $review->saree->featured_image) }}" 
+                                    {{-- UPDATED: Remove 'storage/' prefix --}}
+                                    <img src="{{ asset($review->saree->featured_image) }}" 
                                          alt="{{ $review->saree->name }}" 
                                          class="saree-img-thumb me-2">
                                 @else
@@ -77,6 +104,20 @@
                                     </a>
                                 @endif
                             </div>
+                            
+                            {{-- Display review images if they exist --}}
+                            @if(!empty($review->images) && is_array($review->images))
+                                <div class="mt-2">
+                                    @foreach($review->images as $image)
+                                        <img src="{{ asset($image) }}" 
+                                             alt="Review image" 
+                                             class="review-img-thumb me-1"
+                                             data-bs-toggle="modal" 
+                                             data-bs-target="#imageModal{{ $review->id }}_{{ $loop->index }}"
+                                             style="cursor: pointer;">
+                                    @endforeach
+                                </div>
+                            @endif
                         </td>
                         <td>
                             <small>{{ $review->created_at->format('M d, Y') }}</small><br>
@@ -140,7 +181,7 @@
 
                     <!-- Review Details Modal -->
                     <div class="modal fade" id="reviewModal{{ $review->id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title">Review Details</h5>
@@ -168,6 +209,23 @@
                                         <strong>Comment:</strong>
                                         <p class="mt-2">{{ $review->comment }}</p>
                                     </div>
+                                    
+                                    {{-- Display review images in modal --}}
+                                    @if(!empty($review->images) && is_array($review->images))
+                                        <div class="mb-3">
+                                            <strong>Customer Images:</strong>
+                                            <div class="row mt-2">
+                                                @foreach($review->images as $image)
+                                                    <div class="col-md-4 mb-2">
+                                                        <img src="{{ asset($image) }}" 
+                                                             alt="Review image" 
+                                                             class="img-fluid rounded">
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                    
                                     <div class="mb-3">
                                         <strong>Date:</strong> {{ $review->created_at->format('F d, Y h:i A') }}
                                     </div>
@@ -206,7 +264,16 @@
         @else
         <div class="text-center py-5">
             <i class="fa fa-star fa-3x text-muted mb-3"></i>
-            <p class="text-muted">No reviews found yet. Reviews will appear here once customers start rating products!</p>
+            <p class="text-muted">
+                @if(request('search'))
+                    No reviews found matching your search.
+                @else
+                    No reviews found yet. Reviews will appear here once customers start rating products!
+                @endif
+            </p>
+            @if(request('search') || request('status'))
+                <a href="{{ route('admin.reviews.index') }}" class="btn btn-primary">Clear Filters</a>
+            @endif
         </div>
         @endif
     </div>
@@ -265,6 +332,18 @@
     height: 50px;
     object-fit: cover;
     border-radius: 4px;
+}
+.review-img-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+.review-img-thumb:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+    transition: all 0.2s;
 }
 </style>
 @endpush

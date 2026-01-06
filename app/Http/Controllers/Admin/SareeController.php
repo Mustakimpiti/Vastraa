@@ -8,7 +8,7 @@ use App\Models\SareeImage;
 use App\Models\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class SareeController extends Controller
 {
@@ -55,10 +55,15 @@ class SareeController extends Controller
         // Generate slug
         $validated['slug'] = Str::slug($validated['name']);
 
+        // Ensure directories exist
+        $this->ensureDirectoriesExist();
+
         // Handle featured image upload
         if ($request->hasFile('featured_image')) {
-            $path = $request->file('featured_image')->store('sarees', 'public');
-            $validated['featured_image'] = $path;
+            $image = $request->file('featured_image');
+            $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/sarees'), $filename);
+            $validated['featured_image'] = 'uploads/sarees/' . $filename;
         }
 
         $saree = Saree::create($validated);
@@ -66,11 +71,12 @@ class SareeController extends Controller
         // Handle additional images
         if ($request->hasFile('additional_images')) {
             foreach ($request->file('additional_images') as $index => $image) {
-                $path = $image->store('sarees/gallery', 'public');
+                $filename = time() . '_' . uniqid() . '_' . $index . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads/sarees/gallery'), $filename);
                 
                 SareeImage::create([
                     'saree_id' => $saree->id,
-                    'image_path' => $path,
+                    'image_path' => 'uploads/sarees/gallery/' . $filename,
                     'is_primary' => false,
                     'sort_order' => $index + 1
                 ]);
@@ -126,14 +132,20 @@ class SareeController extends Controller
         // Update slug if name changed
         $validated['slug'] = Str::slug($validated['name']);
 
+        // Ensure directories exist
+        $this->ensureDirectoriesExist();
+
         // Handle featured image upload
         if ($request->hasFile('featured_image')) {
             // Delete old image
-            if ($saree->featured_image) {
-                Storage::disk('public')->delete($saree->featured_image);
+            if ($saree->featured_image && file_exists(public_path($saree->featured_image))) {
+                unlink(public_path($saree->featured_image));
             }
-            $path = $request->file('featured_image')->store('sarees', 'public');
-            $validated['featured_image'] = $path;
+            
+            $image = $request->file('featured_image');
+            $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/sarees'), $filename);
+            $validated['featured_image'] = 'uploads/sarees/' . $filename;
         }
 
         $saree->update($validated);
@@ -143,7 +155,9 @@ class SareeController extends Controller
             foreach ($request->remove_images as $imageId) {
                 $image = SareeImage::find($imageId);
                 if ($image && $image->saree_id == $saree->id) {
-                    Storage::disk('public')->delete($image->image_path);
+                    if (file_exists(public_path($image->image_path))) {
+                        unlink(public_path($image->image_path));
+                    }
                     $image->delete();
                 }
             }
@@ -154,11 +168,12 @@ class SareeController extends Controller
             $currentMaxOrder = $saree->images()->max('sort_order') ?? 0;
             
             foreach ($request->file('additional_images') as $index => $image) {
-                $path = $image->store('sarees/gallery', 'public');
+                $filename = time() . '_' . uniqid() . '_' . $index . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads/sarees/gallery'), $filename);
                 
                 SareeImage::create([
                     'saree_id' => $saree->id,
-                    'image_path' => $path,
+                    'image_path' => 'uploads/sarees/gallery/' . $filename,
                     'is_primary' => false,
                     'sort_order' => $currentMaxOrder + $index + 1
                 ]);
@@ -172,13 +187,15 @@ class SareeController extends Controller
     public function destroy(Saree $saree)
     {
         // Delete featured image
-        if ($saree->featured_image) {
-            Storage::disk('public')->delete($saree->featured_image);
+        if ($saree->featured_image && file_exists(public_path($saree->featured_image))) {
+            unlink(public_path($saree->featured_image));
         }
 
         // Delete all gallery images
         foreach ($saree->images as $image) {
-            Storage::disk('public')->delete($image->image_path);
+            if (file_exists(public_path($image->image_path))) {
+                unlink(public_path($image->image_path));
+            }
         }
 
         $saree->delete();
@@ -193,9 +210,31 @@ class SareeController extends Controller
     public function deleteImage($id)
     {
         $image = SareeImage::findOrFail($id);
-        Storage::disk('public')->delete($image->image_path);
+        
+        if (file_exists(public_path($image->image_path))) {
+            unlink(public_path($image->image_path));
+        }
+        
         $image->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Ensure upload directories exist
+     */
+    private function ensureDirectoriesExist()
+    {
+        $directories = [
+            public_path('uploads'),
+            public_path('uploads/sarees'),
+            public_path('uploads/sarees/gallery'),
+        ];
+
+        foreach ($directories as $directory) {
+            if (!File::exists($directory)) {
+                File::makeDirectory($directory, 0755, true);
+            }
+        }
     }
 }

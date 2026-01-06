@@ -257,64 +257,64 @@
         <h5 class="mb-0">Product Images</h5>
     </div>
     <div class="card-body">
-        <!-- Featured Image -->
-        <div class="form-group mb-4">
-            <label class="form-label">
-                <strong>Featured Image (Main)</strong>
-            </label>
-            @if($saree->featured_image)
-                <div class="mb-3">
-                    <img src="{{ asset('storage/' . $saree->featured_image) }}" 
-                         class="img-fluid" 
-                         style="max-height: 200px; border-radius: 4px; border: 2px solid #e0e0e0;">
-                    <p class="text-muted mt-2 mb-0 small">Current featured image</p>
-                </div>
-            @endif
-            <input type="file" 
-                   class="form-control @error('featured_image') is-invalid @enderror" 
-                   id="featured_image" 
-                   name="featured_image" 
-                   accept="image/*">
-            <small class="text-muted">Upload new image to replace current one</small>
-            @error('featured_image')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-            <div id="featured-preview" class="mt-2"></div>
+    <!-- Featured Image -->
+<div class="form-group mb-4">
+    <label class="form-label">
+        <strong>Featured Image (Main)</strong>
+    </label>
+    @if($saree->featured_image)
+        <div class="mb-3">
+            <img src="{{ asset($saree->featured_image) }}" 
+                 class="img-fluid" 
+                 style="max-height: 200px; border-radius: 4px; border: 2px solid #e0e0e0;">
+            <p class="text-muted mt-2 mb-0 small">Current featured image</p>
         </div>
+    @endif
+    <input type="file" 
+           class="form-control @error('featured_image') is-invalid @enderror" 
+           id="featured_image" 
+           name="featured_image" 
+           accept="image/*">
+    <small class="text-muted">Upload new image to replace current one</small>
+    @error('featured_image')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+    <div id="featured-preview" class="mt-2"></div>
+</div>
 
         <hr>
 
-        <!-- Existing Gallery Images -->
-        @if($saree->images && $saree->images->count() > 0)
-        <div class="form-group mb-4">
-            <label class="form-label">
-                <strong>Current Gallery Images</strong>
-            </label>
-            <div class="row">
-                @foreach($saree->images as $image)
-                <div class="col-md-4 mb-3" id="image-{{ $image->id }}">
-                    <div class="position-relative">
-                        <img src="{{ asset('storage/' . $image->image_path) }}" 
-                             class="img-fluid" 
-                             style="max-height: 150px; border-radius: 4px; border: 2px solid #e0e0e0;">
-                        <button type="button" 
-                                class="btn btn-danger btn-sm position-absolute remove-existing-image"
-                                style="top: 5px; right: 5px;"
-                                data-image-id="{{ $image->id }}"
-                                onclick="removeExistingImage({{ $image->id }})">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                        <span class="badge bg-secondary position-absolute" style="bottom: 5px; left: 5px;">
-                            {{ $image->sort_order }}
-                        </span>
-                    </div>
-                </div>
-                @endforeach
+<!-- Existing Gallery Images -->
+@if($saree->images && $saree->images->count() > 0)
+<div class="form-group mb-4">
+    <label class="form-label">
+        <strong>Current Gallery Images</strong>
+    </label>
+    <div class="row">
+        @foreach($saree->images as $image)
+        <div class="col-md-4 mb-3" id="image-{{ $image->id }}">
+            <div class="position-relative">
+                <img src="{{ asset($image->image_path) }}" 
+                     class="img-fluid" 
+                     style="max-height: 150px; border-radius: 4px; border: 2px solid #e0e0e0;">
+                <button type="button" 
+                        class="btn btn-danger btn-sm position-absolute remove-existing-image"
+                        style="top: 5px; right: 5px;"
+                        data-image-id="{{ $image->id }}"
+                        onclick="removeExistingImage({{ $image->id }})">
+                    <i class="fa fa-trash"></i>
+                </button>
+                <span class="badge bg-secondary position-absolute" style="bottom: 5px; left: 5px;">
+                    {{ $image->sort_order }}
+                </span>
             </div>
-            <input type="hidden" name="remove_images[]" id="remove_images" value="">
         </div>
-        <hr>
-        @endif
+        @endforeach
+    </div>
+    <input type="hidden" name="remove_images[]" id="remove_images" value="">
+</div>
+<hr>
+@endif
 
         <!-- Add New Images -->
         <div class="form-group">

@@ -454,17 +454,20 @@
                     </div>
 
                     <div class="row row-gutter-60 product-items-style4">
-                        @forelse($sarees as $saree)
-                        <div class="col-sm-6 col-md-4">
-                            <div class="product-item">
-                                <div class="product-thumb">
-                                    <a href="{{ route('product.show', $saree->slug) }}">
-                                        @php
-                                            $imageUrl = $saree->featured_image ? asset('storage/' . $saree->featured_image) : asset('assets/img/shop/default.jpg');
-                                        @endphp
-                                        <img src="{{ $imageUrl }}" alt="{{ $saree->name }}">
-                                        <span class="thumb-overlay"></span>
-                                    </a>
+@forelse($sarees as $saree)
+<div class="col-sm-6 col-md-4">
+    <div class="product-item">
+        <div class="product-thumb">
+            <a href="{{ route('product.show', $saree->slug) }}">
+                @php
+                    // Changed from asset('storage/') to asset() directly
+                    $imageUrl = $saree->featured_image 
+                        ? asset($saree->featured_image) 
+                        : asset('assets/img/shop/default.jpg');
+                @endphp
+                <img src="{{ $imageUrl }}" alt="{{ $saree->name }}">
+                <span class="thumb-overlay"></span>
+            </a>
                                     @if($saree->hasDiscount())
                                     @php
                                         $discount = $saree->getDiscountPercentage();
