@@ -256,25 +256,50 @@
                 </div>
             </div>
 
-            <!-- Featured Image -->
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Featured Image</h5>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <input type="file" 
-                               class="form-control @error('featured_image') is-invalid @enderror" 
-                               id="featured_image" 
-                               name="featured_image" 
-                               accept="image/*">
-                        @error('featured_image')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div id="image-preview" class="mt-2"></div>
-                </div>
-            </div>
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Product Images</h5>
+    </div>
+    <div class="card-body">
+        <!-- Featured Image -->
+        <div class="form-group mb-4">
+            <label for="featured_image" class="form-label">
+                <strong>Featured Image (Main)</strong>
+            </label>
+            <input type="file" 
+                   class="form-control @error('featured_image') is-invalid @enderror" 
+                   id="featured_image" 
+                   name="featured_image" 
+                   accept="image/*">
+            <small class="text-muted">This will be the main product image</small>
+            @error('featured_image')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div id="featured-preview" class="mt-2"></div>
+        </div>
+
+        <hr>
+
+        <!-- Additional Images -->
+        <div class="form-group">
+            <label for="additional_images" class="form-label">
+                <strong>Additional Images (Gallery)</strong>
+            </label>
+            <input type="file" 
+                   class="form-control @error('additional_images.*') is-invalid @enderror" 
+                   id="additional_images" 
+                   name="additional_images[]" 
+                   accept="image/*"
+                   multiple>
+            <small class="text-muted">You can select multiple images (Hold Ctrl/Cmd to select multiple)</small>
+            @error('additional_images.*')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div id="additional-preview" class="mt-3 row"></div>
+        </div>
+    </div>
+</div>
+
 
             <!-- Status Flags -->
             <div class="card mb-4">
@@ -341,23 +366,86 @@
     </div>
 </form>
 
+@push('styles')
+<style>
+.image-preview-item {
+    position: relative;
+    margin-bottom: 10px;
+}
+.image-preview-item img {
+    max-height: 150px;
+    border-radius: 4px;
+    border: 2px solid #e0e0e0;
+}
+.remove-preview {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    line-height: 1;
+}
+</style>
+@endpush
+
 @push('scripts')
 <script>
-    // Image preview
-    document.getElementById('featured_image').addEventListener('change', function(e) {
-        const preview = document.getElementById('image-preview');
-        const file = e.target.files[0];
-        
-        if (file) {
+// Featured Image Preview
+document.getElementById('featured_image').addEventListener('change', function(e) {
+    const preview = document.getElementById('featured-preview');
+    const file = e.target.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <div class="image-preview-item">
+                    <img src="${e.target.result}" class="img-fluid">
+                </div>
+            `;
+        }
+        reader.readAsDataURL(file);
+    } else {
+        preview.innerHTML = '';
+    }
+});
+
+// Additional Images Preview
+document.getElementById('additional_images').addEventListener('change', function(e) {
+    const preview = document.getElementById('additional-preview');
+    const files = e.target.files;
+    
+    preview.innerHTML = '';
+    
+    if (files.length > 0) {
+        Array.from(files).forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = function(e) {
-                preview.innerHTML = `<img src="${e.target.result}" class="img-fluid" style="max-height: 200px;">`;
+                const col = document.createElement('div');
+                col.className = 'col-md-4';
+                col.innerHTML = `
+                    <div class="image-preview-item">
+                        <img src="${e.target.result}" class="img-fluid">
+                        <span class="badge bg-primary position-absolute" style="top: 5px; left: 15px;">
+                            Image ${index + 1}
+                        </span>
+                    </div>
+                `;
+                preview.appendChild(col);
             }
             reader.readAsDataURL(file);
-        } else {
-            preview.innerHTML = '';
-        }
-    });
+        });
+    }
+});
 </script>
 @endpush
 @endsection

@@ -75,6 +75,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Saree Management
     Route::resource('sarees', AdminSareeController::class);
+    Route::delete('/sarees/images/{id}', [AdminSareeController::class, 'deleteImage'])->name('sarees.images.delete');
 
     // Review Management
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');

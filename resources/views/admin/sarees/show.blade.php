@@ -118,6 +118,42 @@
             </div>
         </div>
 
+        <!-- Gallery Images -->
+        @if($saree->images && $saree->images->count() > 0)
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Gallery Images ({{ $saree->images->count() }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    @foreach($saree->images as $image)
+                    <div class="col-md-4">
+                        <div class="position-relative">
+                            <img src="{{ asset('storage/' . $image->image_path) }}" 
+                                 class="img-fluid rounded shadow-sm gallery-image" 
+                                 alt="{{ $saree->name }}"
+                                 style="cursor: pointer; width: 100%; height: 200px; object-fit: cover;"
+                                 data-bs-toggle="modal" 
+                                 data-bs-target="#imageModal"
+                                 data-image="{{ asset('storage/' . $image->image_path) }}">
+                            <span class="badge bg-primary position-absolute" 
+                                  style="top: 10px; left: 10px;">
+                                Order: {{ $image->sort_order }}
+                            </span>
+                            @if($image->is_primary)
+                            <span class="badge bg-success position-absolute" 
+                                  style="top: 10px; right: 10px;">
+                                Primary
+                            </span>
+                            @endif
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
+
         <!-- Statistics -->
         <div class="card mb-4">
             <div class="card-header bg-white">
@@ -158,8 +194,12 @@
             </div>
             <div class="card-body">
                 <img src="{{ asset('storage/' . $saree->featured_image) }}" 
-                     class="img-fluid" 
-                     alt="{{ $saree->name }}">
+                     class="img-fluid rounded shadow-sm" 
+                     alt="{{ $saree->name }}"
+                     style="cursor: pointer;"
+                     data-bs-toggle="modal" 
+                     data-bs-target="#imageModal"
+                     data-image="{{ asset('storage/' . $saree->featured_image) }}">
             </div>
         </div>
         @endif
@@ -267,4 +307,47 @@
         </div>
     </div>
 </div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">{{ $saree->name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" id="modalImage" class="img-fluid" alt="{{ $saree->name }}">
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('styles')
+<style>
+.gallery-image {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.gallery-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+}
+</style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageModal = document.getElementById('imageModal');
+    if (imageModal) {
+        imageModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const imageSrc = button.getAttribute('data-image');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = imageSrc;
+        });
+    }
+});
+</script>
+@endpush
 @endsection

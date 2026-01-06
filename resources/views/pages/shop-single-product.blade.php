@@ -32,6 +32,7 @@
                     <div class="product-dec-slider-right">
                         <div class="single-product-thumb">
                             <div class="single-product-thumb-slider">
+                                <!-- Featured Image -->
                                 @if($saree->featured_image)
                                 <div class="zoom zoom-hover">
                                     <div class="thumb-item">
@@ -42,6 +43,7 @@
                                 </div>
                                 @endif
 
+                                <!-- Gallery Images -->
                                 @foreach($saree->images as $image)
                                 <div class="zoom zoom-hover">
                                     <div class="thumb-item">
@@ -62,12 +64,14 @@
                     <div class="product-dec-slider-left">
                         <div class="single-product-nav">
                             <div class="single-product-nav-slider">
+                                <!-- Featured Image Thumbnail -->
                                 @if($saree->featured_image)
                                 <div class="nav-item">
                                     <img src="{{ asset('storage/' . $saree->featured_image) }}" alt="{{ $saree->name }}">
                                 </div>
                                 @endif
 
+                                <!-- Gallery Images Thumbnails -->
                                 @foreach($saree->images as $image)
                                 <div class="nav-item">
                                     <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $saree->name }}">
@@ -130,7 +134,6 @@
                                 </div>
                                 <button type="submit" class="btn-theme btn-black">Add to cart</button>
                             </div>
-                           
                         </form>
                     </div>
                     @else
@@ -425,7 +428,6 @@
                                         <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ route('cart') }}" title="Add to cart">
                                             <i class="lastudioicon-shopping-cart-3"></i>
                                         </a>
-                                        
                                     </div>
                                 </div>
                                 <div class="product-info info-style3">

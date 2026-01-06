@@ -252,35 +252,89 @@
                     </div>
                 </div>
             </div>
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Product Images</h5>
+    </div>
+    <div class="card-body">
+        <!-- Featured Image -->
+        <div class="form-group mb-4">
+            <label class="form-label">
+                <strong>Featured Image (Main)</strong>
+            </label>
+            @if($saree->featured_image)
+                <div class="mb-3">
+                    <img src="{{ asset('storage/' . $saree->featured_image) }}" 
+                         class="img-fluid" 
+                         style="max-height: 200px; border-radius: 4px; border: 2px solid #e0e0e0;">
+                    <p class="text-muted mt-2 mb-0 small">Current featured image</p>
+                </div>
+            @endif
+            <input type="file" 
+                   class="form-control @error('featured_image') is-invalid @enderror" 
+                   id="featured_image" 
+                   name="featured_image" 
+                   accept="image/*">
+            <small class="text-muted">Upload new image to replace current one</small>
+            @error('featured_image')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div id="featured-preview" class="mt-2"></div>
+        </div>
 
-            <!-- Featured Image -->
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Featured Image</h5>
-                </div>
-                <div class="card-body">
-                    @if($saree->featured_image)
-                        <div class="mb-3">
-                            <img src="{{ asset('storage/' . $saree->featured_image) }}" 
-                                 class="img-fluid" 
-                                 style="max-height: 200px;">
-                            <p class="text-muted mt-2 mb-0">Current Image</p>
-                        </div>
-                    @endif
-                    <div class="form-group">
-                        <input type="file" 
-                               class="form-control @error('featured_image') is-invalid @enderror" 
-                               id="featured_image" 
-                               name="featured_image" 
-                               accept="image/*">
-                        <small class="text-muted">Leave empty to keep current image</small>
-                        @error('featured_image')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+        <hr>
+
+        <!-- Existing Gallery Images -->
+        @if($saree->images && $saree->images->count() > 0)
+        <div class="form-group mb-4">
+            <label class="form-label">
+                <strong>Current Gallery Images</strong>
+            </label>
+            <div class="row">
+                @foreach($saree->images as $image)
+                <div class="col-md-4 mb-3" id="image-{{ $image->id }}">
+                    <div class="position-relative">
+                        <img src="{{ asset('storage/' . $image->image_path) }}" 
+                             class="img-fluid" 
+                             style="max-height: 150px; border-radius: 4px; border: 2px solid #e0e0e0;">
+                        <button type="button" 
+                                class="btn btn-danger btn-sm position-absolute remove-existing-image"
+                                style="top: 5px; right: 5px;"
+                                data-image-id="{{ $image->id }}"
+                                onclick="removeExistingImage({{ $image->id }})">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                        <span class="badge bg-secondary position-absolute" style="bottom: 5px; left: 5px;">
+                            {{ $image->sort_order }}
+                        </span>
                     </div>
-                    <div id="image-preview" class="mt-2"></div>
                 </div>
+                @endforeach
             </div>
+            <input type="hidden" name="remove_images[]" id="remove_images" value="">
+        </div>
+        <hr>
+        @endif
+
+        <!-- Add New Images -->
+        <div class="form-group">
+            <label for="additional_images" class="form-label">
+                <strong>Add New Gallery Images</strong>
+            </label>
+            <input type="file" 
+                   class="form-control @error('additional_images.*') is-invalid @enderror" 
+                   id="additional_images" 
+                   name="additional_images[]" 
+                   accept="image/*"
+                   multiple>
+            <small class="text-muted">Select multiple images to add to gallery</small>
+            @error('additional_images.*')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div id="additional-preview" class="mt-3 row"></div>
+        </div>
+    </div>
+</div>
 
             <!-- Status Flags -->
             <div class="card mb-4">
@@ -350,23 +404,96 @@
     </div>
 </form>
 
+@push('styles')
+<style>
+.image-preview-item {
+    position: relative;
+}
+.image-preview-item img {
+    max-height: 150px;
+    border-radius: 4px;
+    border: 2px solid #e0e0e0;
+}
+</style>
+@endpush
+
 @push('scripts')
 <script>
-    // Image preview
-    document.getElementById('featured_image').addEventListener('change', function(e) {
-        const preview = document.getElementById('image-preview');
-        const file = e.target.files[0];
-        
-        if (file) {
+let imagesToRemove = [];
+
+// Remove existing image
+function removeExistingImage(imageId) {
+    if (confirm('Are you sure you want to remove this image?')) {
+        imagesToRemove.push(imageId);
+        document.getElementById('remove_images').value = imagesToRemove.join(',');
+        document.getElementById('image-' + imageId).style.display = 'none';
+    }
+}
+
+// Featured Image Preview
+document.getElementById('featured_image').addEventListener('change', function(e) {
+    const preview = document.getElementById('featured-preview');
+    const file = e.target.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <p class="text-muted mt-2 mb-1 small">New featured image preview:</p>
+                <img src="${e.target.result}" class="img-fluid" style="max-height: 200px; border-radius: 4px; border: 2px solid #28a745;">
+            `;
+        }
+        reader.readAsDataURL(file);
+    } else {
+        preview.innerHTML = '';
+    }
+});
+
+// Additional Images Preview
+document.getElementById('additional_images').addEventListener('change', function(e) {
+    const preview = document.getElementById('additional-preview');
+    const files = e.target.files;
+    
+    preview.innerHTML = '';
+    
+    if (files.length > 0) {
+        Array.from(files).forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = function(e) {
-                preview.innerHTML = `<p class="text-muted mt-2 mb-1">New Image Preview:</p><img src="${e.target.result}" class="img-fluid" style="max-height: 200px;">`;
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-3';
+                col.innerHTML = `
+                    <div class="image-preview-item">
+                        <img src="${e.target.result}" class="img-fluid">
+                        <span class="badge bg-success position-absolute" style="top: 5px; left: 5px;">
+                            New ${index + 1}
+                        </span>
+                    </div>
+                `;
+                preview.appendChild(col);
             }
             reader.readAsDataURL(file);
-        } else {
-            preview.innerHTML = '';
-        }
-    });
+        });
+    }
+});
+
+// Update form to handle array of images to remove
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (imagesToRemove.length > 0) {
+        // Remove the single hidden input
+        const oldInput = document.getElementById('remove_images');
+        if (oldInput) oldInput.remove();
+        
+        // Add multiple hidden inputs for each image to remove
+        imagesToRemove.forEach(function(imageId) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'remove_images[]';
+            input.value = imageId;
+            document.querySelector('form').appendChild(input);
+        });
+    }
+});
 </script>
 @endpush
 @endsection
