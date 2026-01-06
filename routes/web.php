@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\SareeController as AdminSareeController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
@@ -21,27 +22,53 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/about', 'pages.about')->name('about');
 Route::view('/contact', 'pages.contact')->name('contact');
 
-// Shop routes - NOW DYNAMIC
+// Shop routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::view('/shop-collections', 'pages.shop-collections')->name('collections');
 
-// Dynamic Product Route
+// Product routes
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::post('/product/{slug}/review', [ProductController::class, 'storeReview'])->name('product.review')->middleware('auth');
 
-// Cart & Checkout
-Route::view('/shop-cart', 'pages.shop-cart')->name('cart');
+/*
+|--------------------------------------------------------------------------
+| Cart Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('cart')->name('cart.')->group(function () {
+    // View cart
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    
+    // Add to cart
+    Route::post('/add', [CartController::class, 'add'])->name('add');
+    
+    // Update cart item quantity
+    Route::post('/update', [CartController::class, 'update'])->name('update');
+    
+    // Remove item from cart
+    Route::post('/remove', [CartController::class, 'remove'])->name('remove');
+    
+    // Clear entire cart
+    Route::post('/clear', [CartController::class, 'clear'])->name('clear');
+    
+    // Get cart count (AJAX)
+    Route::get('/count', [CartController::class, 'count'])->name('count');
+    
+    // Coupon routes
+    Route::post('/coupon/apply', [CartController::class, 'applyCoupon'])->name('coupon.apply');
+    Route::post('/coupon/remove', [CartController::class, 'removeCoupon'])->name('coupon.remove');
+});
+
+// Legacy cart route (for backward compatibility)
+Route::get('/shop-cart', [CartController::class, 'index'])->name('cart');
+
+// Checkout
 Route::view('/shop-checkout', 'pages.shop-checkout')->name('checkout');
 
 // Wishlist routes (placeholder)
 Route::get('/wishlist/add/{id}', function($id) {
     return redirect()->back()->with('success', 'Product added to wishlist!');
 })->name('wishlist.add');
-
-// Cart routes (placeholder)
-Route::post('/cart/add', function() {
-    return redirect()->back()->with('success', 'Product added to cart!');
-})->name('cart.add');
 
 /*
 |--------------------------------------------------------------------------

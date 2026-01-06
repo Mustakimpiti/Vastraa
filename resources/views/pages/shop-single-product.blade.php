@@ -539,6 +539,77 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// Custom Quantity Controls
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInput = document.getElementById('quantity1');
+    const proQty = document.querySelector('.pro-qty');
+    
+    if (proQty && quantityInput) {
+        // Remove any existing increment/decrement buttons and clear content
+        proQty.innerHTML = '';
+        
+        // Create custom buttons
+        const decrementBtn = document.createElement('button');
+        decrementBtn.type = 'button';
+        decrementBtn.className = 'dec qtybtn';
+        decrementBtn.innerHTML = '-';
+        
+        const incrementBtn = document.createElement('button');
+        incrementBtn.type = 'button';
+        incrementBtn.className = 'inc qtybtn';
+        incrementBtn.innerHTML = '+';
+        
+        // Set input attributes
+        quantityInput.type = 'text';
+        quantityInput.readOnly = false;
+        
+        // Insert buttons in correct order: - [input] +
+        proQty.appendChild(decrementBtn);
+        proQty.appendChild(quantityInput);
+        proQty.appendChild(incrementBtn);
+        
+        // Decrement handler
+        decrementBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            let currentValue = parseInt(quantityInput.value) || 1;
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        });
+        
+        // Increment handler
+        incrementBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            let currentValue = parseInt(quantityInput.value) || 1;
+            const maxStock = {{ $saree->stock_quantity }};
+            if (currentValue < maxStock) {
+                quantityInput.value = currentValue + 1;
+            }
+        });
+        
+        // Prevent manual entry of invalid values
+        quantityInput.addEventListener('input', function() {
+            let value = parseInt(this.value) || 1;
+            const maxStock = {{ $saree->stock_quantity }};
+            
+            if (value < 1) {
+                this.value = 1;
+            } else if (value > maxStock) {
+                this.value = maxStock;
+            } else {
+                this.value = value;
+            }
+        });
+        
+        // Prevent non-numeric input
+        quantityInput.addEventListener('keypress', function(e) {
+            if (e.which < 48 || e.which > 57) {
+                e.preventDefault();
+            }
+        });
+    }
+});
 </script>
 @endpush
 
@@ -681,5 +752,103 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .product-review-comments .comment-item:last-child {
     border-bottom: none;
+}
+
+/* Custom Quantity Controls */
+.pro-qty {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    width: auto !important;
+    height: auto !important;
+}
+
+.pro-qty input[type="text"] {
+    width: 60px;
+    height: 45px;
+    border: none;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+}
+
+.pro-qty input[type="text"]:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.pro-qty .qtybtn {
+    width: 40px;
+    height: 45px;
+    border: none;
+    background: #f5f5f5;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.pro-qty .qtybtn:hover {
+    background: #d4af37;
+    color: #fff;
+}
+
+.pro-qty .qtybtn:active {
+    transform: scale(0.95);
+}
+
+.pro-qty .dec {
+    border-right: 1px solid #ddd;
+}
+
+.pro-qty .inc {
+    border-left: 1px solid #ddd;
+}
+
+/* Disable text selection on buttons */
+.pro-qty .qtybtn {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .pro-qty input[type="text"] {
+        width: 50px;
+        height: 40px;
+        font-size: 14px;
+    }
+    
+    .pro-qty .qtybtn {
+        width: 35px;
+        height: 40px;
+        font-size: 16px;
+    }
+}
+
+/* Fix parent container */
+.pro-qty-area {
+    display: inline-block;
+}
+
+.action-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 </style>

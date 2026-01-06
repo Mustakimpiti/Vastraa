@@ -80,11 +80,21 @@
                                 </div>
                             @endauth
 
+                            <!-- Cart Icon with Dynamic Count -->
                             <div class="header-action-cart">
-                                <button class="btn-cart cart-icon">
-                                    <span class="cart-count">2</span>
+                                <a href="{{ route('cart.index') }}" class="btn-cart cart-icon">
+                                    @php
+                                        $cartCount = \App\Models\Cart::where(function($query) {
+                                            if (Auth::check()) {
+                                                $query->where('user_id', Auth::id());
+                                            } else {
+                                                $query->where('session_id', session('cart_session_id', ''));
+                                            }
+                                        })->sum('quantity');
+                                    @endphp
+                                    <span class="cart-count" id="cart-count-badge">{{ $cartCount }}</span>
                                     <i class="lastudioicon-shopping-cart-2"></i>
-                                </button>
+                                </a>
                             </div>
 
                             @guest
@@ -214,4 +224,33 @@
     }
 }
 </style>
+
+<script>
+// Function to update cart count dynamically
+function updateCartCount() {
+    fetch('{{ route("cart.count") }}')
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('cart-count-badge');
+            if (badge) {
+                badge.textContent = data.count;
+                
+                // Add animation effect
+                badge.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    badge.style.transform = 'scale(1)';
+                }, 300);
+            }
+        })
+        .catch(error => console.error('Error updating cart count:', error));
+}
+
+// Update cart count after page load if there are success messages
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if there's a success message indicating item was added to cart
+    @if(session('success') && (str_contains(session('success'), 'cart') || str_contains(session('success'), 'Cart')))
+        updateCartCount();
+    @endif
+});
+</script>
 <!--== End Header Wrapper ==-->

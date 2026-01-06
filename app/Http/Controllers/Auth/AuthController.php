@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\CartController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -38,6 +40,10 @@ class AuthController extends Controller
             Auth::login($user, $request->has('remember'));
             $request->session()->regenerate();
 
+            // Transfer guest cart to user account
+            $cartController = new CartController();
+            $cartController->transferGuestCart();
+
             return $this->redirectBasedOnRole();
         }
 
@@ -57,7 +63,7 @@ class AuthController extends Controller
             'password' => 'required|confirmed|min:8',
         ]);
 
-        // Store password as plain text (NOT RECOMMENDED)
+        // Store password as plain text (NOT RECOMMENDED - should use Hash::make())
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -66,6 +72,10 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
+
+        // Transfer guest cart to new user account
+        $cartController = new CartController();
+        $cartController->transferGuestCart();
 
         return redirect()->route('home')->with('success', 'Registration successful! Welcome to our store.');
     }
