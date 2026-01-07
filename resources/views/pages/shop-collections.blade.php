@@ -1,282 +1,238 @@
+{{-- File: resources/views/pages/shop-collections.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Shop Collections - Clothing Shop')
+@section('title', 'Saree Collections - Clothing Shop')
+
+@push('styles')
+<style>
+/* Collection Cards Styling */
+.collection-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.collection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.collection-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 125%; /* 4:5 aspect ratio */
+    background: #f8f9fa;
+}
+
+.collection-image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.collection-card:hover .collection-image-wrapper img {
+    transform: scale(1.1);
+}
+
+.collection-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.collection-card:hover .collection-overlay {
+    opacity: 1;
+}
+
+.collection-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 25px;
+    color: #fff;
+    z-index: 2;
+    transform: translateY(10px);
+    transition: transform 0.3s ease;
+}
+
+.collection-card:hover .collection-content {
+    transform: translateY(0);
+}
+
+.collection-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.collection-count {
+    font-size: 14px;
+    color: #fff;
+    opacity: 0.9;
+    margin-bottom: 15px;
+}
+
+.collection-description {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #fff;
+    margin-bottom: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.collection-card:hover .collection-description {
+    opacity: 1;
+}
+
+.btn-view-collection {
+    display: inline-block;
+    background: #fff;
+    color: #000;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.collection-card:hover .btn-view-collection {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.btn-view-collection:hover {
+    background: #000;
+    color: #fff;
+}
+
+.collection-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+    color: #fff;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 3;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+}
+
+/* Page Header */
+.collections-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.collections-header h2 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.collections-header p {
+    font-size: 16px;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+</style>
+@endpush
 
 @section('content')
-<!--== Start Page Title Area ==-->
-<section class="page-title-area bg-img" data-bg-img="{{ asset('assets/img/photos/bg-page9.jpg') }}">
+<section class="page-title-area bg-img" data-bg-img="{{ asset('assets/img/photos/bg-page1.jpg') }}">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="page-title-content">
-                    <h2 class="title">Shop Collection 01</h2>
+                    <h2 class="title">Saree Collections</h2>
                     <div class="bread-crumbs">
                         <a href="{{ route('home') }}">Home<span class="breadcrumb-sep">></span></a>
-                        <span class="active">Shop Collection</span>
+                        <span class="active">Collections</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!--== End Page Title Area ==-->
 
-<!--== Start Category Area Wrapper ==-->
-<section class="category-area product-collection-area">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="items-align">
-                    <div class="align-left">
-                        <div class="category-items-style15 mb-xs-30">
-                            <!-- Start Category Item -->
-                            <div class="category-item hover-effect effect-style1">
-                                <div class="thumb">
-                                    <a href="{{ route('shop') }}">
-                                        <img src="{{ asset('assets/img/shop/category/38.jpg') }}" alt="Moren-Shop">
-                                    </a>
-                                    <div class="effect-content"></div>
-                                </div>
-                                <div class="content">
-                                    <h4 class="title">Women</h4>
-                                </div>
-                            </div>
-                            <!-- End Category Item -->
-                        </div>
-                    </div>
-                    <div class="align-right">
-                        <div class="row row-gutter-60">
-                            {{-- Loop through women products --}}
-                            @for ($i = 0; $i < 3; $i++)
-                            <div class="col-md-6 col-lg-4">
-                                <!-- Start Product Item -->
-                                <div class="product-item">
-                                    <div class="product-thumb">
-                                        <a href="{{ route('shop') }}">
-                                            <img src="{{ asset('assets/img/shop/' . (65 + $i) . '.jpg') }}" alt="Moren-Shop">
-                                            <span class="thumb-overlay"></span>
-                                        </a>
-                                        <div class="product-action action-style3">
-                                            <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ route('cart') }}" title="Add to cart">
-                                                <i class="lastudioicon-shopping-cart-3"></i>
-                                            </a>
-                                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View">
-                                                <i class="lastudioicon-search-zoom-in"></i>
-                                            </a>
-                                            
-                                            <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="#" title="Add to compare">
-                                                <i class="lastudioicon-compare"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="product-info info-style2">
-                                        <div class="content-inner">
-                                            <h4 class="title"><a href="{{ route('shop') }}">Trend Coat</a></h4>
-                                            <div class="prices">
-                                                <span class="price">£39.90</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- End Product Item -->
-                            </div>
-                            @endfor
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!--== End Category Area Wrapper ==-->
-
-<!--== Start Divider Area Wrapper ==-->
-<section class="divider-area bg-overlay-black2-51 bg-img" data-bg-img="{{ asset('assets/img/photos/bg-page2.jpg') }}">
+<section class="product-area" style="padding: 80px 0;">
     <div class="container">
         <div class="row">
-            <div class="col-md-6 m-auto">
-                <div class="divider-content divider-content-style6">
-                    <h2>NEW IN</h2>
-                    <h4>Maecenas pellentesque posuere mauris tincidunt orci, aliquet nam aliquet purus.</h4>
-                    <a href="{{ route('shop') }}" class="btn-theme btn-border">View All</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!--== End Divider Area Wrapper ==-->
-
-<!--== Start Category Area Wrapper ==-->
-<section class="category-area product-collection-area-style1">
-    <div class="container-fluid">
-        <div class="row">
             <div class="col-lg-12">
-                <div class="items-align">
-                    <div class="align-right">
-                        <div class="row row-gutter-60">
-                            {{-- Loop through new products --}}
-                            @for ($i = 0; $i < 3; $i++)
-                            <div class="col-md-6 col-lg-4">
-                                <!-- Start Product Item -->
-                                <div class="product-item">
-                                    <div class="product-thumb">
-                                        <a href="{{ route('shop') }}">
-                                            <img src="{{ asset('assets/img/shop/' . (65 + $i) . '.jpg') }}" alt="Moren-Shop">
-                                            <span class="thumb-overlay"></span>
-                                        </a>
-                                        <div class="product-action action-style3">
-                                            <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ route('cart') }}" title="Add to cart">
-                                                <i class="lastudioicon-shopping-cart-3"></i>
-                                            </a>
-                                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View">
-                                                <i class="lastudioicon-search-zoom-in"></i>
-                                            </a>
-                                            
-                                            <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="#" title="Add to compare">
-                                                <i class="lastudioicon-compare"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="product-info info-style2">
-                                        <div class="content-inner">
-                                            <h4 class="title"><a href="{{ route('shop') }}">Trend Coat</a></h4>
-                                            <div class="prices">
-                                                <span class="price">£39.90</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- End Product Item -->
-                            </div>
-                            @endfor
-                        </div>
-                    </div>
-                    <div class="align-left">
-                        <div class="category-items-style15">
-                            <!-- Start Category Item -->
-                            <div class="category-item hover-effect effect-style1">
-                                <div class="thumb">
-                                    <a href="{{ route('shop') }}">
-                                        <img src="{{ asset('assets/img/shop/category/26.jpg') }}" alt="Moren-Shop">
-                                    </a>
-                                    <div class="effect-content"></div>
-                                </div>
-                                <div class="content">
-                                    <h4 class="title">Men</h4>
-                                </div>
-                            </div>
-                            <!-- End Category Item -->
-                        </div>
-                    </div>
+                <div class="collections-header">
+                    <h2>Explore Our Saree Collections</h2>
+                    <p>Discover our exquisite range of sarees, carefully curated to bring you the finest selection of traditional and contemporary designs.</p>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-<!--== End Category Area Wrapper ==-->
 
-<!--== Start Divider Area Wrapper ==-->
-<section class="divider-area bg-overlay-black2-51 bg-img" data-bg-img="{{ asset('assets/img/photos/bg-page7.jpg') }}">
-    <div class="container">
         <div class="row">
-            <div class="col-md-6 m-auto">
-                <div class="divider-content divider-content-style6">
-                    <h2>HOT TREND</h2>
-                    <h4>Maecenas pellentesque posuere mauris tincidunt orci, aliquet nam aliquet purus.</h4>
-                    <a href="{{ route('shop') }}" class="btn-theme btn-border">View All</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!--== End Divider Area Wrapper ==-->
-
-<!--== Start Category Area Wrapper ==-->
-<section class="category-area product-collection-area">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="items-align">
-                    <div class="align-left">
-                        <div class="category-items-style15 mb-xs-30">
-                            <!-- Start Category Item -->
-                            <div class="category-item hover-effect effect-style1">
-                                <div class="thumb">
-                                    <a href="{{ route('shop') }}">
-                                        <img src="{{ asset('assets/img/shop/category/39.jpg') }}" alt="Moren-Shop">
-                                    </a>
-                                    <div class="effect-content"></div>
-                                </div>
-                                <div class="content">
-                                    <h4 class="title">Kid</h4>
-                                </div>
-                            </div>
-                            <!-- End Category Item -->
-                        </div>
+            @forelse($collections as $collection)
+            <div class="col-md-6 col-lg-4">
+                <div class="collection-card">
+                    <div class="collection-image-wrapper">
+                        @php
+                            $imageUrl = $collection->image 
+                                ? asset($collection->image) 
+                                : asset('assets/img/shop/default-collection.jpg');
+                        @endphp
+                        <img src="{{ $imageUrl }}" alt="{{ $collection->name }}">
+                        <div class="collection-overlay"></div>
                     </div>
-                    <div class="align-right">
-                        <div class="row row-gutter-60">
-                            {{-- Loop through kids products --}}
-                            @for ($i = 0; $i < 3; $i++)
-                            <div class="col-md-6 col-lg-4">
-                                <!-- Start Product Item -->
-                                <div class="product-item">
-                                    <div class="product-thumb">
-                                        <a href="{{ route('shop') }}">
-                                            <img src="{{ asset('assets/img/shop/' . (65 + $i) . '.jpg') }}" alt="Moren-Shop">
-                                            <span class="thumb-overlay"></span>
-                                        </a>
-                                        <div class="product-action action-style3">
-                                            <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ route('cart') }}" title="Add to cart">
-                                                <i class="lastudioicon-shopping-cart-3"></i>
-                                            </a>
-                                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View">
-                                                <i class="lastudioicon-search-zoom-in"></i>
-                                            </a>
-                                           
-                                            <a class="action-compare ht-tooltip" data-tippy-content="Add to compare" href="#" title="Add to compare">
-                                                <i class="lastudioicon-compare"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="product-info info-style2">
-                                        <div class="content-inner">
-                                            <h4 class="title"><a href="{{ route('shop') }}">Trend Coat</a></h4>
-                                            <div class="prices">
-                                                <span class="price">£39.90</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- End Product Item -->
-                            </div>
-                            @endfor
-                        </div>
+                    
+                    @if($collection->launch_date && $collection->launch_date->isFuture())
+                        <span class="collection-badge">Coming Soon</span>
+                    @elseif($collection->launch_date && $collection->launch_date->isToday())
+                        <span class="collection-badge">New Launch</span>
+                    @endif
+
+                    <div class="collection-content">
+                        <h3 class="collection-title">{{ $collection->name }}</h3>
+                        <p class="collection-count">{{ $collection->active_sarees_count }} {{ Str::plural('Saree', $collection->active_sarees_count) }}</p>
+                        
+                        @if($collection->description)
+                        <p class="collection-description">{{ Str::limit($collection->description, 100) }}</p>
+                        @endif
+                        
+                        <a href="{{ route('collections.show', $collection->slug) }}" class="btn-view-collection">
+                            View Collection
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-<!--== End Category Area Wrapper ==-->
-
-<!--== Start Divider Area Wrapper ==-->
-<section class="divider-area bg-overlay-black2-51 bg-img" data-bg-img="{{ asset('assets/img/photos/bg-page8.jpg') }}">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 m-auto">
-                <div class="divider-content divider-content-style6">
-                    <h2>BACK TO SCHOOL</h2>
-                    <h4>Maecenas pellentesque posuere mauris tincidunt orci, aliquet nam aliquet purus.</h4>
-                    <a href="{{ route('shop') }}" class="btn-theme btn-border">View All</a>
-                </div>
+            @empty
+            <div class="col-lg-12 text-center py-5">
+                <h3>No collections available</h3>
+                <p>Check back soon for our latest saree collections!</p>
             </div>
+            @endforelse
         </div>
     </div>
 </section>
-<!--== End Divider Area Wrapper ==-->
 
-<!--== Start Featured Area Wrapper ==-->
+<!--== Start Featured Area ==-->
 <section class="featured-area featured-style3-area">
     <div class="container">
         <div class="row featured-style3">
@@ -290,8 +246,8 @@
                             </svg>
                         </span>
                         <div class="inner-content">
-                            <h4 class="title">NEW DISCOUNT</h4>
-                            <p>Lorem ipsum dolor sit amet, id pericula appe llantur eam, mea.</p>
+                            <h4 class="title">SPECIAL OFFERS</h4>
+                            <p>Exclusive discounts on select saree collections.</p>
                         </div>
                     </div>
                 </div>
@@ -308,8 +264,8 @@
                             </svg>
                         </span>
                         <div class="inner-content">
-                            <h4 class="title">GIFT VOUCHERS</h4>
-                            <p>Lorem ipsum dolor sit amet, id pericula appe llantur eam, mea.</p>
+                            <h4 class="title">AUTHENTIC DESIGNS</h4>
+                            <p>Traditional and contemporary saree designs.</p>
                         </div>
                     </div>
                 </div>
@@ -326,8 +282,8 @@
                             </svg>
                         </span>
                         <div class="inner-content">
-                            <h4 class="title">FREE DELIVERY</h4>
-                            <p>Lorem ipsum dolor sit amet, id pericula appe llantur eam, mea.</p>
+                            <h4 class="title">NATIONWIDE DELIVERY</h4>
+                            <p>Fast and secure delivery across India.</p>
                         </div>
                     </div>
                 </div>
@@ -335,5 +291,5 @@
         </div>
     </div>
 </section>
-<!--== End Featured Area Wrapper ==-->
+<!--== End Featured Area ==-->
 @endsection

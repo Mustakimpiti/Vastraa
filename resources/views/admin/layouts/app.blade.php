@@ -87,64 +87,70 @@
             <nav class="col-md-2 d-md-block admin-sidebar">
                 <div class="p-3">
                     <h4 class="text-center mb-4">Admin Panel</h4>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link {{ Request::is('admin/dashboard') ? 'active' : '' }}" 
-                               href="{{ route('admin.dashboard') }}">
-                                <i class="fa fa-dashboard"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ Request::is('admin/sarees*') ? 'active' : '' }}" 
-                               href="{{ route('admin.sarees.index') }}">
-                                <i class="fa fa-shopping-bag"></i> Sarees
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ Request::is('admin/reviews*') ? 'active' : '' }}" 
-                               href="{{ route('admin.reviews.index') }}">
-                                <i class="fa fa-star"></i> Reviews
-                                @php
-                                    $pendingCount = \App\Models\Review::where('is_approved', false)->count();
-                                @endphp
-                                @if($pendingCount > 0)
-                                    <span class="pending-badge">{{ $pendingCount }}</span>
-                                @endif
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ Request::is('admin/contacts*') ? 'active' : '' }}" 
-                               href="{{ route('admin.contacts.index') }}">
-                                <i class="fa fa-envelope"></i> Contacts
-                                @php
-                                    $unreadCount = \App\Models\Contact::where('status', 'unread')->count();
-                                @endphp
-                                @if($unreadCount > 0)
-                                    <span class="pending-badge">{{ $unreadCount }}</span>
-                                @endif
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fa fa-users"></i> Customers
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fa fa-shopping-cart"></i> Orders
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fa fa-cog"></i> Settings
-                            </a>
-                        </li>
-                        <li class="nav-item mt-4">
-                            <a class="nav-link" href="{{ route('home') }}" target="_blank">
-                                <i class="fa fa-external-link"></i> View Site
-                            </a>
-                        </li>
-                    </ul>
+<ul class="nav flex-column">
+    <li class="nav-item">
+        <a class="nav-link {{ Request::is('admin/dashboard') ? 'active' : '' }}" 
+           href="{{ route('admin.dashboard') }}">
+            <i class="fa fa-dashboard"></i> Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ Request::is('admin/collections*') ? 'active' : '' }}" 
+           href="{{ route('admin.collections.index') }}">
+            <i class="fa fa-folder-open"></i> Collections
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ Request::is('admin/sarees*') ? 'active' : '' }}" 
+           href="{{ route('admin.sarees.index') }}">
+            <i class="fa fa-shopping-bag"></i> Sarees
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ Request::is('admin/reviews*') ? 'active' : '' }}" 
+           href="{{ route('admin.reviews.index') }}">
+            <i class="fa fa-star"></i> Reviews
+            @php
+                $pendingCount = \App\Models\Review::where('is_approved', false)->count();
+            @endphp
+            @if($pendingCount > 0)
+                <span class="pending-badge">{{ $pendingCount }}</span>
+            @endif
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ Request::is('admin/contacts*') ? 'active' : '' }}" 
+           href="{{ route('admin.contacts.index') }}">
+            <i class="fa fa-envelope"></i> Contacts
+            @php
+                $unreadCount = \App\Models\Contact::where('status', 'unread')->count();
+            @endphp
+            @if($unreadCount > 0)
+                <span class="pending-badge">{{ $unreadCount }}</span>
+            @endif
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">
+            <i class="fa fa-users"></i> Customers
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">
+            <i class="fa fa-shopping-cart"></i> Orders
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">
+            <i class="fa fa-cog"></i> Settings
+        </a>
+    </li>
+    <li class="nav-item mt-4">
+        <a class="nav-link" href="{{ route('home') }}" target="_blank">
+            <i class="fa fa-external-link"></i> View Site
+        </a>
+    </li>
+</ul>
                 </div>
             </nav>
 

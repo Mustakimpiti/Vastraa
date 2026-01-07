@@ -4,12 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\SareeController as AdminSareeController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
-// REMOVED: use App\Http\Controllers\ContactController; ← This was causing the error
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +23,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Static Pages
 Route::view('/about', 'pages.about')->name('about');
 
-// Contact Page - Using full namespace to avoid conflicts
+// Contact Page
 Route::middleware('web')->group(function () {
     Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'index'])->name('contact');
     Route::post('/contact-submit', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit');
@@ -31,7 +31,10 @@ Route::middleware('web')->group(function () {
 
 // Shop routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
-Route::view('/shop-collections', 'pages.shop-collections')->name('collections');
+
+// Collection routes
+Route::get('/shop-collections', [CollectionController::class, 'index'])->name('collections');
+Route::get('/shop-collections/{slug}', [CollectionController::class, 'show'])->name('collections.show');
 
 // Product routes
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
@@ -43,30 +46,17 @@ Route::post('/product/{slug}/review', [ProductController::class, 'storeReview'])
 |--------------------------------------------------------------------------
 */
 Route::prefix('cart')->name('cart.')->group(function () {
-    // View cart
     Route::get('/', [CartController::class, 'index'])->name('index');
-    
-    // Add to cart
     Route::post('/add', [CartController::class, 'add'])->name('add');
-    
-    // Update cart item quantity
     Route::post('/update', [CartController::class, 'update'])->name('update');
-    
-    // Remove item from cart
     Route::post('/remove', [CartController::class, 'remove'])->name('remove');
-    
-    // Clear entire cart
     Route::post('/clear', [CartController::class, 'clear'])->name('clear');
-    
-    // Get cart count (AJAX)
     Route::get('/count', [CartController::class, 'count'])->name('count');
-    
-    // Coupon routes
     Route::post('/coupon/apply', [CartController::class, 'applyCoupon'])->name('coupon.apply');
     Route::post('/coupon/remove', [CartController::class, 'removeCoupon'])->name('coupon.remove');
 });
 
-// Legacy cart route (for backward compatibility)
+// Legacy cart route
 Route::get('/shop-cart', [CartController::class, 'index'])->name('cart');
 
 // Checkout
@@ -83,14 +73,12 @@ Route::get('/wishlist/add/{id}', function($id) {
 |--------------------------------------------------------------------------
 */
 
-// Guest only routes (redirect if authenticated)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register'])->name('register');
 });
 
-// Authenticated only routes
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
@@ -106,6 +94,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
+
+    // Collection Management
+    Route::resource('collections', \App\Http\Controllers\Admin\CollectionController::class);
 
     // Saree Management
     Route::resource('sarees', AdminSareeController::class);
