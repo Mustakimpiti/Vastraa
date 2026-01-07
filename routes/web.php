@@ -9,7 +9,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\SareeController as AdminSareeController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
-use App\Http\Controllers\ContactController;
+// REMOVED: use App\Http\Controllers\ContactController; ← This was causing the error
 
 /*
 |--------------------------------------------------------------------------
@@ -23,10 +23,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Static Pages
 Route::view('/about', 'pages.about')->name('about');
 
-// Contact Page - Dynamic with proper middleware
+// Contact Page - Using full namespace to avoid conflicts
 Route::middleware('web')->group(function () {
-    Route::get('/contact', [ContactController::class, 'index'])->name('contact');
-    Route::post('/contact-submit', [ContactController::class, 'submit'])->name('contact.submit');
+    Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'index'])->name('contact');
+    Route::post('/contact-submit', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit');
 });
 
 // Shop routes

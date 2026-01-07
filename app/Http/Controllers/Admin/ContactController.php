@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\Mail\ContactReplyMail;
 
 class ContactController extends Controller
@@ -63,24 +64,58 @@ class ContactController extends Controller
 
     public function reply(Request $request, $id)
     {
-        $request->validate([
-            'admin_reply' => 'required|string|min:10',
-        ]);
-
-        $contact = Contact::findOrFail($id);
+        Log::info('=== CONTACT REPLY STARTED ===');
+        Log::info('Contact ID: ' . $id);
         
-        // Update contact with reply
-        $contact->markAsReplied($request->admin_reply);
-
-        // Send email to customer
         try {
-            Mail::to($contact->email)->send(new ContactReplyMail($contact));
-            $message = 'Reply sent successfully to customer.';
+            // Validate
+            $validated = $request->validate([
+                'admin_reply' => 'required|string|min:10',
+            ]);
+            
+            Log::info('Validation passed');
+            
+            // Find contact
+            $contact = Contact::findOrFail($id);
+            Log::info('Contact found: ' . $contact->name);
+            
+            // Update contact with reply
+            $contact->status = 'replied';
+            $contact->admin_reply = $validated['admin_reply'];
+            $contact->replied_at = now();
+            $contact->save();
+            
+            Log::info('Contact updated in database');
+            
+            // Send email to customer
+            try {
+                Log::info('Attempting to send email to: ' . $contact->email);
+                
+                Mail::to($contact->email)->send(new ContactReplyMail($contact));
+                
+                Log::info('Email sent successfully');
+                
+                return redirect()->back()->with('success', 'Reply sent successfully to ' . $contact->email);
+                
+            } catch (\Symfony\Component\Mailer\Exception\TransportException $e) {
+                // SMTP error
+                Log::error('SMTP Error: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Reply saved but email failed: SMTP error. Check your mail configuration.');
+                
+            } catch (\Exception $e) {
+                // Other email errors
+                Log::error('Email error: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Reply saved but email failed: ' . $e->getMessage());
+            }
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed');
+            return redirect()->back()->withErrors($e->validator)->withInput();
+            
         } catch (\Exception $e) {
-            $message = 'Reply saved but email failed to send: ' . $e->getMessage();
+            Log::error('Reply error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
-
-        return redirect()->back()->with('success', $message);
     }
 
     public function destroy($id)

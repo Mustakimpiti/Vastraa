@@ -4,6 +4,34 @@
 @section('page-title', 'Contact Messages')
 
 @section('content')
+
+{{-- ALWAYS SHOW SUCCESS/ERROR MESSAGES AT TOP --}}
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="position: relative; z-index: 9999;">
+        <strong>✅ Success!</strong> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: relative; z-index: 9999;">
+        <strong>❌ Error!</strong> {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+@if($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: relative; z-index: 9999;">
+        <strong>❌ Validation Errors:</strong>
+        <ul class="mb-0">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
 <div class="card">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">All Contact Messages</h5>
@@ -285,7 +313,10 @@
                     <div class="modal fade" id="replyModal{{ $contact->id }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
-                                <form action="{{ route('admin.contacts.reply', $contact->id) }}" method="POST">
+                                <form action="{{ route('admin.contacts.reply', $contact->id) }}" 
+                                      method="POST" 
+                                      id="replyForm{{ $contact->id }}"
+                                      onsubmit="console.log('Form submitting for contact {{ $contact->id }}'); return true;">
                                     @csrf
                                     <div class="modal-header">
                                         <h5 class="modal-title">Reply to {{ $contact->name }}</h5>
@@ -308,7 +339,8 @@
                                                       name="admin_reply" 
                                                       rows="6" 
                                                       required
-                                                      placeholder="Type your response here..."></textarea>
+                                                      minlength="10"
+                                                      placeholder="Type your response here (minimum 10 characters)..."></textarea>
                                             <small class="text-muted">
                                                 This reply will be sent to {{ $contact->email }}
                                             </small>
@@ -316,7 +348,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-success">
+                                        <button type="submit" class="btn btn-success" id="sendBtn{{ $contact->id }}">
                                             <i class="fa fa-paper-plane"></i> Send Reply
                                         </button>
                                     </div>
@@ -404,6 +436,8 @@
 
 @push('scripts')
 <script>
+console.log('Contact management page loaded');
+
 // Select All Checkbox
 document.getElementById('select-all').addEventListener('change', function() {
     const checkboxes = document.querySelectorAll('.contact-checkbox');
@@ -425,16 +459,45 @@ function updateSelectedCount() {
 
 // Mark as read via AJAX when viewing details
 function markAsRead(contactId) {
+    console.log('Marking contact as read:', contactId);
     fetch(`/admin/contacts/${contactId}/mark-read`, {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             'Content-Type': 'application/json'
         }
+    }).then(response => {
+        console.log('Mark as read response:', response.status);
+    }).catch(error => {
+        console.error('Mark as read error:', error);
     });
 }
 
 // Initialize count on page load
 updateSelectedCount();
+
+// Debug: Log all reply forms
+document.querySelectorAll('[id^="replyForm"]').forEach(form => {
+    console.log('Found reply form:', form.id);
+    form.addEventListener('submit', function(e) {
+        console.log('Reply form submitted:', form.id);
+        const textarea = form.querySelector('textarea[name="admin_reply"]');
+        console.log('Reply content:', textarea.value);
+        console.log('Reply length:', textarea.value.length);
+        
+        if (textarea.value.length < 10) {
+            e.preventDefault();
+            alert('Please enter at least 10 characters in your reply.');
+            return false;
+        }
+    });
+});
+
+// Scroll to top on page load if there's a success/error message
+window.addEventListener('load', function() {
+    if (document.querySelector('.alert')) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+});
 </script>
 @endpush
