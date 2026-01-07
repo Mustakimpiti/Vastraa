@@ -113,6 +113,18 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ Request::is('admin/contacts*') ? 'active' : '' }}" 
+                               href="{{ route('admin.contacts.index') }}">
+                                <i class="fa fa-envelope"></i> Contacts
+                                @php
+                                    $unreadCount = \App\Models\Contact::where('status', 'unread')->count();
+                                @endphp
+                                @if($unreadCount > 0)
+                                    <span class="pending-badge">{{ $unreadCount }}</span>
+                                @endif
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#">
                                 <i class="fa fa-users"></i> Customers
                             </a>

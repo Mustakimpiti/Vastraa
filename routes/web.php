@@ -8,6 +8,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\SareeController as AdminSareeController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\ContactController;
 
 /*
@@ -116,4 +117,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/reviews/{id}/reject', [AdminReviewController::class, 'reject'])->name('reviews.reject');
     Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
     Route::post('/reviews/quick-approve', [AdminReviewController::class, 'quickApprove'])->name('reviews.quick-approve');
+
+    // Contact Management
+    Route::get('/contacts', [AdminContactController::class, 'index'])->name('contacts.index');
+    Route::post('/contacts/{id}/mark-read', [AdminContactController::class, 'markAsRead'])->name('contacts.mark-read');
+    Route::post('/contacts/{id}/mark-unread', [AdminContactController::class, 'markAsUnread'])->name('contacts.mark-unread');
+    Route::post('/contacts/{id}/reply', [AdminContactController::class, 'reply'])->name('contacts.reply');
+    Route::delete('/contacts/{id}', [AdminContactController::class, 'destroy'])->name('contacts.destroy');
+    Route::post('/contacts/bulk-action', [AdminContactController::class, 'bulkAction'])->name('contacts.bulk-action');
 });
