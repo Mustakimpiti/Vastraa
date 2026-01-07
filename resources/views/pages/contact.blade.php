@@ -2,6 +2,62 @@
 
 @section('title', 'Contact Us - Artfauj')
 
+@push('styles')
+<style>
+    /* Force success message to be visible */
+    .success-message-wrapper {
+        position: relative;
+        z-index: 9999;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .success-alert {
+        background: #d4edda !important;
+        border: 3px solid #28a745 !important;
+        border-radius: 10px !important;
+        padding: 25px !important;
+        box-shadow: 0 4px 15px rgba(40,167,69,0.3) !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        animation: slideDown 0.5s ease-out;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .success-icon {
+        font-size: 50px;
+        color: #28a745;
+        animation: bounceIn 0.6s ease-out;
+    }
+    
+    @keyframes bounceIn {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+    
+    #submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
+@endpush
+
 @section('content')
 <!--== Start Page Title Area ==-->
 <section class="page-title-area bg-img" data-bg-img="{{ asset('assets/img/photos/bg-page3.jpg') }}">
@@ -24,23 +80,52 @@
 <!--== Start Contact Area ==-->
 <section class="contact-area">
     <div class="container">
-        {{-- Success Message --}}
-        @if(session('success'))
-        <div class="row">
-            <div class="col-12">
-                <div class="alert alert-success alert-dismissible fade show" role="alert" style="background: #d4edda; border: 2px solid #28a745; border-radius: 10px; padding: 25px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(40,167,69,0.2);">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="font-size: 40px; color: #28a745;">
-                            ✅
+        {{-- Success Message - GUARANTEED TO SHOW --}}
+        @if(request()->get('submitted') === 'success')
+        <div class="success-message-wrapper">
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert success-alert alert-dismissible fade show" role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" 
+                                style="position: absolute; right: 20px; top: 20px;"></button>
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div class="success-icon">
+                                ✅
+                            </div>
+                            <div>
+                                <h4 style="color: #155724; margin: 0 0 8px 0; font-weight: bold; font-size: 22px;">
+                                    Message Sent Successfully!
+                                </h4>
+                                <p style="color: #155724; margin: 0; font-size: 16px; line-height: 1.5;">
+                                    Thank you for contacting us, <strong>{{ request()->get('name', 'valued customer') }}</strong>!<br>
+                                    We have received your message and will respond within 24-48 hours.
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 style="color: #155724; margin: 0 0 5px 0; font-weight: bold;">
-                                Success!
-                            </h4>
-                            <p style="color: #155724; margin: 0; font-size: 16px;">
-                                {{ session('success') }}
-                            </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Session Success Message (Backup) --}}
+        @if(session('success'))
+        <div class="success-message-wrapper">
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert success-alert alert-dismissible fade show" role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" 
+                                style="position: absolute; right: 20px; top: 20px;"></button>
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div class="success-icon">✅</div>
+                            <div>
+                                <h4 style="color: #155724; margin: 0 0 8px 0; font-weight: bold; font-size: 22px;">
+                                    Success!
+                                </h4>
+                                <p style="color: #155724; margin: 0; font-size: 16px;">
+                                    {{ session('success') }}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,8 +179,9 @@
                                     <input class="form-control @error('con_name') is-invalid @enderror" 
                                            type="text" 
                                            name="con_name" 
+                                           id="con_name"
                                            placeholder="Name*" 
-                                           value="{{ old('con_name') }}" 
+                                           value="{{ request()->get('submitted') === 'success' ? '' : old('con_name') }}" 
                                            required>
                                     @error('con_name')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -107,8 +193,9 @@
                                     <input class="form-control @error('con_email') is-invalid @enderror" 
                                            type="email" 
                                            name="con_email" 
+                                           id="con_email"
                                            placeholder="Email*" 
-                                           value="{{ old('con_email') }}" 
+                                           value="{{ request()->get('submitted') === 'success' ? '' : old('con_email') }}" 
                                            required>
                                     @error('con_email')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -120,8 +207,9 @@
                                     <input class="form-control @error('con_phone') is-invalid @enderror" 
                                            type="text" 
                                            name="con_phone" 
+                                           id="con_phone"
                                            placeholder="Phone Number"
-                                           value="{{ old('con_phone') }}">
+                                           value="{{ request()->get('submitted') === 'success' ? '' : old('con_phone') }}">
                                     @error('con_phone')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -131,8 +219,9 @@
                                 <div class="form-group mb-0">
                                     <textarea class="form-control textarea @error('con_message') is-invalid @enderror" 
                                               name="con_message" 
+                                              id="con_message"
                                               placeholder="How can we help?" 
-                                              required>{{ old('con_message') }}</textarea>
+                                              required>{{ request()->get('submitted') === 'success' ? '' : old('con_message') }}</textarea>
                                     @error('con_message')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -225,78 +314,68 @@
             height="450" 
             style="border:0;" 
             allowfullscreen="" 
-            loading="lazy"></iframe>
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
 </div>
 @endif
 <!--== End Map Area ==-->
 
+@push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('contact-form');
-    const submitBtn = document.getElementById('submit-btn');
+(function() {
+    'use strict';
     
-    // Check if there's a success message and show alert
-    @if(session('contact_submitted'))
-        // Scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-        // Show alert
-        alert('✅ Your message has been sent successfully!\n\nWe will respond within 24-48 hours.');
-        
-        // Clear the form
-        if (form) {
-            form.reset();
-        }
-    @endif
+    // Reset button immediately
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Send Message';
+    }
+    
+    // Scroll to success message if present
+    if (window.location.search.includes('submitted=success') || document.querySelector('.success-alert')) {
+        setTimeout(function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 300);
+    }
     
     // Handle form submission
+    const form = document.getElementById('contact-form');
     if (form && submitBtn) {
         form.addEventListener('submit', function(e) {
-            // Change button text to show loading
+            if (submitBtn.disabled) {
+                e.preventDefault();
+                return false;
+            }
+            
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Sending...';
-            
-            // Don't prevent default - let form submit normally
         });
     }
     
-    // Reset button on page load (in case of back button)
-    if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Send Message';
-    }
+    // Force button reset on all page events
+    window.addEventListener('pageshow', function() {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Send Message';
+        }
+    });
     
-    // Handle errors
-    @if($errors->any())
-        // Scroll to error
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-        // Reset button
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden && submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Send Message';
+        }
+    });
+    
+    // Backup reset after 1 second
+    setTimeout(function() {
         if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = 'Send Message';
         }
-    @endif
-});
-
-// Reset button when page visibility changes (prevents stuck spinner)
-document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-        const submitBtn = document.getElementById('submit-btn');
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Send Message';
-        }
-    }
-});
-
-// Reset button on page show (handles back/forward navigation)
-window.addEventListener('pageshow', function(event) {
-    const submitBtn = document.getElementById('submit-btn');
-    if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Send Message';
-    }
-});
+    }, 1000);
+})();
 </script>
+@endpush
 @endsection
