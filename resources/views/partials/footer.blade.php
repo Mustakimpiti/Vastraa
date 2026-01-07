@@ -1,57 +1,62 @@
 <!--== Start Footer Area Wrapper ==-->
 <footer class="footer-area footer-style1">
-    <div class="footer-top">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 col-lg-6">
-                    <div class="footer-logo-area">
-                        <a href="{{ url('/') }}">
-                            <img class="logo-main" src="{{ asset('assets/img/logo-main.svg') }}" alt="Logo" />
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-8 col-lg-6">
-                    <div class="newsletter-content-wrap">
-                        <form class="newsletter-form" action="#">
-                            <input class="form-control" type="text" id="email" placeholder="Enter your email address...">
-                            <button class="btn btn-theme" type="submit">Subscribe</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="footer-main">
         <div class="container">
             <div class="row row-gutter-0">
-                <div class="col-sm-6 col-md-4">
+                <div class="col-sm-6 col-md-3">
                     <div class="widget-item">
+                        <div class="footer-logo-area mb-4">
+                            <a href="{{ url('/') }}">
+                                <img class="logo-main" src="{{ asset('assets/img/logo-main.svg') }}" alt="Logo" />
+                            </a>
+                        </div>
+                        <p class="mb-0">Artfauj - Your one-stop destination for premium fashion and style.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="widget-item mt-sm-0 mt-xs-20">
+                        <h4 class="widget-title">Quick Links</h4>
                         <nav class="widget-menu-wrap">
                             <ul class="nav-menu nav">
-                                
-                                <li><a href="{{ url('/about') }}">ABOUT</a></li>
+                                <li><a href="{{ url('/') }}">HOME</a></li>
+                                <li><a href="{{ url('/shop') }}">SHOP</a></li>
+                                <li><a href="{{ url('/about') }}">ABOUT US</a></li>
                             </ul>
                         </nav>
                     </div>
                 </div>
                 <div class="col-sm-6 col-md-3">
-                    <div class="widget-item mt-xs-20">
+                    <div class="widget-item mt-md-0 mt-xs-20">
+                        <h4 class="widget-title">Information</h4>
                         <nav class="widget-menu-wrap">
                             <ul class="nav-menu nav">
-                                
+                                <li><a href="{{ url('/shop-collections') }}">COLLECTIONS</a></li>
                                 <li><a href="{{ url('/contact') }}">CONTACT</a></li>
+                                <li><a href="{{ url('/') }}">MY ACCOUNT</a></li>
                             </ul>
                         </nav>
                     </div>
                 </div>
-                <div class="col-md-5">
-                    <div class="widget-item widget-social-item mt-sm-30 mt-xs-20">
-                        <span>ON SOCIAL NETWORKS</span>
+                <div class="col-sm-6 col-md-3">
+                    <div class="widget-item widget-social-item mt-md-0 mt-xs-20">
+                        <h4 class="widget-title">Follow Us</h4>
+                        <span class="mb-2 d-block">Stay connected on social media</span>
                         <div class="widget-social-icons">
                             <a href="#/"><i class="lastudioicon lastudioicon-b-facebook"></i></a>
                             <a href="#/"><i class="lastudioicon lastudioicon-b-pinterest"></i></a>
                             <a href="#/"><i class="lastudioicon lastudioicon-b-twitter"></i></a>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="footer-bottom-content">
+                        <p class="copyright text-center mb-0">© {{ date('Y') }} Artfauj. All Rights Reserved. Made with <i class="fa fa-heart text-danger"></i></p>
                     </div>
                 </div>
             </div>

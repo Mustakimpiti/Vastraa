@@ -24,10 +24,63 @@
 <!--== Start Contact Area ==-->
 <section class="contact-area">
     <div class="container">
+        {{-- Success Message --}}
+        @if(session('success'))
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-success alert-dismissible fade show" role="alert" style="background: #d4edda; border: 2px solid #28a745; border-radius: 10px; padding: 25px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(40,167,69,0.2);">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 40px; color: #28a745;">
+                            ✅
+                        </div>
+                        <div>
+                            <h4 style="color: #155724; margin: 0 0 5px 0; font-weight: bold;">
+                                Success!
+                            </h4>
+                            <p style="color: #155724; margin: 0; font-size: 16px;">
+                                {{ session('success') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Error Message --}}
+        @if(session('error'))
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-bottom: 30px;">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <strong>Error!</strong> {{ session('error') }}
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Validation Errors --}}
+        @if($errors->any())
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-bottom: 30px;">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <h5 style="margin-bottom: 10px;"><strong>Please fix the following errors:</strong></h5>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <div class="row">
             <div class="col-lg-7">
                 <div class="contact-form">
-                    <form class="contact-form-wrapper form-style" id="contact-form" action="{{ url('/contact-submit') }}" method="post">
+                    <form class="contact-form-wrapper form-style" id="contact-form" action="{{ route('contact.submit') }}" method="POST">
                         @csrf
                         <div class="row">
                             <div class="col-lg-12">
@@ -38,33 +91,62 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <input class="form-control" type="text" name="con_name" placeholder="Name*" required>
+                                    <input class="form-control @error('con_name') is-invalid @enderror" 
+                                           type="text" 
+                                           name="con_name" 
+                                           placeholder="Name*" 
+                                           value="{{ old('con_name') }}" 
+                                           required>
+                                    @error('con_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <input class="form-control" type="email" name="con_email" placeholder="Email*" required>
+                                    <input class="form-control @error('con_email') is-invalid @enderror" 
+                                           type="email" 
+                                           name="con_email" 
+                                           placeholder="Email*" 
+                                           value="{{ old('con_email') }}" 
+                                           required>
+                                    @error('con_email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <input class="form-control" type="text" name="con_phone" placeholder="Phone Number">
+                                    <input class="form-control @error('con_phone') is-invalid @enderror" 
+                                           type="text" 
+                                           name="con_phone" 
+                                           placeholder="Phone Number"
+                                           value="{{ old('con_phone') }}">
+                                    @error('con_phone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group mb-0">
-                                    <textarea class="form-control textarea" name="con_message" placeholder="How can we help?" required></textarea>
+                                    <textarea class="form-control textarea @error('con_message') is-invalid @enderror" 
+                                              name="con_message" 
+                                              placeholder="How can we help?" 
+                                              required>{{ old('con_message') }}</textarea>
+                                    @error('con_message')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group mb-0">
-                                    <button class="btn btn-theme btn-black" type="submit">Send Message</button>
+                                    <button class="btn btn-theme btn-black" type="submit" id="submit-btn">
+                                        Send Message
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </form>
-                    <!-- Message Notification -->
-                    <div class="form-message"></div>
                 </div>
             </div>
             <div class="col-lg-5">
@@ -80,7 +162,16 @@
                                 </div>
                                 <div class="content">
                                     <h4>Artfauj Registered Office</h4>
-                                    <p>F 316, Ananta Swagatam,<br>Bill Kalali Road,<br>Vadodara - 391410</p>
+                                    <p>
+                                        {{ $contactSettings->address_line1 }}<br>
+                                        @if($contactSettings->address_line2)
+                                            {{ $contactSettings->address_line2 }}<br>
+                                        @endif
+                                        @if($contactSettings->address_line3)
+                                            {{ $contactSettings->address_line3 }}<br>
+                                        @endif
+                                        {{ $contactSettings->city }} - {{ $contactSettings->zip }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -90,36 +181,35 @@
                                     <span><i class="lastudioicon lastudioicon-phone-call-2"></i></span>
                                 </div>
                                 <div class="content">
-                                    <p>+91 94267 24282</p>
-                                    <p>+91 94294 08688</p>
+                                    <p>{{ $contactSettings->phone1 }}</p>
+                                    @if($contactSettings->phone2)
+                                        <p>{{ $contactSettings->phone2 }}</p>
+                                    @endif
+                                    @if($contactSettings->email)
+                                        <p><a href="mailto:{{ $contactSettings->email }}">{{ $contactSettings->email }}</a></p>
+                                    @endif
                                 </div>
                             </div>
                             <div class="contact-info-item social-icons-item mb-0 pb-0">
                                 <div class="content">
                                     <div class="social-widget">
-                                        <a href="#/"><i class="lastudioicon lastudioicon-b-facebook"></i></a>
-                                        <a href="#/"><i class="lastudioicon lastudioicon-b-pinterest"></i></a>
-                                        <a href="#/"><i class="lastudioicon lastudioicon-b-twitter"></i></a>
-                                        <a href="#/"><i class="lastudioicon lastudioicon-b-instagram"></i></a>
+                                        @if($contactSettings->facebook_url)
+                                            <a href="{{ $contactSettings->facebook_url }}" target="_blank"><i class="lastudioicon lastudioicon-b-facebook"></i></a>
+                                        @endif
+                                        @if($contactSettings->instagram_url)
+                                            <a href="{{ $contactSettings->instagram_url }}" target="_blank"><i class="lastudioicon lastudioicon-b-instagram"></i></a>
+                                        @endif
+                                        @if($contactSettings->pinterest_url)
+                                            <a href="{{ $contactSettings->pinterest_url }}" target="_blank"><i class="lastudioicon lastudioicon-b-pinterest"></i></a>
+                                        @endif
+                                        @if($contactSettings->twitter_url)
+                                            <a href="{{ $contactSettings->twitter_url }}" target="_blank"><i class="lastudioicon lastudioicon-b-twitter"></i></a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Taglines Section -->
-                    {{-- <div class="taglines-section" style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-left: 3px solid #333;">
-                        <h5 style="margin-bottom: 15px; font-weight: 600;">Our Heritage</h5>
-                        <ul style="list-style: none; padding: 0; font-size: 14px; line-height: 1.8; color: #555;">
-                            <li style="margin-bottom: 8px;">✦ Saree swag, unstoppable spirit</li>
-                            <li style="margin-bottom: 8px;">✦ Saree, but make it savage</li>
-                            <li style="margin-bottom: 8px;">✦ Turning traditions into trends</li>
-                            <li style="margin-bottom: 8px;">✦ A saree is poetry woven in threads</li>
-                            <li style="margin-bottom: 8px;">✦ Grace in folds, strength in spirit</li>
-                            <li style="margin-bottom: 8px;">✦ Saree: it's my statement</li>
-                            <li style="margin-bottom: 8px;">✦ Not just fabric, it's heritage</li>
-                        </ul>
-                    </div> --}}
                 </div>
             </div>
         </div>
@@ -128,8 +218,85 @@
 <!--== End Contact Area ==-->
 
 <!--== Start Map Area ==-->
+@if($contactSettings->map_embed_url)
 <div class="contact-map-area">
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3691.5447824536945!2d73.1627!3d22.3039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDE4JzE0LjAiTiA3M8KwMDknNDUuNyJF!5e0!3m2!1sen!2sin!4v1234567890!5m2!1sen!2sin" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    <iframe src="{{ $contactSettings->map_embed_url }}" 
+            width="100%" 
+            height="450" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy"></iframe>
 </div>
+@endif
 <!--== End Map Area ==-->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    // Check if there's a success message and show alert
+    @if(session('contact_submitted'))
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Show alert
+        alert('✅ Your message has been sent successfully!\n\nWe will respond within 24-48 hours.');
+        
+        // Clear the form
+        if (form) {
+            form.reset();
+        }
+    @endif
+    
+    // Handle form submission
+    if (form && submitBtn) {
+        form.addEventListener('submit', function(e) {
+            // Change button text to show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Sending...';
+            
+            // Don't prevent default - let form submit normally
+        });
+    }
+    
+    // Reset button on page load (in case of back button)
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Send Message';
+    }
+    
+    // Handle errors
+    @if($errors->any())
+        // Scroll to error
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Reset button
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Send Message';
+        }
+    @endif
+});
+
+// Reset button when page visibility changes (prevents stuck spinner)
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        const submitBtn = document.getElementById('submit-btn');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Send Message';
+        }
+    }
+});
+
+// Reset button on page show (handles back/forward navigation)
+window.addEventListener('pageshow', function(event) {
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Send Message';
+    }
+});
+</script>
 @endsection

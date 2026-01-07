@@ -8,6 +8,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\SareeController as AdminSareeController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +21,12 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Static Pages
 Route::view('/about', 'pages.about')->name('about');
-Route::view('/contact', 'pages.contact')->name('contact');
+
+// Contact Page - Dynamic with proper middleware
+Route::middleware('web')->group(function () {
+    Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+    Route::post('/contact-submit', [ContactController::class, 'submit'])->name('contact.submit');
+});
 
 // Shop routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
