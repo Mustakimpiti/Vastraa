@@ -325,62 +325,259 @@
                             </tr>
                         </tfoot>
                     </table>
-                    <div class="shop-payment-method">
-                        <input type="radio" id="payment_bank" name="payment_method" value="bank_transfer" form="checkout-form" {{ old('payment_method', 'bank_transfer') == 'bank_transfer' ? 'checked' : '' }} style="position: absolute; opacity: 0;" required>
-                        <input type="radio" id="payment_check" name="payment_method" value="check" form="checkout-form" {{ old('payment_method') == 'check' ? 'checked' : '' }} style="position: absolute; opacity: 0;" required>
-                        <input type="radio" id="payment_cod" name="payment_method" value="cod" form="checkout-form" {{ old('payment_method') == 'cod' ? 'checked' : '' }} style="position: absolute; opacity: 0;" required>
-                        <input type="radio" id="payment_paypal" name="payment_method" value="paypal" form="checkout-form" {{ old('payment_method') == 'paypal' ? 'checked' : '' }} style="position: absolute; opacity: 0;" required>
-                        
-                        <div id="accordion">
-                            <div class="card">
-                                <div class="card-header" id="direct_bank_transfer" style="cursor: pointer;" data-payment="payment_bank">
-                                    <h4 class="title" data-bs-toggle="collapse" data-bs-target="#itemOne" aria-controls="itemOne" aria-expanded="false">Direct bank transfer</h4>
-                                </div>
-                                <div id="itemOne" class="collapse" aria-labelledby="direct_bank_transfer" data-bs-parent="#accordion">
-                                    <div class="card-body">
-                                        <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <div class="card-header" id="check_payments" style="cursor: pointer;" data-payment="payment_check">
-                                    <h5 class="title" data-bs-toggle="collapse" data-bs-target="#itemTwo" aria-controls="itemTwo" aria-expanded="false">Check payments</h5>
-                                </div>
-                                <div id="itemTwo" class="collapse" aria-labelledby="check_payments" data-bs-parent="#accordion">
-                                    <div class="card-body">
-                                        <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <div class="card-header" id="cash_on_delivery" style="cursor: pointer;" data-payment="payment_cod">
-                                    <h5 class="title" data-bs-toggle="collapse" data-bs-target="#itemThree" aria-controls="itemThree" aria-expanded="false">Cash on delivery</h5>
-                                </div>
-                                <div id="itemThree" class="collapse" aria-labelledby="cash_on_delivery" data-bs-parent="#accordion">
-                                    <div class="card-body">
-                                        <p>Pay with cash upon delivery.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <div class="card-header" id="Pay_Pal" style="cursor: pointer;" data-payment="payment_paypal">
-                                    <h5 class="title" data-bs-toggle="collapse" data-bs-target="#item4" aria-controls="item4" aria-expanded="false">
-                                        PayPal <img src="{{ asset('assets/img/icons/paypal.png') }}" alt="PayPal" style="height: 20px; margin-left: 5px;"> 
-                                        <a href="#/" style="font-size: 12px; margin-left: 5px;">What is PayPal?</a>
-                                    </h5>
-                                </div>
-                                <div id="item4" class="collapse" aria-labelledby="Pay_Pal" data-bs-parent="#accordion">
-                                    <div class="card-body">
-                                        <p>Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
-                                    </div>
-                                </div>
-                            </div>
-
+<div class="shop-payment-method">
+    <div id="accordion">
+        <!-- Direct Bank Transfer -->
+        <div class="card payment-card">
+            <div class="card-header" id="direct_bank_transfer" data-payment="payment_bank">
+                <h5 class="mb-0">
+                    <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#itemOne" aria-expanded="false" aria-controls="itemOne">
+                        <div class="radio-wrapper">
+                            <input type="radio" id="payment_bank" name="payment_method" value="bank_transfer" form="checkout-form" {{ old('payment_method') == 'bank_transfer' ? 'checked' : '' }} required>
+                            <label for="payment_bank" class="payment-label">
+                                <span class="payment-title">Direct Bank Transfer</span>
+                            </label>
                         </div>
+                        <span class="collapse-icon">▼</span>
                     </div>
+                </h5>
+            </div>
+            <div id="itemOne" class="collapse" aria-labelledby="direct_bank_transfer" data-bs-parent="#accordion">
+                <div class="card-body">
+                    <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Check Payments -->
+        <div class="card payment-card">
+            <div class="card-header" id="check_payments" data-payment="payment_check">
+                <h5 class="mb-0">
+                    <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#itemTwo" aria-expanded="false" aria-controls="itemTwo">
+                        <div class="radio-wrapper">
+                            <input type="radio" id="payment_check" name="payment_method" value="check" form="checkout-form" {{ old('payment_method') == 'check' ? 'checked' : '' }} required>
+                            <label for="payment_check" class="payment-label">
+                                <span class="payment-title">Check Payments</span>
+                            </label>
+                        </div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                </h5>
+            </div>
+            <div id="itemTwo" class="collapse" aria-labelledby="check_payments" data-bs-parent="#accordion">
+                <div class="card-body">
+                    <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cash on Delivery -->
+        <div class="card payment-card">
+            <div class="card-header" id="cash_on_delivery" data-payment="payment_cod">
+                <h5 class="mb-0">
+                    <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#itemThree" aria-expanded="false" aria-controls="itemThree">
+                        <div class="radio-wrapper">
+                            <input type="radio" id="payment_cod" name="payment_method" value="cod" form="checkout-form" {{ old('payment_method') == 'cod' ? 'checked' : '' }} required>
+                            <label for="payment_cod" class="payment-label">
+                                <span class="payment-title">Cash on Delivery</span>
+                            </label>
+                        </div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                </h5>
+            </div>
+            <div id="itemThree" class="collapse" aria-labelledby="cash_on_delivery" data-bs-parent="#accordion">
+                <div class="card-body">
+                    <p>Pay with cash upon delivery.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PayPal -->
+        <div class="card payment-card">
+            <div class="card-header" id="Pay_Pal" data-payment="payment_paypal">
+                <h5 class="mb-0">
+                    <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#item4" aria-expanded="false" aria-controls="item4">
+                        <div class="radio-wrapper">
+                            <input type="radio" id="payment_paypal" name="payment_method" value="paypal" form="checkout-form" {{ old('payment_method') == 'paypal' ? 'checked' : '' }} required>
+                            <label for="payment_paypal" class="payment-label">
+                                <span class="payment-icon">
+                                    <img src="{{ asset('assets/img/icons/paypal.png') }}" alt="PayPal" style="height: 24px;">
+                                </span>
+                                <span class="payment-title">PayPal</span>
+                                <a href="#/" class="info-link">What is PayPal?</a>
+                            </label>
+                        </div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                </h5>
+            </div>
+            <div id="item4" class="collapse" aria-labelledby="Pay_Pal" data-bs-parent="#accordion">
+                <div class="card-body">
+                    <p>Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.shop-payment-method {
+    margin-top: 25px;
+}
+
+.payment-card {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.payment-card:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.payment-card.selected {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.payment-card .card-header {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.payment-card .card-header:hover {
+    background: #f9fafb;
+}
+
+.payment-card.selected .card-header {
+    background: #dbeafe;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    width: 100%;
+}
+
+.radio-wrapper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 12px;
+}
+
+.radio-wrapper input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 0;
+    accent-color: #3b82f6;
+}
+
+.payment-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    margin: 0;
+    font-weight: 500;
+    color: #1f2937;
+    flex: 1;
+}
+
+.payment-icon {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.info-link {
+    font-size: 13px;
+    color: #3b82f6;
+    text-decoration: none;
+    margin-left: 8px;
+    font-weight: 400;
+}
+
+.info-link:hover {
+    text-decoration: underline;
+}
+
+.collapse-icon {
+    color: #6b7280;
+    font-size: 12px;
+    transition: transform 0.3s ease;
+    margin-right: 5px;
+}
+
+.payment-option[aria-expanded="true"] .collapse-icon {
+    transform: rotate(180deg);
+}
+
+.payment-card .card-body {
+    padding: 15px 20px 20px 52px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+}
+
+.payment-card .card-body p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .payment-option {
+        padding: 15px;
+    }
+    
+    .payment-title {
+        font-size: 15px;
+    }
+    
+    .payment-card .card-body {
+        padding: 12px 15px 15px 45px;
+    }
+    
+    .info-link {
+        display: block;
+        margin-left: 0;
+        margin-top: 4px;
+    }
+}
+
+/* Animation for selection */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.payment-card.selected {
+    animation: pulse 0.3s ease-in-out;
+}
+</style>
                 </div>
                 <p class="shop-checkout-info">Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.</p>
                 <button class="btn place-order-btn" type="submit" form="checkout-form">Place order</button>
@@ -391,7 +588,8 @@
 <!--== End Shop Checkout Area ==-->
 
 @push('scripts')
-<script>document.addEventListener('DOMContentLoaded', function() {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
     const shipToDifferentCheckbox = document.getElementById('ship_to_different');
     const shippingFields = document.querySelector('.ship-to-different .single-form-row');
     const shippingInputs = document.querySelectorAll('.shipping-field');
@@ -420,9 +618,24 @@
         });
     }
 
-    // Payment method - clicking on header selects the radio and expands the section
+    // Payment method selection
     const paymentHeaders = document.querySelectorAll('#accordion .card-header');
-    const collapseElements = document.querySelectorAll('#accordion .collapse');
+    const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+    
+    // Add visual feedback class
+    function updatePaymentSelection() {
+        paymentHeaders.forEach(header => {
+            header.classList.remove('selected');
+        });
+        
+        const selectedRadio = document.querySelector('input[name="payment_method"]:checked');
+        if (selectedRadio) {
+            const selectedHeader = document.querySelector(`[data-payment="${selectedRadio.id}"]`);
+            if (selectedHeader) {
+                selectedHeader.classList.add('selected');
+            }
+        }
+    }
     
     paymentHeaders.forEach(header => {
         header.addEventListener('click', function(e) {
@@ -433,52 +646,28 @@
             const radio = document.getElementById(paymentId);
             
             if (radio) {
+                // Uncheck all radio buttons first
+                paymentRadios.forEach(r => {
+                    r.checked = false;
+                });
+                
                 // Select the radio button
                 radio.checked = true;
                 
-                // Collapse all other payment sections
-                collapseElements.forEach(collapse => {
-                    const bsCollapse = bootstrap.Collapse.getInstance(collapse);
-                    if (bsCollapse) {
-                        bsCollapse.hide();
-                    }
-                });
+                // Trigger change event to ensure form recognizes it
+                radio.dispatchEvent(new Event('change', { bubbles: true }));
+                
+                updatePaymentSelection();
+                
+                console.log('Payment method selected:', radio.value);
             }
         });
     });
 
-    // Also handle when user clicks directly on radio buttons
-    const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
-    paymentRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            // When radio changes, ensure only its collapse is shown
-            const paymentId = this.id;
-            const header = document.querySelector(`[data-payment="${paymentId}"]`);
-            
-            if (header) {
-                // Get the collapse element associated with this header
-                const collapseTarget = header.querySelector('[data-bs-toggle="collapse"]').getAttribute('data-bs-target');
-                const collapseElement = document.querySelector(collapseTarget);
-                
-                // Show this collapse
-                const bsCollapse = new bootstrap.Collapse(collapseElement, {
-                    show: true
-                });
-                
-                // Hide others
-                collapseElements.forEach(collapse => {
-                    if (collapse !== collapseElement) {
-                        const instance = bootstrap.Collapse.getInstance(collapse);
-                        if (instance) {
-                            instance.hide();
-                        }
-                    }
-                });
-            }
-        });
-    });
+    // Update visual selection on load
+    updatePaymentSelection();
 
-    // Prevent form submission if no payment method is selected
+    // Form submission validation
     const checkoutForm = document.getElementById('checkout-form');
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', function(e) {
@@ -486,11 +675,26 @@
             
             if (!selectedPayment) {
                 e.preventDefault();
+                e.stopPropagation();
                 alert('Please select a payment method');
+                
+                // Scroll to payment section
+                const paymentSection = document.querySelector('.shop-payment-method');
+                if (paymentSection) {
+                    paymentSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    paymentSection.style.border = '2px solid red';
+                    setTimeout(() => {
+                        paymentSection.style.border = '';
+                    }, 2000);
+                }
+                
                 return false;
             }
+            
+            console.log('Submitting with payment method:', selectedPayment.value);
         });
     }
-});</script>
+});
+</script>
 @endpush
 @endsection

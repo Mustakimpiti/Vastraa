@@ -51,7 +51,7 @@
                                             <li><hr style="margin: 5px 0; border-color: #e0e0e0;"></li>
                                         @endif
                                         <li>
-                                            <a href="{{ route('home') }}">
+                                            <a href="{{ route('account') }}">
                                                 <i class="fa fa-user"></i> My Account
                                             </a>
                                         </li>

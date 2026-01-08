@@ -8,6 +8,7 @@ use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\SareeController as AdminSareeController;
@@ -100,6 +101,10 @@ Route::middleware('auth')->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
+    // My Account
+    Route::get('/my-account', [AccountController::class, 'index'])->name('account');
+    Route::put('/my-account/update', [AccountController::class, 'update'])->name('account.update');
+
     // My Orders
     Route::prefix('my-orders')->name('orders.')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('index');
@@ -150,6 +155,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/{id}/mark-unread', [AdminContactController::class, 'markAsUnread'])->name('mark-unread');
         Route::post('/{id}/reply', [AdminContactController::class, 'reply'])->name('reply');
         Route::delete('/{id}', [AdminContactController::class, 'destroy'])->name('destroy');
-        Route::post('/bulk-action', [AdminContactController::class, 'bulkAction'])->name('bulk-action');
+        Route::post('/bulk-action', [AdminContactController::class, 'bulk-action'])->name('bulk-action');
     });
 });
