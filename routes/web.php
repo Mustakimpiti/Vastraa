@@ -7,14 +7,17 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\SareeController as AdminSareeController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\CollectionController as AdminCollectionController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Public Routes
 |--------------------------------------------------------------------------
 */
 
@@ -25,27 +28,31 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/about', 'pages.about')->name('about');
 
 // Contact Page
-Route::middleware('web')->group(function () {
-    Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'index'])->name('contact');
-    Route::post('/contact-submit', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit');
-});
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact-submit', [ContactController::class, 'submit'])->name('contact.submit');
 
-// Shop routes
+/*
+|--------------------------------------------------------------------------
+| Shop & Product Routes
+|--------------------------------------------------------------------------
+*/
+
+// Shop
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 
-// Collection routes
+// Collections
 Route::get('/shop-collections', [CollectionController::class, 'index'])->name('collections');
 Route::get('/shop-collections/{slug}', [CollectionController::class, 'show'])->name('collections.show');
 
-// Product routes
+// Products
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
-Route::post('/product/{slug}/review', [ProductController::class, 'storeReview'])->name('product.review')->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
 | Cart Routes
 |--------------------------------------------------------------------------
 */
+
 Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
     Route::post('/add', [CartController::class, 'add'])->name('add');
@@ -62,17 +69,13 @@ Route::get('/shop-cart', [CartController::class, 'index'])->name('cart');
 
 /*
 |--------------------------------------------------------------------------
-| Checkout & Order Routes
+| Checkout Routes
 |--------------------------------------------------------------------------
 */
+
 Route::get('/shop-checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
 Route::get('/order/success/{orderNumber}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
-
-// Wishlist routes (placeholder)
-Route::get('/wishlist/add/{id}', function($id) {
-    return redirect()->back()->with('success', 'Product added to wishlist!');
-})->name('wishlist.add');
 
 /*
 |--------------------------------------------------------------------------
@@ -92,35 +95,61 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes
+| User Account Routes (Protected)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+    // My Orders
+    Route::prefix('my-orders')->name('orders.')->group(function () {
+        Route::get('/', [OrderController::class, 'index'])->name('index');
+        Route::get('/{orderNumber}', [OrderController::class, 'show'])->name('show');
+    });
+
+    // Wishlist
+    Route::get('/wishlist/add/{id}', function($id) {
+        return redirect()->back()->with('success', 'Product added to wishlist!');
+    })->name('wishlist.add');
+
+    // Product Reviews
+    Route::post('/product/{slug}/review', [ProductController::class, 'storeReview'])->name('product.review');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes (Protected)
 |--------------------------------------------------------------------------
 */
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    // Admin Dashboard
+    // Dashboard
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
 
     // Collection Management
-    Route::resource('collections', \App\Http\Controllers\Admin\CollectionController::class);
+    Route::resource('collections', AdminCollectionController::class);
 
     // Saree Management
     Route::resource('sarees', AdminSareeController::class);
     Route::delete('/sarees/images/{id}', [AdminSareeController::class, 'deleteImage'])->name('sarees.images.delete');
 
     // Review Management
-    Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
-    Route::post('/reviews/{id}/approve', [AdminReviewController::class, 'approve'])->name('reviews.approve');
-    Route::post('/reviews/{id}/reject', [AdminReviewController::class, 'reject'])->name('reviews.reject');
-    Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
-    Route::post('/reviews/quick-approve', [AdminReviewController::class, 'quickApprove'])->name('reviews.quick-approve');
+    Route::prefix('reviews')->name('reviews.')->group(function () {
+        Route::get('/', [AdminReviewController::class, 'index'])->name('index');
+        Route::post('/{id}/approve', [AdminReviewController::class, 'approve'])->name('approve');
+        Route::post('/{id}/reject', [AdminReviewController::class, 'reject'])->name('reject');
+        Route::delete('/{id}', [AdminReviewController::class, 'destroy'])->name('destroy');
+        Route::post('/quick-approve', [AdminReviewController::class, 'quickApprove'])->name('quick-approve');
+    });
 
     // Contact Management
-    Route::get('/contacts', [AdminContactController::class, 'index'])->name('contacts.index');
-    Route::post('/contacts/{id}/mark-read', [AdminContactController::class, 'markAsRead'])->name('contacts.mark-read');
-    Route::post('/contacts/{id}/mark-unread', [AdminContactController::class, 'markAsUnread'])->name('contacts.mark-unread');
-    Route::post('/contacts/{id}/reply', [AdminContactController::class, 'reply'])->name('contacts.reply');
-    Route::delete('/contacts/{id}', [AdminContactController::class, 'destroy'])->name('contacts.destroy');
-    Route::post('/contacts/bulk-action', [AdminContactController::class, 'bulkAction'])->name('contacts.bulk-action');
+    Route::prefix('contacts')->name('contacts.')->group(function () {
+        Route::get('/', [AdminContactController::class, 'index'])->name('index');
+        Route::post('/{id}/mark-read', [AdminContactController::class, 'markAsRead'])->name('mark-read');
+        Route::post('/{id}/mark-unread', [AdminContactController::class, 'markAsUnread'])->name('mark-unread');
+        Route::post('/{id}/reply', [AdminContactController::class, 'reply'])->name('reply');
+        Route::delete('/{id}', [AdminContactController::class, 'destroy'])->name('destroy');
+        Route::post('/bulk-action', [AdminContactController::class, 'bulkAction'])->name('bulk-action');
+    });
 });

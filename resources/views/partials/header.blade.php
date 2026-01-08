@@ -56,7 +56,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="{{ route('home') }}">
+                                            <a href="{{ route('orders.index') }}">
                                                 <i class="fa fa-shopping-bag"></i> My Orders
                                             </a>
                                         </li>

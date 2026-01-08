@@ -326,11 +326,15 @@
                         </tfoot>
                     </table>
                     <div class="shop-payment-method">
+                        <input type="radio" id="payment_bank" name="payment_method" value="bank_transfer" form="checkout-form" {{ old('payment_method', 'bank_transfer') == 'bank_transfer' ? 'checked' : '' }} style="position: absolute; opacity: 0;" required>
+                        <input type="radio" id="payment_check" name="payment_method" value="check" form="checkout-form" {{ old('payment_method') == 'check' ? 'checked' : '' }} style="position: absolute; opacity: 0;" required>
+                        <input type="radio" id="payment_cod" name="payment_method" value="cod" form="checkout-form" {{ old('payment_method') == 'cod' ? 'checked' : '' }} style="position: absolute; opacity: 0;" required>
+                        <input type="radio" id="payment_paypal" name="payment_method" value="paypal" form="checkout-form" {{ old('payment_method') == 'paypal' ? 'checked' : '' }} style="position: absolute; opacity: 0;" required>
+                        
                         <div id="accordion">
                             <div class="card">
-                                <div class="card-header" id="direct_bank_transfer">
+                                <div class="card-header" id="direct_bank_transfer" style="cursor: pointer;" data-payment="payment_bank">
                                     <h4 class="title" data-bs-toggle="collapse" data-bs-target="#itemOne" aria-controls="itemOne" aria-expanded="false">Direct bank transfer</h4>
-                                    <input type="radio" class="d-none" id="payment_bank" name="payment_method" value="bank_transfer" form="checkout-form" {{ old('payment_method', 'bank_transfer') == 'bank_transfer' ? 'checked' : '' }} required>
                                 </div>
                                 <div id="itemOne" class="collapse" aria-labelledby="direct_bank_transfer" data-bs-parent="#accordion">
                                     <div class="card-body">
@@ -340,9 +344,8 @@
                             </div>
 
                             <div class="card">
-                                <div class="card-header" id="check_payments">
+                                <div class="card-header" id="check_payments" style="cursor: pointer;" data-payment="payment_check">
                                     <h5 class="title" data-bs-toggle="collapse" data-bs-target="#itemTwo" aria-controls="itemTwo" aria-expanded="false">Check payments</h5>
-                                    <input type="radio" class="d-none" id="payment_check" name="payment_method" value="check" form="checkout-form" {{ old('payment_method') == 'check' ? 'checked' : '' }} required>
                                 </div>
                                 <div id="itemTwo" class="collapse" aria-labelledby="check_payments" data-bs-parent="#accordion">
                                     <div class="card-body">
@@ -352,9 +355,8 @@
                             </div>
 
                             <div class="card">
-                                <div class="card-header" id="cash_on_delivery">
+                                <div class="card-header" id="cash_on_delivery" style="cursor: pointer;" data-payment="payment_cod">
                                     <h5 class="title" data-bs-toggle="collapse" data-bs-target="#itemThree" aria-controls="itemThree" aria-expanded="false">Cash on delivery</h5>
-                                    <input type="radio" class="d-none" id="payment_cod" name="payment_method" value="cod" form="checkout-form" {{ old('payment_method') == 'cod' ? 'checked' : '' }} required>
                                 </div>
                                 <div id="itemThree" class="collapse" aria-labelledby="cash_on_delivery" data-bs-parent="#accordion">
                                     <div class="card-body">
@@ -364,9 +366,11 @@
                             </div>
 
                             <div class="card">
-                                <div class="card-header" id="Pay_Pal">
-                                    <h5 class="title" data-bs-toggle="collapse" data-bs-target="#item4" aria-controls="item4" aria-expanded="false">PayPal <img src="{{ asset('assets/img/icons/paypal.png') }}" alt="PayPal" style="height: 20px; margin-left: 5px;"> <a href="#/" style="font-size: 12px; margin-left: 5px;">What is PayPal?</a></h5>
-                                    <input type="radio" class="d-none" id="payment_paypal" name="payment_method" value="paypal" form="checkout-form" {{ old('payment_method') == 'paypal' ? 'checked' : '' }} required>
+                                <div class="card-header" id="Pay_Pal" style="cursor: pointer;" data-payment="payment_paypal">
+                                    <h5 class="title" data-bs-toggle="collapse" data-bs-target="#item4" aria-controls="item4" aria-expanded="false">
+                                        PayPal <img src="{{ asset('assets/img/icons/paypal.png') }}" alt="PayPal" style="height: 20px; margin-left: 5px;"> 
+                                        <a href="#/" style="font-size: 12px; margin-left: 5px;">What is PayPal?</a>
+                                    </h5>
                                 </div>
                                 <div id="item4" class="collapse" aria-labelledby="Pay_Pal" data-bs-parent="#accordion">
                                     <div class="card-body">
@@ -387,13 +391,12 @@
 <!--== End Shop Checkout Area ==-->
 
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
+<script>document.addEventListener('DOMContentLoaded', function() {
     const shipToDifferentCheckbox = document.getElementById('ship_to_different');
     const shippingFields = document.querySelector('.ship-to-different .single-form-row');
     const shippingInputs = document.querySelectorAll('.shipping-field');
 
-    // Initial state
+    // Initial state for shipping
     if (!shipToDifferentCheckbox.checked) {
         shippingFields.style.display = 'none';
         shippingInputs.forEach(input => {
@@ -417,18 +420,77 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Payment method accordion header clicks should select the radio button
-    const paymentHeaders = document.querySelectorAll('#accordion .card-header .title');
+    // Payment method - clicking on header selects the radio and expands the section
+    const paymentHeaders = document.querySelectorAll('#accordion .card-header');
+    const collapseElements = document.querySelectorAll('#accordion .collapse');
+    
     paymentHeaders.forEach(header => {
-        header.addEventListener('click', function() {
-            const cardHeader = this.closest('.card-header');
-            const radio = cardHeader.querySelector('input[type="radio"]');
+        header.addEventListener('click', function(e) {
+            // Don't trigger if clicking on a link
+            if (e.target.tagName === 'A') return;
+            
+            const paymentId = this.getAttribute('data-payment');
+            const radio = document.getElementById(paymentId);
+            
             if (radio) {
+                // Select the radio button
                 radio.checked = true;
+                
+                // Collapse all other payment sections
+                collapseElements.forEach(collapse => {
+                    const bsCollapse = bootstrap.Collapse.getInstance(collapse);
+                    if (bsCollapse) {
+                        bsCollapse.hide();
+                    }
+                });
             }
         });
     });
-});
-</script>
+
+    // Also handle when user clicks directly on radio buttons
+    const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // When radio changes, ensure only its collapse is shown
+            const paymentId = this.id;
+            const header = document.querySelector(`[data-payment="${paymentId}"]`);
+            
+            if (header) {
+                // Get the collapse element associated with this header
+                const collapseTarget = header.querySelector('[data-bs-toggle="collapse"]').getAttribute('data-bs-target');
+                const collapseElement = document.querySelector(collapseTarget);
+                
+                // Show this collapse
+                const bsCollapse = new bootstrap.Collapse(collapseElement, {
+                    show: true
+                });
+                
+                // Hide others
+                collapseElements.forEach(collapse => {
+                    if (collapse !== collapseElement) {
+                        const instance = bootstrap.Collapse.getInstance(collapse);
+                        if (instance) {
+                            instance.hide();
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    // Prevent form submission if no payment method is selected
+    const checkoutForm = document.getElementById('checkout-form');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function(e) {
+            const selectedPayment = document.querySelector('input[name="payment_method"]:checked');
+            
+            if (!selectedPayment) {
+                e.preventDefault();
+                alert('Please select a payment method');
+                return false;
+            }
+        });
+    }
+});</script>
 @endpush
 @endsection
