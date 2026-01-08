@@ -136,8 +136,15 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link {{ Request::is('admin/orders*') ? 'active' : '' }}" 
+           href="{{ route('admin.orders.index') }}">
             <i class="fa fa-shopping-cart"></i> Orders
+            @php
+                $pendingOrders = \App\Models\Order::where('order_status', 'pending')->count();
+            @endphp
+            @if($pendingOrders > 0)
+                <span class="pending-badge">{{ $pendingOrders }}</span>
+            @endif
         </a>
     </li>
     <li class="nav-item">

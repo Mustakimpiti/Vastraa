@@ -17,7 +17,8 @@ class Order extends Model
         'shipping_street_address', 'shipping_apartment',
         'shipping_city', 'shipping_state', 'shipping_country', 'shipping_zip',
         'subtotal', 'shipping_cost', 'discount', 'total',
-        'payment_method', 'payment_status', 'order_status', 'order_notes'
+        'payment_method', 'payment_status', 'order_status', 
+        'order_notes', 'admin_notes'
     ];
 
     protected $casts = [
@@ -47,5 +48,28 @@ class Order extends Model
                 $order->order_number = 'ORD-' . strtoupper(uniqid());
             }
         });
+    }
+
+    // Status badge helpers
+    public function getStatusBadgeClass()
+    {
+        return match($this->order_status) {
+            'pending' => 'warning',
+            'processing' => 'info',
+            'completed' => 'success',
+            'cancelled' => 'danger',
+            default => 'secondary'
+        };
+    }
+
+    public function getPaymentBadgeClass()
+    {
+        return match($this->payment_status) {
+            'paid' => 'success',
+            'pending' => 'warning',
+            'failed' => 'danger',
+            'refunded' => 'info',
+            default => 'secondary'
+        };
     }
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\SareeController as AdminSareeController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\CollectionController as AdminCollectionController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -156,5 +157,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/{id}/reply', [AdminContactController::class, 'reply'])->name('reply');
         Route::delete('/{id}', [AdminContactController::class, 'destroy'])->name('destroy');
         Route::post('/bulk-action', [AdminContactController::class, 'bulk-action'])->name('bulk-action');
+    });
+
+    // Order Management
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [AdminOrderController::class, 'index'])->name('index');
+        Route::get('/{order}', [AdminOrderController::class, 'show'])->name('show');
+        Route::put('/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('update-status');
+        Route::put('/{order}/update-payment-status', [AdminOrderController::class, 'updatePaymentStatus'])->name('update-payment-status');
+        Route::get('/{order}/invoice', [AdminOrderController::class, 'invoice'])->name('invoice');
+        Route::delete('/{order}', [AdminOrderController::class, 'destroy'])->name('destroy');
     });
 });
