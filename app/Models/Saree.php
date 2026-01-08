@@ -64,6 +64,11 @@ class Saree extends Model
         return $this->hasMany(Wishlist::class);
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     // Helper Methods
     public function getActivePrice()
     {
@@ -86,6 +91,26 @@ class Saree extends Model
     public function isInStock()
     {
         return $this->stock_quantity > 0;
+    }
+
+    public function hasEnoughStock($quantity)
+    {
+        return $this->stock_quantity >= $quantity;
+    }
+
+    public function decrementStock($quantity)
+    {
+        if ($this->hasEnoughStock($quantity)) {
+            $this->decrement('stock_quantity', $quantity);
+            return true;
+        }
+        return false;
+    }
+
+    public function incrementStock($quantity)
+    {
+        $this->increment('stock_quantity', $quantity);
+        return true;
     }
 
     public function getRouteKeyName()

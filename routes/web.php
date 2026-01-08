@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\SareeController as AdminSareeController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
@@ -59,8 +60,14 @@ Route::prefix('cart')->name('cart.')->group(function () {
 // Legacy cart route
 Route::get('/shop-cart', [CartController::class, 'index'])->name('cart');
 
-// Checkout
-Route::view('/shop-checkout', 'pages.shop-checkout')->name('checkout');
+/*
+|--------------------------------------------------------------------------
+| Checkout & Order Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/shop-checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
+Route::get('/order/success/{orderNumber}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
 
 // Wishlist routes (placeholder)
 Route::get('/wishlist/add/{id}', function($id) {
