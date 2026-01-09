@@ -3,60 +3,117 @@
     <div class="footer-main">
         <div class="container">
             <div class="row row-gutter-0">
-                <div class="col-sm-6 col-md-3">
+                <!-- Column 1: About / Logo -->
+                <div class="col-sm-6 col-lg-4">
                     <div class="widget-item">
                         <div class="footer-logo-area mb-4">
                             <a href="{{ url('/') }}">
-                                <img class="logo-main" src="{{ asset('assets/img/logo-main.svg') }}" alt="Logo" />
+                                <img class="logo-main" src="{{ asset('assets/img/logo-main.svg') }}" alt="Artfauj Logo" style="max-width: 180px;" />
                             </a>
                         </div>
-                        <p class="mb-0">Artfauj - Your one-stop destination for premium fashion and style.</p>
+<p class="mb-4">Your one-stop destination for elegant and traditional sarees.</p>
+                        
+                        @php
+                            $contactSettings = \App\Models\ContactSetting::getSettings();
+                        @endphp
+                        
+                        @if($contactSettings->email)
+                            <p class="mb-2">
+                                <i class="fa fa-envelope me-2"></i>
+                                <a href="mailto:{{ $contactSettings->email }}">{{ $contactSettings->email }}</a>
+                            </p>
+                        @endif
+                        
+                        @if($contactSettings->phone1)
+                            <p class="mb-0">
+                                <i class="fa fa-phone me-2"></i>
+                                <a href="tel:{{ $contactSettings->phone1 }}">{{ $contactSettings->phone1 }}</a>
+                            </p>
+                        @endif
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="widget-item mt-sm-0 mt-xs-20">
+
+                <!-- Column 2: Quick Links -->
+                <div class="col-6 col-sm-6 col-lg-2">
+                    <div class="widget-item mt-sm-0 mt-4">
                         <h4 class="widget-title">Quick Links</h4>
                         <nav class="widget-menu-wrap">
                             <ul class="nav-menu nav">
-                                <li><a href="{{ url('/') }}">HOME</a></li>
-                                <li><a href="{{ url('/shop') }}">SHOP</a></li>
-                                <li><a href="{{ url('/about') }}">ABOUT US</a></li>
+                                <li><a href="{{ route('home') }}">Home</a></li>
+                                <li><a href="{{ route('shop') }}">Shop</a></li>
+                                <li><a href="{{ route('about') }}">About Us</a></li>
+                                <li><a href="{{ route('collections') }}">Collections</a></li>
+                                <li><a href="{{ route('contact') }}">Contact Us</a></li>
                             </ul>
                         </nav>
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="widget-item mt-md-0 mt-xs-20">
-                        <h4 class="widget-title">Information</h4>
+
+                <!-- Column 3: My Account -->
+                <div class="col-6 col-sm-6 col-lg-2">
+                    <div class="widget-item mt-lg-0 mt-4">
+                        <h4 class="widget-title">My Account</h4>
                         <nav class="widget-menu-wrap">
                             <ul class="nav-menu nav">
-                                <li><a href="{{ url('/shop-collections') }}">COLLECTIONS</a></li>
-                                <li><a href="{{ url('/contact') }}">CONTACT</a></li>
-                                <li><a href="{{ url('/') }}">MY ACCOUNT</a></li>
+                                @auth
+                                    <li><a href="{{ route('account') }}">My Account</a></li>
+                                    <li><a href="{{ route('orders.index') }}">My Orders</a></li>
+                                @else
+                                    <li><a href="{{ route('login') }}">Login</a></li>
+                                @endauth
+                                <li><a href="{{ route('cart.index') }}">Shopping Cart</a></li>
+                                <li><a href="{{ route('checkout') }}">Checkout</a></li>
                             </ul>
                         </nav>
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="widget-item widget-social-item mt-md-0 mt-xs-20">
+
+                <!-- Column 4: Follow Us -->
+                <div class="col-sm-6 col-lg-4">
+                    <div class="widget-item widget-social-item mt-lg-0 mt-4">
                         <h4 class="widget-title">Follow Us</h4>
-                        <span class="mb-2 d-block">Stay connected on social media</span>
+                        <p class="mb-3">Follow us on social media for latest updates and exclusive offers.</p>
+                        
                         <div class="widget-social-icons">
-                            <a href="#/"><i class="lastudioicon lastudioicon-b-facebook"></i></a>
-                            <a href="#/"><i class="lastudioicon lastudioicon-b-pinterest"></i></a>
-                            <a href="#/"><i class="lastudioicon lastudioicon-b-twitter"></i></a>
+                            @if($contactSettings->facebook_url)
+                                <a href="{{ $contactSettings->facebook_url }}" target="_blank" rel="noopener noreferrer" title="Facebook">
+                                    <i class="lastudioicon lastudioicon-b-facebook"></i>
+                                </a>
+                            @endif
+                            
+                            @if($contactSettings->instagram_url)
+                                <a href="{{ $contactSettings->instagram_url }}" target="_blank" rel="noopener noreferrer" title="Instagram">
+                                    <i class="lastudioicon lastudioicon-b-instagram"></i>
+                                </a>
+                            @endif
+                            
+                            @if($contactSettings->pinterest_url)
+                                <a href="{{ $contactSettings->pinterest_url }}" target="_blank" rel="noopener noreferrer" title="Pinterest">
+                                    <i class="lastudioicon lastudioicon-b-pinterest"></i>
+                                </a>
+                            @endif
+                            
+                            @if($contactSettings->twitter_url)
+                                <a href="{{ $contactSettings->twitter_url }}" target="_blank" rel="noopener noreferrer" title="Twitter">
+                                    <i class="lastudioicon lastudioicon-b-twitter"></i>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Footer Bottom -->
     <div class="footer-bottom">
         <div class="container">
             <div class="row">
                 <div class="col-12">
                     <div class="footer-bottom-content">
-                        <p class="copyright text-center mb-0">© {{ date('Y') }} Artfauj. All Rights Reserved. Made with <i class="fa fa-heart text-danger"></i></p>
+                        <p class="copyright text-center mb-0">
+                            © {{ date('Y') }} Artfauj. All Rights Reserved. Made with <i class="fa fa-heart text-danger"></i>
+                        </p>
                     </div>
                 </div>
             </div>
