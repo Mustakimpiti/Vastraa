@@ -74,7 +74,7 @@
 
                 <div class="row mb-5">
                     <!-- Total Orders -->
-                    <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="col-md-3 mb-4 mb-md-0">
                         <div class="contact-info-wrapper text-center">
                             <div class="contact-info-item">
                                 <div class="icon">
@@ -89,7 +89,7 @@
                     </div>
 
                     <!-- Total Spent -->
-                    <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="col-md-3 mb-4 mb-md-0">
                         <div class="contact-info-wrapper text-center">
                             <div class="contact-info-item">
                                 <div class="icon">
@@ -103,19 +103,84 @@
                         </div>
                     </div>
 
+                    <!-- Saved Addresses -->
+                    <div class="col-md-3 mb-4 mb-md-0">
+                        <a href="{{ route('addresses.index') }}" class="text-decoration-none">
+                            <div class="contact-info-wrapper text-center hover-effect">
+                                <div class="contact-info-item">
+                                    <div class="icon">
+                                        <i class="lastudioicon-pin-3-2"></i>
+                                    </div>
+                                    <div class="content">
+                                        <h4>{{ Auth::user()->addresses()->count() }}</h4>
+                                        <p>Saved Addresses</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
                     <!-- Member Since -->
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="contact-info-wrapper text-center">
                             <div class="contact-info-item">
                                 <div class="icon">
                                     <i class="lastudioicon-calendar"></i>
                                 </div>
                                 <div class="content">
-                                    <h4>{{ Auth::user()->created_at->format('M Y') }}</h4>
+                                    <h4>{{ Auth::user()->created_at ? Auth::user()->created_at->format('M Y') : 'N/A' }}</h4>
                                     <p>Member Since</p>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div class="section-title">
+                            <h2 class="title">Quick Links</h2>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ route('orders.index') }}" class="quick-link-card">
+                            <div class="d-flex align-items-center">
+                                <div class="quick-link-icon">
+                                    <i class="lastudioicon-shopping-bag"></i>
+                                </div>
+                                <div class="quick-link-content">
+                                    <h5>My Orders</h5>
+                                    <p>View and track your orders</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ route('addresses.index') }}" class="quick-link-card">
+                            <div class="d-flex align-items-center">
+                                <div class="quick-link-icon">
+                                    <i class="lastudioicon-pin-3-2"></i>
+                                </div>
+                                <div class="quick-link-content">
+                                    <h5>My Addresses</h5>
+                                    <p>Manage your saved addresses</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="#account-details" class="quick-link-card">
+                            <div class="d-flex align-items-center">
+                                <div class="quick-link-icon">
+                                    <i class="lastudioicon-single-01-2"></i>
+                                </div>
+                                <div class="quick-link-content">
+                                    <h5>Account Details</h5>
+                                    <p>Update your information</p>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
@@ -174,7 +239,7 @@
                 @endif
 
                 <!-- Account Details Form -->
-                <div class="contact-form">
+                <div class="contact-form" id="account-details">
                     <form class="contact-form-wrapper form-style" action="{{ route('account.update') }}" method="POST">
                         @csrf
                         @method('PUT')
@@ -200,7 +265,7 @@
                                 </div>
                             </div>
 
-                                                    <!-- Email -->
+                            <!-- Email -->
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <input class="form-control" 
@@ -271,4 +336,71 @@
     </div>
 </section>
 <!--== End Account Section ==-->
+
+<style>
+/* Quick Links Styling */
+.quick-link-card {
+    display: block;
+    padding: 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.quick-link-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+.quick-link-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 24px;
+    color: #3b82f6;
+    transition: all 0.3s ease;
+}
+
+.quick-link-card:hover .quick-link-icon {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.quick-link-content h5 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.quick-link-content p {
+    margin: 0;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* Hover effect for saved addresses card */
+.hover-effect {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth scroll */
+html {
+    scroll-behavior: smooth;
+}
+</style>
 @endsection

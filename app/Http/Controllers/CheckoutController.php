@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Coupon;
+use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -59,13 +60,19 @@ class CheckoutController extends Controller
         $shippingCost = 50.00; // Flat rate shipping
         $total = $subtotal - $discount + $shippingCost;
 
+        // Get saved addresses for logged-in users
+        $savedAddresses = Auth::check() ? Auth::user()->addresses()->get() : collect();
+        $defaultAddress = Auth::check() ? Auth::user()->defaultAddress : null;
+
         return view('pages.shop-checkout', compact(
             'cartItems',
             'subtotal',
             'discount',
             'shippingCost',
             'total',
-            'couponCode'
+            'couponCode',
+            'savedAddresses',
+            'defaultAddress'
         ));
     }
 
@@ -73,6 +80,9 @@ class CheckoutController extends Controller
     {
         // Validate request
         $validated = $request->validate([
+            'use_saved_address' => 'nullable|boolean',
+            'saved_address_id' => 'nullable|exists:addresses,id',
+            'save_address' => 'nullable|boolean',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -168,6 +178,24 @@ class CheckoutController extends Controller
                 'order_status' => 'pending',
                 'order_notes' => $validated['order_notes'] ?? null,
             ]);
+
+            // Save address if user checked "save address" and is logged in
+            if (Auth::check() && $request->boolean('save_address') && !$request->boolean('use_saved_address')) {
+                Address::create([
+                    'user_id' => Auth::id(),
+                    'address_type' => 'both',
+                    'first_name' => $validated['first_name'],
+                    'last_name' => $validated['last_name'],
+                    'street_address' => $validated['street_address'],
+                    'apartment' => $validated['apartment'],
+                    'city' => $validated['city'],
+                    'state' => $validated['state'],
+                    'country' => $validated['country'],
+                    'zip' => $validated['zip'],
+                    'phone' => $validated['phone'],
+                    'is_default' => false,
+                ]);
+            }
 
             // Create order items and update stock
             foreach ($cartItems as $cartItem) {

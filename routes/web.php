@@ -9,6 +9,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\SareeController as AdminSareeController;
@@ -17,7 +18,6 @@ use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\CollectionController as AdminCollectionController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ContactSettingController as AdminContactSettingController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -107,6 +107,20 @@ Route::middleware('auth')->group(function () {
     // My Account
     Route::get('/my-account', [AccountController::class, 'index'])->name('account');
     Route::put('/my-account/update', [AccountController::class, 'update'])->name('account.update');
+
+    // Address Management
+    Route::prefix('addresses')->name('addresses.')->group(function () {
+        Route::get('/', [AddressController::class, 'index'])->name('index');
+        Route::get('/create', [AddressController::class, 'create'])->name('create');
+        Route::post('/', [AddressController::class, 'store'])->name('store');
+        Route::get('/{address}/edit', [AddressController::class, 'edit'])->name('edit');
+        Route::put('/{address}', [AddressController::class, 'update'])->name('update');
+        Route::post('/{address}/set-default', [AddressController::class, 'setDefault'])->name('set-default');
+        Route::delete('/{address}', [AddressController::class, 'destroy'])->name('destroy');
+    });
+
+    // API route for getting address data
+    Route::get('/api/address/{address}', [AddressController::class, 'getAddress'])->name('api.address.get');
 
     // My Orders
     Route::prefix('my-orders')->name('orders.')->group(function () {

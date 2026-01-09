@@ -112,112 +112,150 @@
                 <div class="shop-billing-form">
                     <form action="{{ route('checkout.process') }}" method="post" id="checkout-form">
                         @csrf
-                        <h4 class="title">Billing details</h4>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="cf_name">First name <abbr class="required" title="required">*</abbr></label>
-                                    <input class="form-control" id="cf_name" name="first_name" type="text" value="{{ old('first_name', Auth::user()->name ?? '') }}" required>
+
+                        @auth
+                        @if($savedAddresses->count() > 0)
+                        <!-- Saved Addresses Section -->
+                        <div class="mb-4">
+                            <h4 class="title">Select Saved Address</h4>
+                            <div class="saved-addresses-list">
+                                @foreach($savedAddresses as $address)
+                                <div class="saved-address-card {{ $address->is_default ? 'default-address' : '' }}" data-address-id="{{ $address->id }}">
+                                    <div class="form-check">
+                                        <input class="form-check-input address-radio" 
+                                               type="radio" 
+                                               name="saved_address_id" 
+                                               id="address_{{ $address->id }}"
+                                               value="{{ $address->id }}"
+                                               {{ $address->is_default ? 'checked' : '' }}>
+                                        <label class="form-check-label w-100" for="address_{{ $address->id }}">
+                                            <div class="address-content">
+                                                <div class="address-header">
+                                                    <strong>{{ $address->full_name }}</strong>
+                                                    @if($address->is_default)
+                                                    <span class="badge bg-success ms-2">Default</span>
+                                                    @endif
+                                                </div>
+                                                <div class="address-details">
+                                                    <p class="mb-1">{{ $address->street_address }}{{ $address->apartment ? ', ' . $address->apartment : '' }}</p>
+                                                    <p class="mb-1">{{ $address->city }}, {{ $address->state }} {{ $address->zip }}</p>
+                                                    <p class="mb-1">{{ $address->country }}</p>
+                                                    <p class="mb-0"><strong>Phone:</strong> {{ $address->phone }}</p>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="use_new_address" name="use_new_address">
+                                    <label class="form-check-label" for="use_new_address">
+                                        Use a different address or add new address
+                                    </label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="cf_last_name">Last name <abbr class="required" title="required">*</abbr></label>
-                                    <input class="form-control" id="cf_last_name" name="last_name" type="text" value="{{ old('last_name') }}" required>
+                        </div>
+                        @endif
+                        @endauth
+
+                        <div id="billing-details-section" class="{{ Auth::check() && $savedAddresses->count() > 0 ? 'd-none' : '' }}">
+                            <h4 class="title">Billing details</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="cf_name">First name <abbr class="required" title="required">*</abbr></label>
+                                        <input class="form-control billing-field" id="cf_name" name="first_name" type="text" value="{{ old('first_name', $defaultAddress->first_name ?? Auth::user()->name ?? '') }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="cf_last_name">Last name <abbr class="required" title="required">*</abbr></label>
+                                        <input class="form-control billing-field" id="cf_last_name" name="last_name" type="text" value="{{ old('last_name', $defaultAddress->last_name ?? '') }}" required>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="cf_country_region">Country / Region <abbr class="required" title="required">*</abbr></label>
-                            <select class="form-control niceselect" id="cf_country_region" name="country" required>
-                                <option value="India" {{ old('country', 'India') == 'India' ? 'selected' : '' }}>India</option>
-                                <option value="United States" {{ old('country') == 'United States' ? 'selected' : '' }}>United States (US)</option>
-                                <option value="United Kingdom" {{ old('country') == 'United Kingdom' ? 'selected' : '' }}>United Kingdom (UK)</option>
-                                <option value="Bangladesh" {{ old('country') == 'Bangladesh' ? 'selected' : '' }}>Bangladesh</option>
-                                <option value="Pakistan" {{ old('country') == 'Pakistan' ? 'selected' : '' }}>Pakistan</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="cf_street_address">Street address <abbr class="required" title="required">*</abbr></label>
-                            <input class="form-control" id="cf_street_address" name="street_address" type="text" placeholder="House number and street name" value="{{ old('street_address') }}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <input class="form-control" name="apartment" type="text" placeholder="Apartment, suite, unit, etc. (optional)" value="{{ old('apartment') }}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="cf_town_city">Town / City <abbr class="required" title="required">*</abbr></label>
-                            <input class="form-control" id="cf_town_city" name="city" type="text" value="{{ old('city') }}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="cf_state_region">State <abbr class="required" title="required">*</abbr></label>
-                            <select class="form-control niceselect" id="cf_state_region" name="state" required>
-                                <option value="">Select State</option>
-                                <option value="Andhra Pradesh" {{ old('state') == 'Andhra Pradesh' ? 'selected' : '' }}>Andhra Pradesh</option>
-                                <option value="Arunachal Pradesh" {{ old('state') == 'Arunachal Pradesh' ? 'selected' : '' }}>Arunachal Pradesh</option>
-                                <option value="Assam" {{ old('state') == 'Assam' ? 'selected' : '' }}>Assam</option>
-                                <option value="Bihar" {{ old('state') == 'Bihar' ? 'selected' : '' }}>Bihar</option>
-                                <option value="Chhattisgarh" {{ old('state') == 'Chhattisgarh' ? 'selected' : '' }}>Chhattisgarh</option>
-                                <option value="Goa" {{ old('state') == 'Goa' ? 'selected' : '' }}>Goa</option>
-                                <option value="Gujarat" {{ old('state') == 'Gujarat' ? 'selected' : '' }}>Gujarat</option>
-                                <option value="Haryana" {{ old('state') == 'Haryana' ? 'selected' : '' }}>Haryana</option>
-                                <option value="Himachal Pradesh" {{ old('state') == 'Himachal Pradesh' ? 'selected' : '' }}>Himachal Pradesh</option>
-                                <option value="Jharkhand" {{ old('state') == 'Jharkhand' ? 'selected' : '' }}>Jharkhand</option>
-                                <option value="Karnataka" {{ old('state') == 'Karnataka' ? 'selected' : '' }}>Karnataka</option>
-                                <option value="Kerala" {{ old('state') == 'Kerala' ? 'selected' : '' }}>Kerala</option>
-                                <option value="Madhya Pradesh" {{ old('state') == 'Madhya Pradesh' ? 'selected' : '' }}>Madhya Pradesh</option>
-                                <option value="Maharashtra" {{ old('state') == 'Maharashtra' ? 'selected' : '' }}>Maharashtra</option>
-                                <option value="Manipur" {{ old('state') == 'Manipur' ? 'selected' : '' }}>Manipur</option>
-                                <option value="Meghalaya" {{ old('state') == 'Meghalaya' ? 'selected' : '' }}>Meghalaya</option>
-                                <option value="Mizoram" {{ old('state') == 'Mizoram' ? 'selected' : '' }}>Mizoram</option>
-                                <option value="Nagaland" {{ old('state') == 'Nagaland' ? 'selected' : '' }}>Nagaland</option>
-                                <option value="Odisha" {{ old('state') == 'Odisha' ? 'selected' : '' }}>Odisha</option>
-                                <option value="Punjab" {{ old('state') == 'Punjab' ? 'selected' : '' }}>Punjab</option>
-                                <option value="Rajasthan" {{ old('state') == 'Rajasthan' ? 'selected' : '' }}>Rajasthan</option>
-                                <option value="Sikkim" {{ old('state') == 'Sikkim' ? 'selected' : '' }}>Sikkim</option>
-                                <option value="Tamil Nadu" {{ old('state') == 'Tamil Nadu' ? 'selected' : '' }}>Tamil Nadu</option>
-                                <option value="Telangana" {{ old('state') == 'Telangana' ? 'selected' : '' }}>Telangana</option>
-                                <option value="Tripura" {{ old('state') == 'Tripura' ? 'selected' : '' }}>Tripura</option>
-                                <option value="Uttar Pradesh" {{ old('state') == 'Uttar Pradesh' ? 'selected' : '' }}>Uttar Pradesh</option>
-                                <option value="Uttarakhand" {{ old('state') == 'Uttarakhand' ? 'selected' : '' }}>Uttarakhand</option>
-                                <option value="West Bengal" {{ old('state') == 'West Bengal' ? 'selected' : '' }}>West Bengal</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="cf_zip">ZIP <abbr class="required" title="required">*</abbr></label>
-                            <input class="form-control" id="cf_zip" name="zip" type="text" value="{{ old('zip') }}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="cf_phone">Phone <abbr class="required" title="required">*</abbr></label>
-                            <input class="form-control" id="cf_phone" name="phone" type="text" value="{{ old('phone') }}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="cf_email">Email address <abbr class="required" title="required">*</abbr></label>
-                            <input class="form-control" id="cf_email" name="email" type="email" value="{{ old('email', Auth::user()->email ?? '') }}" required>
-                        </div>
-
-                        <div class="checkout-box-wrap ship-different-address">
-                        <div class="form-group">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" 
-                                    class="custom-control-input" 
-                                    id="ship_to_different" 
-                                    name="ship_to_different" 
-                                    value="1" 
-                                    {{ old('ship_to_different') ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="ship_to_different">
-                                    Ship to a different address?
-                                </label>
+                            <div class="form-group">
+                                <label for="cf_country_region">Country / Region <abbr class="required" title="required">*</abbr></label>
+                                <select class="form-control niceselect billing-field" id="cf_country_region" name="country" required>
+                                    <option value="India" {{ old('country', $defaultAddress->country ?? 'India') == 'India' ? 'selected' : '' }}>India</option>
+                                    <option value="United States" {{ old('country', $defaultAddress->country ?? '') == 'United States' ? 'selected' : '' }}>United States (US)</option>
+                                    <option value="United Kingdom" {{ old('country', $defaultAddress->country ?? '') == 'United Kingdom' ? 'selected' : '' }}>United Kingdom (UK)</option>
+                                    <option value="Bangladesh" {{ old('country', $defaultAddress->country ?? '') == 'Bangladesh' ? 'selected' : '' }}>Bangladesh</option>
+                                    <option value="Pakistan" {{ old('country', $defaultAddress->country ?? '') == 'Pakistan' ? 'selected' : '' }}>Pakistan</option>
+                                </select>
                             </div>
+
+                            <div class="form-group">
+                                <label for="cf_street_address">Street address <abbr class="required" title="required">*</abbr></label>
+                                <input class="form-control billing-field" id="cf_street_address" name="street_address" type="text" placeholder="House number and street name" value="{{ old('street_address', $defaultAddress->street_address ?? '') }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-control billing-field" name="apartment" type="text" placeholder="Apartment, suite, unit, etc. (optional)" value="{{ old('apartment', $defaultAddress->apartment ?? '') }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cf_town_city">Town / City <abbr class="required" title="required">*</abbr></label>
+                                <input class="form-control billing-field" id="cf_town_city" name="city" type="text" value="{{ old('city', $defaultAddress->city ?? '') }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cf_state_region">State <abbr class="required" title="required">*</abbr></label>
+                                <select class="form-control niceselect billing-field" id="cf_state_region" name="state" required>
+                                    <option value="">Select State</option>
+                                    <option value="Gujarat" {{ old('state', $defaultAddress->state ?? '') == 'Gujarat' ? 'selected' : '' }}>Gujarat</option>
+                                    <option value="Maharashtra" {{ old('state', $defaultAddress->state ?? '') == 'Maharashtra' ? 'selected' : '' }}>Maharashtra</option>
+                                    <option value="Karnataka" {{ old('state', $defaultAddress->state ?? '') == 'Karnataka' ? 'selected' : '' }}>Karnataka</option>
+                                    <!-- Add other states -->
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cf_zip">ZIP <abbr class="required" title="required">*</abbr></label>
+                                <input class="form-control billing-field" id="cf_zip" name="zip" type="text" value="{{ old('zip', $defaultAddress->zip ?? '') }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cf_phone">Phone <abbr class="required" title="required">*</abbr></label>
+                                <input class="form-control billing-field" id="cf_phone" name="phone" type="text" value="{{ old('phone', $defaultAddress->phone ?? '') }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cf_email">Email address <abbr class="required" title="required">*</abbr></label>
+                                <input class="form-control" id="cf_email" name="email" type="email" value="{{ old('email', Auth::user()->email ?? '') }}" required>
+                            </div>
+
+                            @auth
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="save_address" name="save_address" value="1">
+                                    <label class="custom-control-label" for="save_address">
+                                        Save this address for future orders
+                                    </label>
+                                </div>
+                            </div>
+                            @endauth
                         </div>
-                            <div class="ship-to-different single-form-row">
+
+                        <div class="checkout-box-wrap ship-different-address mt-4">
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" 
+                                        class="custom-control-input" 
+                                        id="ship_to_different" 
+                                        name="ship_to_different" 
+                                        value="1" 
+                                        {{ old('ship_to_different') ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="ship_to_different">
+                                        Ship to a different address?
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="ship-to-different single-form-row" style="display: none;">
                                 <div class="form-group">
                                     <label for="cf_name_2">First name <abbr class="required" title="required">*</abbr></label>
                                     <input class="form-control shipping-field" id="cf_name_2" name="shipping_first_name" type="text" value="{{ old('shipping_first_name') }}">
@@ -234,8 +272,6 @@
                                         <option value="India" {{ old('shipping_country', 'India') == 'India' ? 'selected' : '' }}>India</option>
                                         <option value="United States" {{ old('shipping_country') == 'United States' ? 'selected' : '' }}>United States (US)</option>
                                         <option value="United Kingdom" {{ old('shipping_country') == 'United Kingdom' ? 'selected' : '' }}>United Kingdom (UK)</option>
-                                        <option value="Bangladesh" {{ old('shipping_country') == 'Bangladesh' ? 'selected' : '' }}>Bangladesh</option>
-                                        <option value="Pakistan" {{ old('shipping_country') == 'Pakistan' ? 'selected' : '' }}>Pakistan</option>
                                     </select>
                                 </div>
 
@@ -257,12 +293,8 @@
                                     <label for="cf_state_region_2">State <abbr class="required" title="required">*</abbr></label>
                                     <select class="form-control niceselect shipping-field" id="cf_state_region_2" name="shipping_state">
                                         <option value="">Select State</option>
-                                        <option value="Maharashtra" {{ old('shipping_state') == 'Maharashtra' ? 'selected' : '' }}>Maharashtra</option>
-                                        <option value="Karnataka" {{ old('shipping_state') == 'Karnataka' ? 'selected' : '' }}>Karnataka</option>
-                                        <option value="Tamil Nadu" {{ old('shipping_state') == 'Tamil Nadu' ? 'selected' : '' }}>Tamil Nadu</option>
-                                        <option value="West Bengal" {{ old('shipping_state') == 'West Bengal' ? 'selected' : '' }}>West Bengal</option>
-                                        <option value="Gujarat" {{ old('shipping_state') == 'Gujarat' ? 'selected' : '' }}>Gujarat</option>
-                                        <option value="Rajasthan" {{ old('shipping_state') == 'Rajasthan' ? 'selected' : '' }}>Rajasthan</option>
+                                        <option value="Gujarat">Gujarat</option>
+                                        <option value="Maharashtra">Maharashtra</option>
                                     </select>
                                 </div>
 
@@ -273,7 +305,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group mt-4">
                             <label for="cf_order_notes">Order notes (optional)</label>
                             <textarea class="form-control" name="order_notes" id="cf_order_notes" placeholder="Notes about your order, e.g. special notes for delivery.">{{ old('order_notes') }}</textarea>
                         </div>
@@ -282,6 +314,7 @@
             </div>
 
             <div class="col-lg-4 col-md-12">
+                <!-- Order summary and payment methods remain the same as before -->
                 <h4 class="title">Your order</h4>
                 <div class="order-review-details">
                     <table class="table">
@@ -314,17 +347,8 @@
                             </tr>
                             @endif
                             <tr class="shipping">
-                                <th class="shipping-title">Shipping</th>
-                                <td class="shipping-check">
-                                    <div class="form-check">
-                                        <input type="radio" class="form-check-input" id="validationFormCheck2" name="shipping_method" value="flat_rate" form="checkout-form" checked required>
-                                        <label class="form-check-label" for="validationFormCheck2">Flat rate: <span>₹{{ number_format($shippingCost, 2) }}</span></label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input type="radio" class="form-check-input" id="validationFormCheck3" name="shipping_method" value="local_pickup" form="checkout-form" required>
-                                        <label class="form-check-label" for="validationFormCheck3">Local pickup</label>
-                                    </div>
-                                </td>
+                                <th>Shipping</th>
+                                <td>₹{{ number_format($shippingCost, 2) }}</td>
                             </tr>
                             <tr class="final-total">
                                 <th>Total</th>
@@ -332,103 +356,165 @@
                             </tr>
                         </tfoot>
                     </table>
-<div class="shop-payment-method">
-    <div id="accordion">
-        <!-- Direct Bank Transfer -->
-        <div class="card payment-card">
-            <div class="card-header" id="direct_bank_transfer" data-payment="payment_bank">
-                <h5 class="mb-0">
-                    <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#itemOne" aria-expanded="false" aria-controls="itemOne">
-                        <div class="radio-wrapper">
-                            <input type="radio" id="payment_bank" name="payment_method" value="bank_transfer" form="checkout-form" {{ old('payment_method') == 'bank_transfer' ? 'checked' : '' }} required>
-                            <label for="payment_bank" class="payment-label">
-                                <span class="payment-title">Direct Bank Transfer</span>
-                            </label>
-                        </div>
-                        <span class="collapse-icon">▼</span>
-                    </div>
-                </h5>
-            </div>
-            <div id="itemOne" class="collapse" aria-labelledby="direct_bank_transfer" data-bs-parent="#accordion">
-                <div class="card-body">
-                    <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
-                </div>
-            </div>
-        </div>
 
-        <!-- Check Payments -->
-        <div class="card payment-card">
-            <div class="card-header" id="check_payments" data-payment="payment_check">
-                <h5 class="mb-0">
-                    <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#itemTwo" aria-expanded="false" aria-controls="itemTwo">
-                        <div class="radio-wrapper">
-                            <input type="radio" id="payment_check" name="payment_method" value="check" form="checkout-form" {{ old('payment_method') == 'check' ? 'checked' : '' }} required>
-                            <label for="payment_check" class="payment-label">
-                                <span class="payment-title">Check Payments</span>
-                            </label>
-                        </div>
-                        <span class="collapse-icon">▼</span>
-                    </div>
-                </h5>
-            </div>
-            <div id="itemTwo" class="collapse" aria-labelledby="check_payments" data-bs-parent="#accordion">
-                <div class="card-body">
-                    <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
-                </div>
-            </div>
-        </div>
+                    <!-- Payment methods section -->
+                    <div class="shop-payment-method">
+                        <div id="accordion">
+                            <!-- Direct Bank Transfer -->
+                            <div class="card payment-card">
+                                <div class="card-header" id="direct_bank_transfer" data-payment="payment_bank">
+                                    <h5 class="mb-0">
+                                        <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#itemOne" aria-expanded="false" aria-controls="itemOne">
+                                            <div class="radio-wrapper">
+                                                <input type="radio" id="payment_bank" name="payment_method" value="bank_transfer" form="checkout-form" {{ old('payment_method') == 'bank_transfer' ? 'checked' : '' }} required>
+                                                <label for="payment_bank" class="payment-label">
+                                                    <span class="payment-title">Direct Bank Transfer</span>
+                                                </label>
+                                            </div>
+                                            <span class="collapse-icon">▼</span>
+                                        </div>
+                                    </h5>
+                                </div>
+                                <div id="itemOne" class="collapse" aria-labelledby="direct_bank_transfer" data-bs-parent="#accordion">
+                                    <div class="card-body">
+                                        <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
+                                    </div>
+                                </div>
+                            </div>
 
-        <!-- Cash on Delivery -->
-        <div class="card payment-card">
-            <div class="card-header" id="cash_on_delivery" data-payment="payment_cod">
-                <h5 class="mb-0">
-                    <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#itemThree" aria-expanded="false" aria-controls="itemThree">
-                        <div class="radio-wrapper">
-                            <input type="radio" id="payment_cod" name="payment_method" value="cod" form="checkout-form" {{ old('payment_method') == 'cod' ? 'checked' : '' }} required>
-                            <label for="payment_cod" class="payment-label">
-                                <span class="payment-title">Cash on Delivery</span>
-                            </label>
-                        </div>
-                        <span class="collapse-icon">▼</span>
-                    </div>
-                </h5>
-            </div>
-            <div id="itemThree" class="collapse" aria-labelledby="cash_on_delivery" data-bs-parent="#accordion">
-                <div class="card-body">
-                    <p>Pay with cash upon delivery.</p>
-                </div>
-            </div>
-        </div>
+                            <!-- Check Payments -->
+                            <div class="card payment-card">
+                                <div class="card-header" id="check_payments" data-payment="payment_check">
+                                    <h5 class="mb-0">
+                                        <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#itemTwo" aria-expanded="false" aria-controls="itemTwo">
+                                            <div class="radio-wrapper">
+                                                <input type="radio" id="payment_check" name="payment_method" value="check" form="checkout-form" {{ old('payment_method') == 'check' ? 'checked' : '' }} required>
+                                                <label for="payment_check" class="payment-label">
+                                                    <span class="payment-title">Check Payments</span>
+                                                </label>
+                                            </div>
+                                            <span class="collapse-icon">▼</span>
+                                        </div>
+                                    </h5>
+                                </div>
+                                <div id="itemTwo" class="collapse" aria-labelledby="check_payments" data-bs-parent="#accordion">
+                                    <div class="card-body">
+                                        <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
+                                    </div>
+                                </div>
+                            </div>
 
-        <!-- PayPal -->
-        <div class="card payment-card">
-            <div class="card-header" id="Pay_Pal" data-payment="payment_paypal">
-                <h5 class="mb-0">
-                    <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#item4" aria-expanded="false" aria-controls="item4">
-                        <div class="radio-wrapper">
-                            <input type="radio" id="payment_paypal" name="payment_method" value="paypal" form="checkout-form" {{ old('payment_method') == 'paypal' ? 'checked' : '' }} required>
-                            <label for="payment_paypal" class="payment-label">
-                                <span class="payment-icon">
-                                    <img src="{{ asset('assets/img/icons/paypal.png') }}" alt="PayPal" style="height: 24px;">
-                                </span>
-                                <span class="payment-title">PayPal</span>
-                                <a href="#/" class="info-link">What is PayPal?</a>
-                            </label>
+                            <!-- Cash on Delivery -->
+                            <div class="card payment-card">
+                                <div class="card-header" id="cash_on_delivery" data-payment="payment_cod">
+                                    <h5 class="mb-0">
+                                        <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#itemThree" aria-expanded="false" aria-controls="itemThree">
+                                            <div class="radio-wrapper">
+                                                <input type="radio" id="payment_cod" name="payment_method" value="cod" form="checkout-form" {{ old('payment_method') == 'cod' ? 'checked' : '' }} required>
+                                                <label for="payment_cod" class="payment-label">
+                                                    <span class="payment-title">Cash on Delivery</span>
+                                                </label>
+                                            </div>
+                                            <span class="collapse-icon">▼</span>
+                                        </div>
+                                    </h5>
+                                </div>
+                                <div id="itemThree" class="collapse" aria-labelledby="cash_on_delivery" data-bs-parent="#accordion">
+                                    <div class="card-body">
+                                        <p>Pay with cash upon delivery.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PayPal -->
+                            <div class="card payment-card">
+                                <div class="card-header" id="Pay_Pal" data-payment="payment_paypal">
+                                    <h5 class="mb-0">
+                                        <div class="payment-option" data-bs-toggle="collapse" data-bs-target="#item4" aria-expanded="false" aria-controls="item4">
+                                            <div class="radio-wrapper">
+                                                <input type="radio" id="payment_paypal" name="payment_method" value="paypal" form="checkout-form" {{ old('payment_method') == 'paypal' ? 'checked' : '' }} required>
+                                                <label for="payment_paypal" class="payment-label">
+                                                    <span class="payment-icon">
+                                                        <img src="{{ asset('assets/img/icons/paypal.png') }}" alt="PayPal" style="height: 24px;">
+                                                    </span>
+                                                    <span class="payment-title">PayPal</span>
+                                                    <a href="#/" class="info-link">What is PayPal?</a>
+                                                </label>
+                                            </div>
+                                            <span class="collapse-icon">▼</span>
+                                        </div>
+                                    </h5>
+                                </div>
+                                <div id="item4" class="collapse" aria-labelledby="Pay_Pal" data-bs-parent="#accordion">
+                                    <div class="card-body">
+                                        <p>Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <span class="collapse-icon">▼</span>
                     </div>
-                </h5>
-            </div>
-            <div id="item4" class="collapse" aria-labelledby="Pay_Pal" data-bs-parent="#accordion">
-                <div class="card-body">
-                    <p>Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
                 </div>
+                <button class="btn place-order-btn" type="submit" form="checkout-form">Place order</button>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 <style>
+.saved-addresses-list {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.saved-address-card {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.saved-address-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.saved-address-card.selected {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+.saved-address-card.default-address {
+    border-color: #10b981;
+}
+
+.address-radio {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+}
+
+.address-content {
+    flex: 1;
+}
+
+.address-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.address-details {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.address-details p {
+    line-height: 1.5;
+}
+
+/* Payment Method Styles */
 .shop-payment-method {
     margin-top: 25px;
 }
@@ -585,45 +671,107 @@
     animation: pulse 0.3s ease-in-out;
 }
 </style>
-                </div>
-                <p class="shop-checkout-info">Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.</p>
-                <button class="btn place-order-btn" type="submit" form="checkout-form">Place order</button>
-            </div>
-        </div>
-    </div>
-</section>
-<!--== End Shop Checkout Area ==-->
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+    const savedAddressCards = document.querySelectorAll('.saved-address-card');
+    const useNewAddressCheckbox = document.getElementById('use_new_address');
+    const billingDetailsSection = document.getElementById('billing-details-section');
+    const billingFields = document.querySelectorAll('.billing-field');
+    const addressRadios = document.querySelectorAll('.address-radio');
+
+    // Handle saved address selection
+    savedAddressCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const radio = this.querySelector('.address-radio');
+            radio.checked = true;
+            updateAddressSelection();
+            loadAddressData(radio.value);
+        });
+    });
+
+    // Handle address radio change
+    addressRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                loadAddressData(this.value);
+            }
+        });
+    });
+
+    // Update visual selection
+    function updateAddressSelection() {
+        savedAddressCards.forEach(card => {
+            card.classList.remove('selected');
+        });
+        const selectedCard = document.querySelector('.address-radio:checked')?.closest('.saved-address-card');
+        if (selectedCard) {
+            selectedCard.classList.add('selected');
+        }
+    }
+
+    // Load address data into form
+    function loadAddressData(addressId) {
+        if (!addressId) return;
+
+        fetch(`/api/address/${addressId}`)
+            .then(response => response.json())
+            .then(address => {
+                document.getElementById('cf_name').value = address.first_name;
+                document.getElementById('cf_last_name').value = address.last_name;
+                document.getElementById('cf_street_address').value = address.street_address;
+                document.querySelector('[name="apartment"]').value = address.apartment || '';
+                document.getElementById('cf_town_city').value = address.city;
+                document.getElementById('cf_state_region').value = address.state;
+                document.getElementById('cf_country_region').value = address.country;
+                document.getElementById('cf_zip').value = address.zip;
+                document.getElementById('cf_phone').value = address.phone;
+            })
+            .catch(error => console.error('Error loading address:', error));
+    }
+
+    // Handle "use new address" checkbox
+    if (useNewAddressCheckbox) {
+        useNewAddressCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                billingDetailsSection.classList.remove('d-none');
+                billingFields.forEach(field => field.setAttribute('required', 'required'));
+                // Uncheck saved addresses
+                addressRadios.forEach(radio => radio.checked = false);
+                updateAddressSelection();
+            } else {
+                billingDetailsSection.classList.add('d-none');
+                billingFields.forEach(field => field.removeAttribute('required'));
+                // Check default address
+                const defaultRadio = document.querySelector('.address-radio[checked]');
+                if (defaultRadio) {
+                    defaultRadio.checked = true;
+                    loadAddressData(defaultRadio.value);
+                }
+            }
+        });
+    }
+
+    // Ship to different address toggle
     const shipToDifferentCheckbox = document.getElementById('ship_to_different');
     const shippingFields = document.querySelector('.ship-to-different .single-form-row');
     const shippingInputs = document.querySelectorAll('.shipping-field');
-
-    // Initial state for shipping
-    if (!shipToDifferentCheckbox.checked) {
-        shippingFields.style.display = 'none';
-        shippingInputs.forEach(input => {
-            input.removeAttribute('required');
-        });
-    }
 
     if (shipToDifferentCheckbox) {
         shipToDifferentCheckbox.addEventListener('change', function() {
             if (this.checked) {
                 shippingFields.style.display = 'block';
-                shippingInputs.forEach(input => {
-                    input.setAttribute('required', 'required');
-                });
+                shippingInputs.forEach(input => input.setAttribute('required', 'required'));
             } else {
                 shippingFields.style.display = 'none';
-                shippingInputs.forEach(input => {
-                    input.removeAttribute('required');
-                });
+                shippingInputs.forEach(input => input.removeAttribute('required'));
             }
         });
     }
+
+    // Initialize
+    updateAddressSelection();
 
     // Payment method selection
     const paymentHeaders = document.querySelectorAll('#accordion .card-header');
