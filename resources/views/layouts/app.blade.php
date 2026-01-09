@@ -18,6 +18,8 @@
 
     <!--== Bootstrap CSS ==-->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" />
+    <!--== Bootstrap Icons ==-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!--== Font-awesome Icons CSS ==-->
     <link href="{{ asset('assets/css/font-awesome.min.css') }}" rel="stylesheet" />
     <!--== Icofont Min Icons CSS ==-->

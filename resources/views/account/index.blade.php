@@ -64,7 +64,7 @@
         </div>
         @endif
 
-        <div class="row">
+<div class="row">
             <!-- Main Content -->
             <div class="col-12">
                 <!-- Account Overview -->
@@ -78,7 +78,7 @@
                         <div class="contact-info-wrapper text-center">
                             <div class="contact-info-item">
                                 <div class="icon">
-                                    <i class="lastudioicon-shopping-bag"></i>
+                                    <i class="bi bi-bag-check"></i>
                                 </div>
                                 <div class="content">
                                     <h4>{{ $totalOrders }}</h4>
@@ -93,7 +93,7 @@
                         <div class="contact-info-wrapper text-center">
                             <div class="contact-info-item">
                                 <div class="icon">
-                                    <i class="lastudioicon-wallet"></i>
+                                    <i class="bi bi-wallet2"></i>
                                 </div>
                                 <div class="content">
                                     <h4>₹{{ number_format($totalSpent, 2) }}</h4>
@@ -109,7 +109,7 @@
                             <div class="contact-info-wrapper text-center hover-effect">
                                 <div class="contact-info-item">
                                     <div class="icon">
-                                        <i class="lastudioicon-pin-3-2"></i>
+                                        <i class="bi bi-geo-alt"></i>
                                     </div>
                                     <div class="content">
                                         <h4>{{ Auth::user()->addresses()->count() }}</h4>
@@ -125,7 +125,7 @@
                         <div class="contact-info-wrapper text-center">
                             <div class="contact-info-item">
                                 <div class="icon">
-                                    <i class="lastudioicon-calendar"></i>
+                                    <i class="bi bi-calendar-event"></i>
                                 </div>
                                 <div class="content">
                                     <h4>{{ Auth::user()->created_at ? Auth::user()->created_at->format('M Y') : 'N/A' }}</h4>
@@ -147,7 +147,7 @@
                         <a href="{{ route('orders.index') }}" class="quick-link-card">
                             <div class="d-flex align-items-center">
                                 <div class="quick-link-icon">
-                                    <i class="lastudioicon-shopping-bag"></i>
+                                    <i class="bi bi-bag-check"></i>
                                 </div>
                                 <div class="quick-link-content">
                                     <h5>My Orders</h5>
@@ -160,7 +160,7 @@
                         <a href="{{ route('addresses.index') }}" class="quick-link-card">
                             <div class="d-flex align-items-center">
                                 <div class="quick-link-icon">
-                                    <i class="lastudioicon-pin-3-2"></i>
+                                    <i class="bi bi-geo-alt"></i>
                                 </div>
                                 <div class="quick-link-content">
                                     <h5>My Addresses</h5>
@@ -173,7 +173,7 @@
                         <a href="#account-details" class="quick-link-card">
                             <div class="d-flex align-items-center">
                                 <div class="quick-link-icon">
-                                    <i class="lastudioicon-single-01-2"></i>
+                                    <i class="bi bi-person-circle"></i>
                                 </div>
                                 <div class="quick-link-content">
                                     <h5>Account Details</h5>
