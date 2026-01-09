@@ -147,11 +147,12 @@
             @endif
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#">
-            <i class="fa fa-cog"></i> Settings
-        </a>
-    </li>
+<li class="nav-item">
+    <a class="nav-link {{ Request::is('admin/contact-settings*') ? 'active' : '' }}" 
+       href="{{ route('admin.contact-settings.index') }}">
+        <i class="fa fa-cog"></i> Contact Settings
+    </a>
+</li>
     <li class="nav-item mt-4">
         <a class="nav-link" href="{{ route('home') }}" target="_blank">
             <i class="fa fa-external-link"></i> View Site

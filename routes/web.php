@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\CollectionController as AdminCollectionController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\ContactSettingController as AdminContactSettingController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -168,4 +170,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/{order}/invoice', [AdminOrderController::class, 'invoice'])->name('invoice');
         Route::delete('/{order}', [AdminOrderController::class, 'destroy'])->name('destroy');
     });
+
+    Route::get('/contact-settings', [AdminContactSettingController::class, 'index'])->name('contact-settings.index');
+    Route::put('/contact-settings', [AdminContactSettingController::class, 'update'])->name('contact-settings.update');
 });
