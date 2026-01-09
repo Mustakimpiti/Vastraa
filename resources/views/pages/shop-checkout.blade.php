@@ -204,12 +204,19 @@
                         </div>
 
                         <div class="checkout-box-wrap ship-different-address">
-                            <div class="form-group">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="ship_to_different" name="ship_to_different" {{ old('ship_to_different') ? 'checked' : '' }}>
-                                    <label class="custom-control-label" for="ship_to_different">Ship to a different address?</label>
-                                </div>
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" 
+                                    class="custom-control-input" 
+                                    id="ship_to_different" 
+                                    name="ship_to_different" 
+                                    value="1" 
+                                    {{ old('ship_to_different') ? 'checked' : '' }}>
+                                <label class="custom-control-label" for="ship_to_different">
+                                    Ship to a different address?
+                                </label>
                             </div>
+                        </div>
                             <div class="ship-to-different single-form-row">
                                 <div class="form-group">
                                     <label for="cf_name_2">First name <abbr class="required" title="required">*</abbr></label>

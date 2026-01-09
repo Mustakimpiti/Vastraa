@@ -134,6 +134,9 @@ class CheckoutController extends Controller
         try {
             DB::beginTransaction();
 
+            // Convert ship_to_different to boolean properly
+            $shipToDifferent = $request->boolean('ship_to_different');
+
             // Create order
             $order = Order::create([
                 'user_id' => Auth::id(),
@@ -147,15 +150,15 @@ class CheckoutController extends Controller
                 'state' => $validated['state'],
                 'country' => $validated['country'],
                 'zip' => $validated['zip'],
-                'ship_to_different' => $request->has('ship_to_different'),
-                'shipping_first_name' => $validated['shipping_first_name'] ?? null,
-                'shipping_last_name' => $validated['shipping_last_name'] ?? null,
-                'shipping_street_address' => $validated['shipping_street_address'] ?? null,
-                'shipping_apartment' => $validated['shipping_apartment'] ?? null,
-                'shipping_city' => $validated['shipping_city'] ?? null,
-                'shipping_state' => $validated['shipping_state'] ?? null,
-                'shipping_country' => $validated['shipping_country'] ?? null,
-                'shipping_zip' => $validated['shipping_zip'] ?? null,
+                'ship_to_different' => $shipToDifferent,
+                'shipping_first_name' => $shipToDifferent ? $validated['shipping_first_name'] : null,
+                'shipping_last_name' => $shipToDifferent ? $validated['shipping_last_name'] : null,
+                'shipping_street_address' => $shipToDifferent ? $validated['shipping_street_address'] : null,
+                'shipping_apartment' => $shipToDifferent ? ($validated['shipping_apartment'] ?? null) : null,
+                'shipping_city' => $shipToDifferent ? $validated['shipping_city'] : null,
+                'shipping_state' => $shipToDifferent ? $validated['shipping_state'] : null,
+                'shipping_country' => $shipToDifferent ? $validated['shipping_country'] : null,
+                'shipping_zip' => $shipToDifferent ? $validated['shipping_zip'] : null,
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shippingCost,
                 'discount' => $discount,
