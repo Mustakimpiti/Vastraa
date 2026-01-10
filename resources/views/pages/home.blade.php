@@ -181,9 +181,7 @@
                             @endif
                         </div>
                         <div class="product-info-action">
-                            <a class="action-wishlist ht-tooltip" data-tippy-content="Add to wishlist" href="{{ route('wishlist.add', $saree->id) }}" title="Add to wishlist">
-                                <i class="lastudioicon-heart-2"></i>
-                            </a>
+
                             <form action="{{ route('cart.add') }}" method="POST" style="display: inline;">
                                 @csrf
                                 <input type="hidden" name="saree_id" value="{{ $saree->id }}">

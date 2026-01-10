@@ -130,11 +130,12 @@
             @endif
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#">
-            <i class="fa fa-users"></i> Customers
-        </a>
-    </li>
+<li class="nav-item">
+    <a class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}" 
+       href="{{ route('admin.users.index') }}">
+        <i class="fa fa-users"></i> Users
+    </a>
+</li>
     <li class="nav-item">
         <a class="nav-link {{ Request::is('admin/orders*') ? 'active' : '' }}" 
            href="{{ route('admin.orders.index') }}">
