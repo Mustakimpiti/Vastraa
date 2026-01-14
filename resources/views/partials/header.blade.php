@@ -17,14 +17,15 @@
                                 <li class="{{ Request::is('/') ? 'active' : '' }}">
                                     <a href="{{ route('home') }}">Home</a>
                                 </li>
-                                <li class="{{ Request::is('shop*') ? 'active' : '' }}">
-                                    <a href="{{ route('shop') }}">Shop</a>
-                                </li>
+                                
                                 <li class="{{ Request::is('about') ? 'active' : '' }}">
                                     <a href="{{ route('about') }}">About Us</a>
                                 </li>
                                 <li class="{{ Request::is('shop-collections') ? 'active' : '' }}">
                                     <a href="{{ route('collections') }}">Collections</a>
+                                </li>
+                                <li class="{{ Request::is('shop*') ? 'active' : '' }}">
+                                    <a href="{{ route('shop') }}">Shop</a>
                                 </li>
                                 <li class="{{ Request::is('contact') ? 'active' : '' }}">
                                     <a href="{{ route('contact') }}">Contact</a>
