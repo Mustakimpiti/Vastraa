@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <title>@yield('title', 'Clothing Shop')</title>
+    <title>@yield('title', 'Artfauj - Clothing Shop')</title>
 
     <!--== Favicon ==-->
-    <link rel="shortcut icon" href="assets/img/favicon.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}" type="image/x-icon" />
 
     <!--== Google Fonts ==-->
     <link href="https://fonts.googleapis.com/css?family=Abril+Fatface:400" rel="stylesheet">
@@ -18,8 +18,6 @@
 
     <!--== Bootstrap CSS ==-->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" />
-    <!--== Bootstrap Icons ==-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!--== Font-awesome Icons CSS ==-->
     <link href="{{ asset('assets/css/font-awesome.min.css') }}" rel="stylesheet" />
     <!--== Icofont Min Icons CSS ==-->
@@ -64,16 +62,11 @@
         @include('partials.header')
         <!--== End Header Wrapper ==-->
 
-        <main class="main-content">
-            @yield('content')
-        </main>
+        @yield('content')
 
         <!--== Start Footer Area Wrapper ==-->
         @include('partials.footer')
         <!--== End Footer Area Wrapper ==-->
-
-        <!--== Scroll Top Button ==-->
-        <div class="scroll-to-top"><span class="icofont-arrow-up"></span></div>
     </div>
 
     <!--=======================Javascript============================-->

@@ -7,9 +7,8 @@
                     <div class="header-align-left">
                         <div class="header-logo-area">
                             <a href="{{ route('home') }}">
-                                <img class="logo-main d-none d-sm-block" src="{{ asset('assets/img/logo-light.svg') }}" alt="Logo" />
-                                <img class="logo-main d-sm-none" src="{{ asset('assets/img/logo-main-light.svg') }}" alt="Logo" />
-                                <img class="logo-light" src="{{ asset('assets/img/logo-main.svg') }}" alt="Logo" />
+                                <img class="logo-main d-none d-sm-block" src="{{ asset('assets/img/logo.png') }}" alt="Logo" />
+                                <img class="logo-main d-sm-none" src="{{ asset('assets/img/logo.png') }}" alt="Logo" />
                             </a>
                         </div>
                         <div class="header-navigation-area d-none d-xl-block">
@@ -17,15 +16,11 @@
                                 <li class="{{ Request::is('/') ? 'active' : '' }}">
                                     <a href="{{ route('home') }}">Home</a>
                                 </li>
-                                
-                                <li class="{{ Request::is('about') ? 'active' : '' }}">
-                                    <a href="{{ route('about') }}">About Us</a>
-                                </li>
                                 <li class="{{ Request::is('shop-collections') ? 'active' : '' }}">
-                                    <a href="{{ route('collections') }}">Collections</a>
+                                    <a href="{{ route('collections') }}">Collection</a>
                                 </li>
-                                <li class="{{ Request::is('shop*') ? 'active' : '' }}">
-                                    <a href="{{ route('shop') }}">Shop</a>
+                                <li class="{{ Request::is('about') ? 'active' : '' }}">
+                                    <a href="{{ route('about') }}">About</a>
                                 </li>
                                 <li class="{{ Request::is('contact') ? 'active' : '' }}">
                                     <a href="{{ route('contact') }}">Contact</a>
@@ -46,19 +41,19 @@
                                         @if(Auth::user()->isAdmin())
                                             <li>
                                                 <a href="{{ route('admin.dashboard') }}">
-                                                    <i class="fa fa-dashboard"></i> Admin Dashboard
+                                                    <i class="icofont-dashboard"></i> Admin Dashboard
                                                 </a>
                                             </li>
                                             <li><hr style="margin: 5px 0; border-color: #e0e0e0;"></li>
                                         @endif
                                         <li>
                                             <a href="{{ route('account') }}">
-                                                <i class="fa fa-user"></i> My Account
+                                                <i class="icofont-user-alt-7"></i> My Account
                                             </a>
                                         </li>
                                         <li>
                                             <a href="{{ route('orders.index') }}">
-                                                <i class="fa fa-shopping-bag"></i> My Orders
+                                                <i class="icofont-shopping-cart"></i> My Orders
                                             </a>
                                         </li>
                                         <li><hr style="margin: 5px 0; border-color: #e0e0e0;"></li>
@@ -66,7 +61,7 @@
                                             <form action="{{ route('logout') }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="logout-button">
-                                                    <i class="fa fa-sign-out"></i> Logout
+                                                    <i class="icofont-logout"></i> Logout
                                                 </button>
                                             </form>
                                         </li>
@@ -81,9 +76,9 @@
                                 </div>
                             @endauth
 
-                            <!-- Cart Icon with Dynamic Count - FIXED: Direct navigation -->
+                            <!-- Cart Icon with Dynamic Count -->
                             <div class="header-action-cart">
-                                <a href="{{ route('cart.index') }}" class="btn-cart direct-cart-link" onclick="event.stopPropagation();">
+                                <a href="{{ route('cart.index') }}" class="btn-cart cart-icon">
                                     @php
                                         $cartCount = \App\Models\Cart::where(function($query) {
                                             if (Auth::check()) {
@@ -224,33 +219,9 @@
         right: -10px;
     }
 }
-
-/* Prevent cart slider from opening - force direct navigation */
-.direct-cart-link {
-    pointer-events: auto !important;
-}
 </style>
 
 <script>
-// Prevent any cart slider/offcanvas from opening
-document.addEventListener('DOMContentLoaded', function() {
-    // Remove cart slider triggers
-    const cartLink = document.querySelector('.direct-cart-link');
-    if (cartLink) {
-        // Remove any data attributes that might trigger modals/offcanvas
-        cartLink.removeAttribute('data-bs-toggle');
-        cartLink.removeAttribute('data-toggle');
-        cartLink.removeAttribute('data-offcanvas');
-        
-        // Add click handler to ensure direct navigation
-        cartLink.addEventListener('click', function(e) {
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            // Let the default link behavior work
-        }, true);
-    }
-});
-
 // Function to update cart count dynamically
 function updateCartCount() {
     fetch('{{ route("cart.count") }}')
@@ -272,7 +243,6 @@ function updateCartCount() {
 
 // Update cart count after page load if there are success messages
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if there's a success message indicating item was added to cart
     @if(session('success') && (str_contains(session('success'), 'cart') || str_contains(session('success'), 'Cart')))
         updateCartCount();
     @endif
