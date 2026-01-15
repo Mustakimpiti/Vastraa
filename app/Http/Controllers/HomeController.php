@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Saree;
 use App\Models\Collection;
+use App\Models\Blog;
+use App\Models\Testimonial;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -18,7 +20,6 @@ class HomeController extends Controller
 
         // Fetch bestseller sarees for the Best Sellers section
         $bestSellers = Saree::where('is_active', true)
-            ->where('is_bestseller', true)
             ->where('stock_quantity', '>', 0)
             ->with(['collection', 'images'])
             ->orderBy('views', 'desc')
@@ -54,10 +55,25 @@ class HomeController extends Controller
                 ->get();
         }
 
+        // Fetch recent blog posts
+        $recentBlogs = Blog::published()
+            ->orderBy('published_at', 'desc')
+            ->limit(2)
+            ->get();
+
+        // Fetch active testimonials (shop-wise reviews)
+        $testimonials = Testimonial::active()
+            ->ordered()
+            ->limit(6)
+            ->get();
+
+        // Single return statement with all variables
         return view('pages.home', compact(
             'featuredCollections',
             'bestSellers',
-            'trendingSarees'
+            'trendingSarees',
+            'recentBlogs',
+            'testimonials'
         ));
     }
 }

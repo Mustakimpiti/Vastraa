@@ -17,7 +17,10 @@
                                     <a href="{{ route('home') }}">Home</a>
                                 </li>
                                 <li class="{{ Request::is('shop-collections') ? 'active' : '' }}">
-                                    <a href="{{ route('collections') }}">Collection</a>
+                                    <a href="{{ route('shop') }}">Collection</a>
+                                </li>
+                                <li class="{{ Request::is('blogs*') ? 'active' : '' }}">
+                                    <a href="{{ route('blogs') }}">Blog</a>
                                 </li>
                                 <li class="{{ Request::is('about') ? 'active' : '' }}">
                                     <a href="{{ route('about') }}">About</a>

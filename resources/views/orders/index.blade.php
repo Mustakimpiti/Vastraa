@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'My Orders - Saree Shop')
+@section('title', 'My Orders - Artfauj')
 
 @section('content')
 <!--== Start Page Title Area ==-->
@@ -125,6 +125,14 @@
 
 @push('styles')
 <style>
+/* Brand Colors */
+:root {
+    --artfauj-orange: #FF8C42;
+    --artfauj-teal: #1B9AAA;
+    --artfauj-orange-light: #FFB380;
+    --artfauj-teal-light: #3DB5C4;
+}
+
 /* Orders Grid Layout */
 .orders-grid {
     display: grid;
@@ -142,22 +150,24 @@
 /* Order Card */
 .order-card {
     background: #ffffff;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s ease;
     box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    border: 2px solid #e5e7eb;
 }
 
 .order-card:hover {
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 25px rgba(255, 140, 66, 0.2);
     transform: translateY(-5px);
+    border-color: var(--artfauj-orange);
 }
 
 /* Order Card Header */
 .order-card-header {
     padding: 20px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e8e8e8;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-bottom: 2px solid #e8e8e8;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -166,7 +176,7 @@
 .order-info h4.order-number {
     font-size: 18px;
     font-weight: 700;
-    color: #333;
+    color: var(--artfauj-orange);
     margin: 0 0 8px 0;
 }
 
@@ -180,7 +190,7 @@
 }
 
 .order-date i {
-    color: #999;
+    color: var(--artfauj-teal);
     font-size: 14px;
 }
 
@@ -200,13 +210,13 @@
 }
 
 .badge-info { 
-    background-color: #17a2b8;
+    background-color: var(--artfauj-teal);
     color: white; 
 }
 
 .badge-warning { 
-    background-color: #ffc107;
-    color: #212529; 
+    background-color: var(--artfauj-orange);
+    color: white; 
 }
 
 .badge-danger { 
@@ -235,9 +245,15 @@
 .order-item-thumb {
     width: 70px;
     height: 70px;
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
-    border: 2px solid #f0f0f0;
+    border: 2px solid var(--artfauj-teal);
+    transition: all 0.3s ease;
+}
+
+.order-item-thumb:hover {
+    border-color: var(--artfauj-orange);
+    transform: scale(1.05);
 }
 
 .order-item-thumb img {
@@ -249,21 +265,23 @@
 .order-item-more {
     width: 70px;
     height: 70px;
-    border-radius: 6px;
-    background: #f8f9fa;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--artfauj-orange) 0%, var(--artfauj-orange-light) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    color: #666;
-    border: 2px dashed #ddd;
+    font-weight: 700;
+    color: white;
+    border: 2px solid var(--artfauj-orange);
+    font-size: 14px;
 }
 
 /* Order Summary Info */
 .order-summary-info {
     background: #f8f9fa;
     padding: 15px;
-    border-radius: 6px;
+    border-radius: 8px;
+    border-left: 4px solid var(--artfauj-teal);
 }
 
 .info-row {
@@ -292,19 +310,20 @@
 .total-row {
     margin-top: 5px;
     padding-top: 15px;
-    border-top: 2px solid #ddd;
+    border-top: 2px solid var(--artfauj-orange);
 }
 
 .total-amount {
     font-size: 18px;
-    color: #000;
+    color: var(--artfauj-orange);
+    font-weight: 700;
 }
 
 /* Order Card Footer */
 .order-card-footer {
     padding: 15px 20px;
     background: #fff;
-    border-top: 1px solid #e8e8e8;
+    border-top: 2px solid #e8e8e8;
 }
 
 .order-card-footer .btn-theme {
@@ -314,6 +333,17 @@
     font-size: 14px;
     font-weight: 600;
     display: block;
+    background: linear-gradient(135deg, var(--artfauj-teal) 0%, var(--artfauj-teal-light) 100%);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.order-card-footer .btn-theme:hover {
+    background: linear-gradient(135deg, #158999 0%, var(--artfauj-teal) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(27, 154, 170, 0.3);
 }
 
 /* Empty State */
@@ -321,8 +351,9 @@
     text-align: center;
     padding: 80px 20px;
     background: white;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    border: 2px solid #e5e7eb;
 }
 
 .empty-icon {
@@ -331,12 +362,13 @@
 
 .empty-icon i {
     font-size: 80px;
-    color: #ddd;
+    color: var(--artfauj-orange);
+    opacity: 0.3;
 }
 
 .empty-orders-state h3 {
     font-size: 28px;
-    color: #333;
+    color: var(--artfauj-orange);
     margin-bottom: 15px;
     font-weight: 700;
 }
@@ -356,6 +388,18 @@
     align-items: center;
     gap: 8px;
     padding: 14px 35px;
+    background: linear-gradient(135deg, var(--artfauj-teal) 0%, var(--artfauj-teal-light) 100%);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.empty-orders-state .btn-theme:hover {
+    background: linear-gradient(135deg, #158999 0%, var(--artfauj-teal) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(27, 154, 170, 0.3);
 }
 
 /* Responsive */

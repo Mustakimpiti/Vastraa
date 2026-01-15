@@ -79,24 +79,6 @@
     <div class="collection-slider-content">
         <div class="swiper-container collection-slider-container">
             <div class="swiper-wrapper">
-                @forelse($featuredCollections as $collection)
-                <div class="swiper-slide">
-                    <div class="slider-item">
-                        <div class="thumb">
-                            <div class="bg-thumb bg-overlay bg-img" data-bg-img="{{ $collection->banner_image ? asset($collection->banner_image) : asset('assets/img/about/2.JPG') }}"></div>
-                        </div>
-                        <div class="slider-content-area">
-                            <div class="content">
-                                <div class="inner-content">
-                                    <span>{{ $collection->name }}</span>
-                                    <h2 style="font-size: 2rem;">{{ $collection->description ?? 'Grace Wrapped in Tradition' }}</h2>
-                                    <p style="font-size: 0.9rem;">{{ $collection->short_description ?? 'Experience the perfect blend of heritage and modern aesthetics. Our sarees are not just fabric, they\'re a celebration of culture and craftsmanship.' }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @empty
                 <div class="swiper-slide">
                     <div class="slider-item">
                         <div class="thumb">
@@ -113,23 +95,20 @@
                         </div>
                     </div>
                 </div>
-                @endforelse
             </div>
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
         </div>
     </div>
 </section>
 <!--== End Collection Slider Area Wrapper ==-->
 
-<!--== Start Products Area Wrapper ==-->
-<section class="product-area best-sellers-product-area">
+<!--== Start Products Area Wrapper (Best Sellers) ==-->
+<section class="product-area new-product-area">
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-lg-6 m-auto">
                 <div class="section-title text-center" data-aos="fade-up" data-aos-duration="1000">
-                    <h2 class="title">Best Sellers</h2>
-                    <h5 class="subtitle">TURNING TRADITIONS INTO TRENDS</h5>
+                    <h2 class="title">New Products</h2>
+                    <h5 class="subtitle">COLLECTION</h5>
                 </div>
             </div>
         </div>
@@ -140,9 +119,6 @@
                     <div class="product-thumb">
                         <a href="{{ route('product.show', $saree->slug) }}">
                             <img src="{{ $saree->featured_image ? asset($saree->featured_image) : asset('assets/img/shop/default.jpg') }}" alt="{{ $saree->name }}">
-                            @if($saree->images->count() > 0)
-                            <span class="bg-thumb" data-bg-img="{{ asset($saree->images->first()->image_path) }}"></span>
-                            @endif
                             <span class="thumb-overlay"></span>
                         </a>
                         @if($saree->hasDiscount())
@@ -151,11 +127,12 @@
                         @if($saree->is_new_arrival)
                         <span class="badge badge-new">NEW</span>
                         @endif
-                        {{-- <div class="product-action">
-                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="{{ route('product.show', $saree->slug) }}" title="Quick View">
+                        <div class="product-action">
+                            <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View"
+                               onclick="showQuickView({{ $saree->id }}, '{{ addslashes($saree->name) }}', '{{ $saree->featured_image ? asset($saree->featured_image) : asset('assets/img/shop/default.jpg') }}', '{{ $saree->hasDiscount() ? number_format($saree->sale_price, 2) : number_format($saree->price, 2) }}', '{{ $saree->hasDiscount() ? number_format($saree->price, 2) : '' }}', '{{ $saree->stock_quantity }}', '{{ addslashes($saree->short_description ?? $saree->description) }}', '{{ $saree->sku ?? 'N/A' }}', '{{ route('product.show', $saree->slug) }}', '{{ $saree->hasDiscount() ? $saree->getDiscountPercentage() : '' }}', {{ $saree->avg_rating ?? 0 }}, {{ $saree->total_reviews ?? 0 }})">
                                 <i class="lastudioicon-search-zoom-in"></i>
                             </a>
-                        </div> --}}
+                        </div>
                     </div>
                     <div class="product-info">
                         <div class="content-inner">
@@ -181,7 +158,6 @@
                             @endif
                         </div>
                         <div class="product-info-action">
-
                             <form action="{{ route('cart.add') }}" method="POST" style="display: inline;">
                                 @csrf
                                 <input type="hidden" name="saree_id" value="{{ $saree->id }}">
@@ -199,190 +175,316 @@
                 <p>No sarees available at the moment. Please check back soon!</p>
             </div>
             @endforelse
-            @if($bestSellers->count() > 0)
-            <div class="col-md-12 text-center">
-                <a href="{{ route('shop') }}" class="btn-theme btn-black btn-border btn-padding mt-20">View more</a>
-            </div>
-            @endif
         </div>
     </div>
 </section>
 <!--== End Products Area Wrapper ==-->
 
-<!--== Start Video Divider Area Wrapper ==-->
-<div class="divider-area divider-about-area">
-    <div class="container-fluid xs-pr-15 xs-pl-15 p-0">
+<!--== Start Divider Area Wrapper ==-->
+<section class="divider-area bg-overlay2 bg-img" data-bg-img="assets/img/photos/bg-d1.jpg">
+    <div class="container">
         <div class="row">
-            <div class="col-md-12">
-                <div class="divider-about-content">
-                    <div class="divider-content" data-aos="fade-up" data-aos-duration="1000">
-                        <span>Our Story</span>
-                        <img class="logo-divider" src="{{ asset('assets/img/logo-main.svg') }}" alt="Logo">
-                        <p>Where every drape whispers tales of heritage. We believe a saree is not just fabric—it's heritage, poetry woven in threads. Experience grace wrapped in tradition, where each fold celebrates the timeless elegance of Indian craftsmanship.</p>
-                        <a href="{{ route('about') }}" class="btn-theme btn-black btn-border">Read more</a>
-                    </div>
-                    <div class="video-content" data-aos="fade-up" data-aos-duration="1000">
-                        <div class="thumb">
-                            <img src="{{ asset('assets/img/photos/video1.jpg') }}" alt="Moren-Image">
-                            <a class="btn-play play-video-popup" href="https://www.youtube.com/watch?v=MLpWrANjFbI">
-                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="110" height="110" fill="none" viewBox="0 0 110 110">
-                                    <circle cx="55" cy="55" r="54" stroke="currentColor" stroke-width="2" fill="none"></circle>
-                                    <path stroke="currentColor" stroke-width="2" d="M43.5 35.081L78 55 43.5 74.919V35.08z" fill="none"></path>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!--== End Video Divider Area Wrapper ==-->
-
-<!--== Start Trends Social Area Wrapper ==-->
-<section class="gallery-area gallery-trends-area">
-    <div class="container-fluid p-0">
-        <div class="row">
-            <div class="col-md-8 col-lg-6 m-auto">
-                <div class="section-title text-center" data-aos="fade-up" data-aos-duration="1000">
-                    <h2 class="title">Saree Trends</h2>
-                    <h5 class="subtitle">SAREE: IT'S MY STATEMENT</h5>
-                </div>
-            </div>
-        </div>
-        <div class="row" data-aos="fade-up" data-aos-duration="1200">
-            <div class="col-md-12">
-                <div class="gallery-trends-content">
-                    <div class="swiper-container gallery-trends-container">
-                        <div class="swiper-wrapper">
-                            @forelse($trendingSarees as $saree)
-                            <div class="swiper-slide">
-                                <div class="slider-item">
-                                    <a href="{{ route('product.show', $saree->slug) }}">
-                                        <div class="bg-thumb" data-bg-img="{{ $saree->featured_image ? asset($saree->featured_image) : asset('assets/img/gallery/t1.jpg') }}"></div>
-                                    </a>
-                                </div>
-                            </div>
-                            @empty
-                            <div class="swiper-slide">
-                                <div class="slider-item">
-                                    <div class="bg-thumb" data-bg-img="{{ asset('assets/img/gallery/t1.jpg') }}"></div>
-                                </div>
-                            </div>
-                            <div class="swiper-slide">
-                                <div class="slider-item">
-                                    <div class="bg-thumb" data-bg-img="{{ asset('assets/img/gallery/t2.jpg') }}"></div>
-                                </div>
-                            </div>
-                            <div class="swiper-slide">
-                                <div class="slider-item">
-                                    <div class="bg-thumb" data-bg-img="{{ asset('assets/img/gallery/t3.jpg') }}"></div>
-                                </div>
-                            </div>
-                            <div class="swiper-slide">
-                                <div class="slider-item">
-                                    <div class="bg-thumb" data-bg-img="{{ asset('assets/img/gallery/t4.jpg') }}"></div>
-                                </div>
-                            </div>
-                            @endforelse
-                        </div>
-                    </div>
+            <div class="col-xl-8 col-lg-12 m-auto">
+                <div class="divider-content divider-content-style1" data-aos="fade-up" data-aos-duration="1000">
+                    <h2>Are you tired of <br> all those ordinary sarees?</h2>
+                    <p>We invite you to step into our creative and imaginative world,<br> where sarees can be as elegant and traditional as they are modern and breathtaking.</p>
+                    <a href="{{ route('shop') }}" class="btn-theme btn-white">New Arrivals</a>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!--== End Trends Social Area Wrapper ==-->
+<!--== End Divider Area Wrapper ==-->
 
-    <!--== Start Featured Area Wrapper ==-->
-    <section class="featured-area featured-style3-area">
-      <div class="container">
-        <div class="row featured-style3">
-          <div class="col-sm-6 col-md-4">
-            <div class="featured-item">
-              <div class="content">
-                <span class="icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="76" height="46" fill="none" viewBox="0 0 76 46"><path fill="currentColor" d="M74.757 45.702H1.243a1.08 1.08 0 0 1-1.08-1.08V33.593a1.081 1.081 0 0 1 .864-1.06 9.73 9.73 0 0 0 0-19.07 1.081 1.081 0 0 1-.865-1.059V1.378A1.081 1.081 0 0 1 1.243.297h73.514a1.08 1.08 0 0 1 1.08 1.081v11.027a1.082 1.082 0 0 1-.864 1.06 9.73 9.73 0 0 0 0 19.07 1.081 1.081 0 0 1 .865 1.06V44.62a1.08 1.08 0 0 1-1.081 1.081zM2.324 43.54h71.352v-9.097a11.892 11.892 0 0 1 0-22.887V2.46H2.324v9.097a11.892 11.892 0 0 1 0 22.887v9.097z"></path><path fill="currentColor" d="M54.216 6.39a1.081 1.081 0 0 1-1.08-1.081V1.378a1.081 1.081 0 0 1 2.161 0v3.93a1.081 1.081 0 0 1-1.08 1.082zm0 9.828a1.08 1.08 0 0 1-1.08-1.08v-3.932a1.081 1.081 0 0 1 2.161 0v3.931a1.081 1.081 0 0 1-1.08 1.081zm0 9.828a1.08 1.08 0 0 1-1.08-1.081v-3.93a1.081 1.081 0 0 1 2.161 0v3.931a1.081 1.081 0 0 1-1.08 1.08zm0 9.828a1.08 1.08 0 0 1-1.08-1.08v-3.931a1.082 1.082 0 0 1 2.161 0v3.93a1.081 1.081 0 0 1-1.08 1.081zm0 9.828a1.08 1.08 0 0 1-1.08-1.08V40.69a1.082 1.082 0 0 1 2.161 0v3.931a1.081 1.081 0 0 1-1.08 1.081zm-33.59-11.305a1.081 1.081 0 0 1-.764-1.846l20.034-20.045a1.082 1.082 0 1 1 1.529 1.529L21.39 34.08a1.082 1.082 0 0 1-.764.316zm16.704.516a4.993 4.993 0 1 1 4.994-4.994 5 5 0 0 1-4.993 4.994zm0-7.826a2.832 2.832 0 1 0 .001 5.663 2.832 2.832 0 0 0 0-5.663zm-13.796-6.079a4.994 4.994 0 1 1 4.994-4.995 5 5 0 0 1-4.994 4.995zm0-7.826a2.832 2.832 0 1 0 0 5.663 2.832 2.832 0 0 0 0-5.663z"></path></svg>       </span>
-                <div class="inner-content">
-                <h4 class="title">NEW DISCOUNT</h4>
-                <p>Save up to 40% on your first order! Exclusive deals that make premium quality affordable.</p>
+<!--== Start Blog Area Wrapper ==-->
+<section class="blog-area blog-about-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-lg-6 m-auto">
+                <div class="section-title text-center" data-aos="fade-up" data-aos-duration="1000">
+                    <h2 class="title">#Our Latest News</h2>
                 </div>
-              </div>
             </div>
-          </div>
-          <div class="col-sm-6 col-md-4">
-            <div class="featured-item mt-xs-30">
-              <div class="content">
-                <span class="icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="76" height="72" fill="none" viewBox="0 0 76 72"><path fill="currentColor" d="M64.733 71.123H11.267a4.432 4.432 0 0 1-4.422-4.42V31.614a1.081 1.081 0 0 1 1.081-1.08h60.147a1.081 1.081 0 0 1 1.082 1.08v35.089a4.432 4.432 0 0 1-4.422 4.42zM9.008 32.695v34.008a2.263 2.263 0 0 0 2.26 2.26h53.465a2.262 2.262 0 0 0 2.26-2.26V32.695H9.007z"></path><path fill="currentColor" d="M73.085 32.695H2.915a2.755 2.755 0 0 1-2.753-2.749v-8.357a2.755 2.755 0 0 1 2.753-2.751h70.17a2.755 2.755 0 0 1 2.753 2.751v8.357a2.755 2.755 0 0 1-2.753 2.75zM2.915 21a.59.59 0 0 0-.59.59v8.356a.59.59 0 0 0 .59.59h70.17a.59.59 0 0 0 .59-.59v-8.357a.59.59 0 0 0-.59-.589H2.915z"></path><path fill="currentColor" d="M40.23 21a1.081 1.081 0 0 1-1.032-1.404c1.336-4.276 3.732-10.054 7.554-13.333A7.946 7.946 0 0 1 57.08 18.34a17.38 17.38 0 0 1-4.117 2.558 1.082 1.082 0 0 1-1.267-1.718c.102-.104.224-.186.36-.242a15.29 15.29 0 0 0 3.614-2.235 5.782 5.782 0 1 0-7.507-8.796C44.55 11 42.29 16.963 41.265 20.242A1.081 1.081 0 0 1 40.23 21z"></path><path fill="currentColor" d="M40.23 21a1.08 1.08 0 0 1-1.031-.757c-1.281-4.094-4.108-11.54-8.636-15.42a7.433 7.433 0 0 0-9.66 11.3 19.242 19.242 0 0 0 4.55 2.816 1.08 1.08 0 1 1-.908 1.962 21.321 21.321 0 0 1-5.052-3.136A9.597 9.597 0 0 1 31.968 3.178c4.695 4.02 7.645 11.147 9.297 16.419A1.081 1.081 0 0 1 40.23 21zm3.932 50.123H31.838a1.081 1.081 0 0 1-1.081-1.08v-38.43a1.081 1.081 0 0 1 1.08-1.08h12.325a1.081 1.081 0 0 1 1.081 1.08v38.428a1.081 1.081 0 0 1-1.08 1.081zM32.92 68.961h10.16V32.695H32.92v36.266z"></path></svg></span>
-                <div class="inner-content">
-                <h4 class="title">GIFT VOUCHERS</h4>
-                <p>Surprise someone special with the perfect gift. Digital vouchers delivered instantly to their inbox.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4">
-            <div class="featured-item mt-sm-30">
-              <div class="content">
-                <span class="icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="76" height="74" fill="none" viewBox="0 0 76 74"><path fill="currentColor" d="M74.757 73.649H1.243a1.08 1.08 0 0 1-1.08-1.081V20.4a1.081 1.081 0 0 1 1.08-1.081h73.514a1.08 1.08 0 0 1 1.08 1.081v52.168a1.08 1.08 0 0 1-1.08 1.08zM2.324 71.487h71.352V21.48H2.324v50.006z"></path><path fill="currentColor" d="M74.757 21.481H1.243a1.08 1.08 0 0 1-.865-1.73L14.607.785a1.081 1.081 0 0 1 .864-.432H60.53a1.081 1.081 0 0 1 .865.432l14.228 18.968a1.081 1.081 0 0 1-.865 1.73zM3.405 19.32h69.19L59.988 2.514H16.012L3.405 19.319z"></path><path fill="currentColor" d="M47.19 21.481H28.81a1.082 1.082 0 0 1-1.059-1.297l3.784-18.968a1.08 1.08 0 0 1 1.06-.864h10.81a1.08 1.08 0 0 1 1.06.864l3.784 18.971a1.08 1.08 0 0 1-1.06 1.297v-.003zM30.128 19.32H45.87L42.52 2.514h-9.038L30.13 19.319z"></path><path fill="currentColor" d="M47.19 41.848a1.08 1.08 0 0 1-.685-.245L38 34.653l-8.505 6.95a1.08 1.08 0 0 1-1.765-.836V20.4a1.08 1.08 0 0 1 1.08-1.081h18.38a1.08 1.08 0 0 1 1.08 1.081v20.367a1.08 1.08 0 0 1-1.08 1.08zM38 32.176c.25 0 .491.087.684.245l7.424 6.066V21.48H29.892v17.006l7.424-6.067a1.08 1.08 0 0 1 .684-.244z"></path></svg></span>
-                <div class="inner-content">
-                <h4 class="title">FREE DELIVERY</h4>
-                <p>Enjoy complimentary shipping on orders over ₹2000. Fast, reliable delivery straight to your door.</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
-    </section>
-    <!--== End Featured Area Wrapper ==-->
+        <div class="row post-items" data-aos="fade-up" data-aos-duration="1200">
+            <div class="col-12">
+                <div class="swiper-container post-slider-container">
+                    <div class="swiper-wrapper">
+                        @forelse($recentBlogs as $blog)
+                        <div class="swiper-slide">
+                            <div class="post-item">
+                                <div class="thumb">
+                                    <a href="{{ route('blog.show', $blog->slug) }}">
+                                        <img src="{{ $blog->featured_image ? asset($blog->featured_image) : asset('assets/img/blog/s1.jpg') }}" 
+                                             alt="{{ $blog->title }}">
+                                    </a>
+                                </div>
+                                <div class="content">
+                                    <div class="post-meta">
+                                        @if($blog->author_image)
+                                            <img src="{{ asset($blog->author_image) }}" alt="{{ $blog->author_name }}">
+                                        @else
+                                            <img src="{{ asset('assets/img/icons/s1.jpg') }}" alt="{{ $blog->author_name }}">
+                                        @endif
+                                        <a href="#">{{ $blog->author_name }}</a>
+                                    </div>
+                                    <div class="inner-content">
+                                        <h4 class="title">
+                                            <a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a>
+                                        </h4>
+                                        <p>{{ Str::limit($blog->excerpt, 120) }}</p>
+                                    </div>
+                                    <a href="{{ route('blog.show', $blog->slug) }}" class="btn-theme btn-border btn-black">Continue reading</a>
+                                </div>
+                            </div>
+                        </div>
+                        @empty
+                        <div class="swiper-slide">
+                            <div class="post-item">
+                                <div class="thumb">
+                                    <a href="#"><img src="{{ asset('assets/img/blog/s1.jpg') }}" alt="Moren-Image"></a>
+                                </div>
+                                <div class="content">
+                                    <div class="post-meta">
+                                        <img src="{{ asset('assets/img/icons/s1.jpg') }}" alt="Image">
+                                        <a href="#">Admin</a>
+                                    </div>
+                                    <div class="inner-content">
+                                        <h4 class="title">
+                                            <a href="#">No blog posts yet</a>
+                                        </h4>
+                                        <p>Check back soon for exciting updates and stories about our saree collection.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endforelse
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--== End Blog Area Wrapper ==-->
+<!--== Start Newsletter Area ==-->
+<section class="newsletter-area bg-overlay-black2-6 bg-parallax" data-speed="1.136" data-bg-img="assets/img/photos/bg-d4.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 m-auto">
+                <div class="newsletter-content content-style3" data-aos="fade-up" data-aos-duration="1000">
+                    <h1 class="title">Stay in the loop</h1>
+                    <p>Sign up for our newsletter to be updated with the latest products and news.</p>
+                    
+                    {{-- Success Message --}}
+                    @if(session('newsletter_success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="lastudioicon-check-1"></i> {{ session('newsletter_success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    {{-- Info Message --}}
+                    @if(session('newsletter_info'))
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="lastudioicon-i-information"></i> {{ session('newsletter_info') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    {{-- Error Message --}}
+                    @if(session('newsletter_error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="lastudioicon-close"></i> {{ session('newsletter_error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    {{-- Validation Errors --}}
+                    @if($errors->has('email'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="lastudioicon-close"></i> {{ $errors->first('email') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    <form class="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST">
+                        @csrf
+                        <input class="form-control @error('email') is-invalid @enderror" 
+                               type="email" 
+                               name="email" 
+                               id="email" 
+                               placeholder="Enter your email address..." 
+                               value="{{ old('email') }}"
+                               required>
+                        <button class="btn btn-submit" type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--== End Newsletter Area -->
+
+
 @endsection
+
+@push('scripts')
+<script>
+function showQuickView(id, name, image, price, oldPrice, stock, description, sku, productUrl, discount, rating, totalReviews) {
+    // Update product image
+    const modalImage = document.querySelector('.product-quick-view-modal .thumb img');
+    if (modalImage) {
+        modalImage.src = image;
+        modalImage.alt = name;
+    }
+    
+    // Update product title
+    const modalTitle = document.querySelector('.product-quick-view-modal .title');
+    if (modalTitle) {
+        modalTitle.textContent = name;
+    }
+    
+    // Update rating
+    const ratingDiv = document.querySelector('.product-quick-view-modal .ratting-icons');
+    if (ratingDiv) {
+        let ratingHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                ratingHtml += '<i class="lastudioicon-star-rate-1"></i>';
+            } else {
+                ratingHtml += '<i class="lastudioicon-star-rate-2"></i>';
+            }
+        }
+        ratingDiv.innerHTML = ratingHtml;
+    }
+    
+    // Update review count
+    const reviewLink = document.querySelector('.product-quick-view-modal .review a');
+    if (reviewLink) {
+        reviewLink.textContent = '(' + totalReviews + ' customer ' + (totalReviews == 1 ? 'review' : 'reviews') + ')';
+        reviewLink.href = productUrl + '#productReview';
+    }
+    
+    // Update stock info
+    const stockInfo = document.querySelector('.product-quick-view-modal .review p');
+    if (stockInfo) {
+        if (stock > 0) {
+            stockInfo.innerHTML = '<span></span>' + stock + ' in stock';
+        } else {
+            stockInfo.innerHTML = '<span class="text-danger">Out of stock</span>';
+        }
+    }
+    
+    // Update prices with discount badge
+    const pricesDiv = document.querySelector('.product-quick-view-modal .prices');
+    if (pricesDiv) {
+        if (oldPrice && discount) {
+            pricesDiv.innerHTML = '<span class="price-old">₹' + oldPrice + '</span><span class="price">₹' + price + '</span><span class="badge badge-sale">-' + discount + '%</span>';
+        } else {
+            pricesDiv.innerHTML = '<span class="price">₹' + price + '</span>';
+        }
+    }
+    
+    // Update description
+    const descDiv = document.querySelector('.product-quick-view-modal .product-desc');
+    if (descDiv) {
+        const shortDesc = description.length > 200 ? description.substring(0, 200) + '...' : description;
+        descDiv.textContent = shortDesc;
+    }
+    
+    // Update SKU
+    const skuSpan = document.querySelector('.product-quick-view-modal .product-sku span');
+    if (skuSpan) {
+        skuSpan.textContent = sku;
+    }
+    
+    // Hide add to cart if out of stock
+    const addToCartSection = document.querySelector('.product-quick-view-modal .quick-product-action');
+    if (addToCartSection) {
+        if (stock > 0) {
+            addToCartSection.style.display = 'block';
+        } else {
+            addToCartSection.style.display = 'none';
+        }
+    }
+    
+    // Hide wishlist and compare buttons
+    const actionBottom = document.querySelector('.product-quick-view-modal .action-bottom');
+    if (actionBottom) {
+        actionBottom.style.display = 'none';
+    }
+    
+    // Update "View Full Details" button link
+    const viewDetailsBtn = document.querySelector('.product-quick-view-modal .btn-theme');
+    if (viewDetailsBtn) {
+        viewDetailsBtn.href = productUrl;
+    }
+    
+    // Update all other product links
+    const productLinks = document.querySelectorAll('.product-quick-view-modal a[href*="shop-single-product"]');
+    productLinks.forEach(link => {
+        if (!link.classList.contains('btn-close') && !link.classList.contains('btn-theme')) {
+            link.href = productUrl;
+        }
+    });
+    
+    // Show modal
+    const modal = document.querySelector('.product-quick-view-modal');
+    const overlay = document.querySelector('.canvas-overlay');
+    
+    if (modal) {
+        modal.classList.add('open');
+    }
+    if (overlay) {
+        overlay.classList.add('open');
+    }
+}
+</script>
+
 <style>
-.product-item .product-thumb img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-    object-position: center;
+/* Quick View Price Styles */
+.product-quick-view-modal .prices {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
-.product-item .product-thumb .bg-thumb {
-    height: 400px;
-    background-size: cover;
-    background-position: center;
+.product-quick-view-modal .price-old {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 18px;
+    font-weight: 400;
 }
 
-/* Saree Trends Section - Force height */
-.gallery-trends-area .swiper-slide {
-    height: 350px !important;
+.product-quick-view-modal .price {
+    color: #000;
+    font-size: 28px;
+    font-weight: 600;
 }
 
-.gallery-trends-area .slider-item {
-    height: 350px !important;
+.product-quick-view-modal .badge-sale {
+    background: linear-gradient(135deg, #d4af37 0%, #f9d77e 50%, #d4af37 100%);
+    color: #ffffff !important;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-.gallery-trends-area .slider-item .bg-thumb {
-    height: 350px !important;
-    width: 100%;
-    background-size: cover;
-    background-position: center;
+/* Hide wishlist and compare in quick view */
+.product-quick-view-modal .action-bottom {
+    display: none !important;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .gallery-trends-area .swiper-slide,
-    .gallery-trends-area .slider-item,
-    .gallery-trends-area .slider-item .bg-thumb {
-        height: 250px !important;
-    }
-}
-
-@media (max-width: 576px) {
-    .gallery-trends-area .swiper-slide,
-    .gallery-trends-area .slider-item,
-    .gallery-trends-area .slider-item .bg-thumb {
-        height: 200px !important;
-    }
+/* Out of stock styling */
+.product-quick-view-modal .text-danger {
+    color: #dc3545;
+    font-weight: 600;
 }
 </style>
+@endpush

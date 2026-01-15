@@ -16,8 +16,10 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,400i,500,600,700,900,900i" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,500,600,700,900,900i" rel="stylesheet">
 
-    <!--== Bootstrap CSS ==-->
+        <!--== Bootstrap CSS ==-->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" />
+    <!--== Bootstrap Icons ==-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!--== Font-awesome Icons CSS ==-->
     <link href="{{ asset('assets/css/font-awesome.min.css') }}" rel="stylesheet" />
     <!--== Icofont Min Icons CSS ==-->

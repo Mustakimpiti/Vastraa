@@ -11,6 +11,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\SareeController as AdminSareeController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
@@ -19,6 +20,8 @@ use App\Http\Controllers\Admin\CollectionController as AdminCollectionController
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ContactSettingController as AdminContactSettingController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\BlogController as AdminBlogController;
+
 /*
 |--------------------------------------------------------------------------
 | Public Routes
@@ -30,6 +33,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Static Pages
 Route::view('/about', 'pages.about')->name('about');
+
+// Blog Routes
+Route::get('/blogs', [BlogController::class, 'index'])->name('blogs');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Contact Page
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
@@ -50,7 +57,8 @@ Route::get('/shop-collections/{slug}', [CollectionController::class, 'show'])->n
 
 // Products
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
-
+Route::post('/newsletter/subscribe', [App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+Route::post('/newsletter/unsubscribe', [App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 /*
 |--------------------------------------------------------------------------
 | Cart Routes
@@ -156,6 +164,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('sarees', AdminSareeController::class);
     Route::delete('/sarees/images/{id}', [AdminSareeController::class, 'deleteImage'])->name('sarees.images.delete');
 
+    // Blog Management
+Route::resource('blogs', AdminBlogController::class);
+Route::post('/blogs/{blog}/toggle-featured', [AdminBlogController::class, 'toggleFeatured'])->name('blogs.toggle-featured');
+Route::post('/blogs/{blog}/toggle-published', [AdminBlogController::class, 'togglePublished'])->name('blogs.toggle-published');
     // Review Management
     Route::prefix('reviews')->name('reviews.')->group(function () {
         Route::get('/', [AdminReviewController::class, 'index'])->name('index');
@@ -184,14 +196,27 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/{order}/invoice', [AdminOrderController::class, 'invoice'])->name('invoice');
         Route::delete('/{order}', [AdminOrderController::class, 'destroy'])->name('destroy');
     });
-    // User Management
-Route::prefix('users')->name('users.')->group(function () {
-    Route::get('/', [AdminUserController::class, 'index'])->name('index');
-    Route::post('/', [AdminUserController::class, 'store'])->name('store');
-    Route::put('/{id}', [AdminUserController::class, 'update'])->name('update');
-    Route::delete('/{id}', [AdminUserController::class, 'destroy'])->name('destroy');
-});
 
+    // User Management
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [AdminUserController::class, 'index'])->name('index');
+        Route::post('/', [AdminUserController::class, 'store'])->name('store');
+        Route::put('/{id}', [AdminUserController::class, 'update'])->name('update');
+        Route::delete('/{id}', [AdminUserController::class, 'destroy'])->name('destroy');
+    });
+
+    // Contact Settings
     Route::get('/contact-settings', [AdminContactSettingController::class, 'index'])->name('contact-settings.index');
     Route::put('/contact-settings', [AdminContactSettingController::class, 'update'])->name('contact-settings.update');
+});
+// Admin Testimonial Routes
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::resource('testimonials', App\Http\Controllers\Admin\TestimonialController::class);
+    Route::post('/testimonials/{testimonial}/toggle-featured', [App\Http\Controllers\Admin\TestimonialController::class, 'toggleFeatured'])->name('testimonials.toggle-featured');
+    Route::post('/testimonials/{testimonial}/toggle-active', [App\Http\Controllers\Admin\TestimonialController::class, 'toggleActive'])->name('testimonials.toggle-active');
+    
+    // Newsletter Subscribers
+    Route::get('/newsletter-subscribers', [App\Http\Controllers\Admin\NewsletterController::class, 'index'])->name('newsletter.index');
+    Route::delete('/newsletter-subscribers/{id}', [App\Http\Controllers\Admin\NewsletterController::class, 'destroy'])->name('newsletter.destroy');
+    Route::post('/newsletter-subscribers/export', [App\Http\Controllers\Admin\NewsletterController::class, 'export'])->name('newsletter.export');
 });

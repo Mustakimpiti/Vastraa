@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Order Details - Saree Shop')
+@section('title', 'Order Details - Artfauj')
 
 @section('content')
 <!--== Start Page Title Area ==-->
@@ -246,29 +246,42 @@
 
 @push('styles')
 <style>
+/* Brand Colors */
+:root {
+    --artfauj-orange: #FF8C42;
+    --artfauj-teal: #1B9AAA;
+    --artfauj-orange-light: #FFB380;
+    --artfauj-teal-light: #3DB5C4;
+}
+
 /* Order Header Card */
 .order-header-card {
     background: white;
     padding: 30px;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    border: 2px solid #e5e7eb;
+    border-left: 4px solid var(--artfauj-orange);
 }
 
 .order-number {
     font-size: 24px;
-    font-weight: 600;
-    color: #333;
+    font-weight: 700;
+    color: var(--artfauj-orange);
     margin-bottom: 8px;
 }
 
 .order-date {
     color: #666;
     font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .order-date i {
-    margin-right: 6px;
-    color: #999;
+    color: var(--artfauj-teal);
+    font-size: 16px;
 }
 
 /* Status Badges */
@@ -280,6 +293,7 @@
     font-size: 13px;
     color: #666;
     margin-right: 8px;
+    font-weight: 500;
 }
 
 .badge-status {
@@ -298,13 +312,13 @@
 }
 
 .badge-processing {
-    background-color: #17a2b8;
+    background-color: var(--artfauj-teal);
     color: white;
 }
 
 .badge-pending {
-    background-color: #ffc107;
-    color: #212529;
+    background-color: var(--artfauj-orange);
+    color: white;
 }
 
 .badge-cancelled {
@@ -321,17 +335,18 @@
 .shop-billing-form {
     background: white;
     padding: 30px;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    border: 2px solid #e5e7eb;
 }
 
 .shop-billing-form .title {
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: var(--artfauj-orange);
     margin-bottom: 25px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 2px solid var(--artfauj-teal);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -339,7 +354,7 @@
 
 .shop-billing-form .title i {
     font-size: 20px;
-    color: #666;
+    color: var(--artfauj-teal);
 }
 
 /* Order Items List */
@@ -354,13 +369,15 @@
     gap: 20px;
     padding: 20px;
     background: #f8f9fa;
-    border-radius: 8px;
+    border-radius: 12px;
     transition: all 0.3s ease;
+    border: 2px solid #e5e7eb;
 }
 
 .order-item-row:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(27, 154, 170, 0.15);
     transform: translateY(-2px);
+    border-color: var(--artfauj-teal);
 }
 
 .item-image-wrapper {
@@ -371,8 +388,14 @@
     width: 100px;
     height: 100px;
     object-fit: cover;
-    border-radius: 6px;
-    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    border: 2px solid var(--artfauj-teal);
+    transition: all 0.3s ease;
+}
+
+.item-thumbnail:hover {
+    border-color: var(--artfauj-orange);
+    transform: scale(1.05);
 }
 
 .item-info-wrapper {
@@ -395,7 +418,7 @@
 }
 
 .item-title a:hover {
-    color: #000;
+    color: var(--artfauj-orange);
 }
 
 .item-metadata {
@@ -408,6 +431,10 @@
 
 .meta-item {
     white-space: nowrap;
+}
+
+.meta-item strong {
+    color: var(--artfauj-teal);
 }
 
 .item-price-details {
@@ -432,25 +459,33 @@
 }
 
 .subtotal-price {
-    color: #000;
+    color: var(--artfauj-orange);
     font-size: 16px;
+    font-weight: 700;
 }
 
 /* Info Card Box */
 .info-card-box {
     background: #f8f9fa;
     padding: 25px;
-    border-radius: 8px;
+    border-radius: 12px;
     height: 100%;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.info-card-box:hover {
+    border-color: var(--artfauj-teal);
+    box-shadow: 0 4px 12px rgba(27, 154, 170, 0.1);
 }
 
 .info-card-title {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: var(--artfauj-orange);
     margin-bottom: 20px;
     padding-bottom: 12px;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid var(--artfauj-teal);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -458,7 +493,7 @@
 
 .info-card-title i {
     font-size: 18px;
-    color: #666;
+    color: var(--artfauj-teal);
 }
 
 .info-card-content {
@@ -489,7 +524,7 @@
 }
 
 .contact-details i {
-    color: #999;
+    color: var(--artfauj-teal);
     font-size: 14px;
 }
 
@@ -503,6 +538,7 @@
     font-size: 14px;
     color: #666;
     margin: 0;
+    font-weight: 600;
 }
 
 .notes-text {
@@ -517,6 +553,7 @@
     background: #f8f9fa;
     padding: 20px;
     border-radius: 8px;
+    border: 2px solid #e5e7eb;
 }
 
 .order-summary-table .table {
@@ -534,23 +571,32 @@
 }
 
 .order-summary-table tfoot tr {
-    border-top: 2px solid #333;
+    border-top: 2px solid var(--artfauj-teal);
 }
 
 .order-summary-table tfoot th {
     padding: 15px 0;
     font-size: 18px;
     font-weight: 700;
-    color: #333;
+    color: var(--artfauj-orange);
 }
 
 /* Button Styles */
 .btn-theme {
     padding: 14px 35px;
     font-size: 14px;
-    font-weight: 500;
-    border-radius: 4px;
+    font-weight: 600;
+    border-radius: 8px;
     transition: all 0.3s;
+    background: linear-gradient(135deg, var(--artfauj-teal) 0%, var(--artfauj-teal-light) 100%);
+    border: none;
+    color: white;
+}
+
+.btn-theme:hover {
+    background: linear-gradient(135deg, #158999 0%, var(--artfauj-teal) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(27, 154, 170, 0.3);
 }
 
 .btn-theme i {
