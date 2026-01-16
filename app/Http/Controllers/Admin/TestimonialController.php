@@ -15,12 +15,12 @@ class TestimonialController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
         
-        return view('admin.testimonials.index', compact('testimonials'));
+        return view('admin.Testimonials.index', compact('testimonials'));
     }
 
     public function create()
     {
-        return view('admin.testimonials.create');
+        return view('admin.Testimonials.create');
     }
 
     public function store(Request $request)
@@ -55,7 +55,7 @@ class TestimonialController extends Controller
 
     public function edit(Testimonial $testimonial)
     {
-        return view('admin.testimonials.edit', compact('testimonial'));
+        return view('admin.Testimonials.edit', compact('testimonial'));
     }
 
     public function update(Request $request, Testimonial $testimonial)

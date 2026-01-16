@@ -79,9 +79,9 @@
                                 </div>
                             @endauth
 
-                            <!-- Cart Icon with Dynamic Count -->
+                            <!-- Cart Icon with Dynamic Count - UPDATED -->
                             <div class="header-action-cart">
-                                <a href="{{ route('cart.index') }}" class="btn-cart cart-icon">
+                                <a href="{{ route('cart.index') }}" class="btn-cart cart-icon direct-cart-link">
                                     @php
                                         $cartCount = \App\Models\Cart::where(function($query) {
                                             if (Auth::check()) {
@@ -216,6 +216,11 @@
     display: inline-block;
 }
 
+/* Direct Cart Link - Prevent sidebar opening */
+.direct-cart-link {
+    pointer-events: auto !important;
+}
+
 /* Responsive */
 @media (max-width: 991px) {
     .account-dropdown-menu {
@@ -225,6 +230,27 @@
 </style>
 
 <script>
+// Prevent cart sidebar from opening on cart icon click
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove any click handlers that might open the cart sidebar
+    const cartLinks = document.querySelectorAll('.direct-cart-link, .cart-icon');
+    
+    cartLinks.forEach(link => {
+        // Stop event propagation to prevent sidebar opening
+        link.addEventListener('click', function(e) {
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+        }, true);
+    });
+    
+    // If there's a cart sidebar, prevent it from opening on cart icon click
+    const cartSidebar = document.querySelector('.aside-cart-wrapper, .cart-offcanvas, .offcanvas-cart');
+    if (cartSidebar) {
+        // Ensure it stays closed
+        cartSidebar.classList.remove('active', 'open', 'show');
+    }
+});
+
 // Function to update cart count dynamically
 function updateCartCount() {
     fetch('{{ route("cart.count") }}')

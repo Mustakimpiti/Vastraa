@@ -19,7 +19,7 @@ class NewsletterController extends Controller
             'unsubscribed' => NewsletterSubscriber::unsubscribed()->count(),
         ];
 
-        return view('admin.newsletter.index', compact('subscribers', 'stats'));
+        return view('admin.Newsletter.index', compact('subscribers', 'stats'));
     }
 
     public function destroy($id)
@@ -31,33 +31,31 @@ class NewsletterController extends Controller
             ->with('success', 'Subscriber deleted successfully.');
     }
 
-    public function export()
-    {
-        $subscribers = NewsletterSubscriber::active()->get();
+public function export()
+{
+    $subscribers = NewsletterSubscriber::active()->get();
 
-        $filename = 'newsletter_subscribers_' . date('Y-m-d') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
+    $filename = 'newsletter_subscribers_' . date('Y-m-d') . '.csv';
+    
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+    ];
 
-        $callback = function() use ($subscribers) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, ['Email', 'Name', 'Status', 'Subscribed At']);
+    $callback = function() use ($subscribers) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, ['Email', 'Subscribed At']);
 
-            foreach ($subscribers as $subscriber) {
-                fputcsv($file, [
-                    $subscriber->email,
-                    $subscriber->name ?? 'N/A',
-                    $subscriber->status,
-                    $subscriber->subscribed_at->format('Y-m-d H:i:s'),
-                ]);
-            }
+        foreach ($subscribers as $subscriber) {
+            fputcsv($file, [
+                $subscriber->email,
+                $subscriber->subscribed_at->format('Y-m-d H:i:s'),
+            ]);
+        }
 
-            fclose($file);
-        };
+        fclose($file);
+    };
 
-        return response()->stream($callback, 200, $headers);
-    }
+    return response()->stream($callback, 200, $headers);
+}
 }
