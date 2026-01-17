@@ -267,7 +267,296 @@
     </div>
 </section>
 <!--== End Blog Area Wrapper ==-->
+<!--== Start Testimonials Area Wrapper ==-->
+<section class="testimonial-area testimonial-about-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-lg-6 m-auto">
+                <div class="section-title text-center" data-aos="fade-up" data-aos-duration="1000">
+                    <h2 class="title">What Our Customers Say</h2>
+                    <h5 class="subtitle">TESTIMONIALS</h5>
+                </div>
+            </div>
+        </div>
+        <div class="row testimonial-items" data-aos="fade-up" data-aos-duration="1200">
+            <div class="col-12">
+                <div class="swiper-container testimonial-slider-container">
+                    <div class="swiper-wrapper">
+                        @forelse($testimonials as $testimonial)
+                        <div class="swiper-slide">
+                            <div class="testimonial-item">
+                                <div class="testimonial-image">
+                                    @if($testimonial->customer_image)
+                                        <img src="{{ asset($testimonial->customer_image) }}" alt="{{ $testimonial->customer_name }}">
+                                    @else
+                                        <img src="{{ asset('assets/img/icons/user-default.png') }}" alt="{{ $testimonial->customer_name }}">
+                                    @endif
+                                </div>
+                                <div class="testimonial-content">
+                                    <div class="testimonial-text">
+                                        <div class="rating">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= $testimonial->rating)
+                                                <span class="lastudioicon-star-rate-1"></span>
+                                                @else
+                                                <span class="lastudioicon-star-rate-2"></span>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <p>"{{ $testimonial->testimonial }}"</p>
+                                    </div>
+                                    <div class="testimonial-author">
+                                        <h5>{{ $testimonial->customer_name }}</h5>
+                                        @if($testimonial->customer_location)
+                                        <span>{{ $testimonial->customer_location }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @empty
+                        <div class="swiper-slide">
+                            <div class="testimonial-item">
+                                <div class="testimonial-image">
+                                    <img src="{{ asset('assets/img/icons/user-default.png') }}" alt="Customer">
+                                </div>
+                                <div class="testimonial-content">
+                                    <div class="testimonial-text">
+                                        <div class="rating">
+                                            <span class="lastudioicon-star-rate-1"></span>
+                                            <span class="lastudioicon-star-rate-1"></span>
+                                            <span class="lastudioicon-star-rate-1"></span>
+                                            <span class="lastudioicon-star-rate-1"></span>
+                                            <span class="lastudioicon-star-rate-1"></span>
+                                        </div>
+                                        <p>"No testimonials yet. Be the first to share your experience!"</p>
+                                    </div>
+                                    <div class="testimonial-author">
+                                        <h5>Our Valued Customer</h5>
+                                        <span>Location</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endforelse
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--== End Testimonials Area Wrapper ==-->
 
+<style>
+/* Testimonials Area Styles */
+.testimonial-area {
+    padding: 80px 0;
+    background: #f9f9f9;
+}
+
+.testimonial-slider-container .swiper-slide {
+    height: auto;
+    display: flex;
+}
+
+.testimonial-item {
+    background: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    margin: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 320px;
+    width: 100%;
+}
+
+.testimonial-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Fixed Image Section */
+.testimonial-image {
+    flex-shrink: 0;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #d4af37;
+    margin: 0 auto 15px;
+    align-self: center;
+}
+
+.testimonial-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Content Section */
+.testimonial-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* Fixed Rating Section */
+.testimonial-text {
+    margin-bottom: auto;
+}
+
+.testimonial-item .rating {
+    display: flex;
+    gap: 5px;
+    font-size: 16px;
+    color: #d4af37;
+    margin-bottom: 15px;
+    justify-content: center;
+    height: 20px;
+}
+
+/* Flexible Text Content */
+.testimonial-text p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #666;
+    font-style: italic;
+    margin: 0 0 15px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 110px;
+}
+
+/* Fixed Author Section - Always at Bottom */
+.testimonial-author {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.testimonial-author h5 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    color: #333;
+    height: 22px;
+    line-height: 22px;
+}
+
+.testimonial-author span {
+    font-size: 14px;
+    color: #999;
+    display: block;
+    height: 20px;
+    line-height: 20px;
+}
+
+/* Swiper Pagination */
+.testimonial-slider-container .swiper-pagination {
+    position: relative;
+    margin-top: 30px;
+}
+
+.testimonial-slider-container .swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+    background: #ddd;
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.testimonial-slider-container .swiper-pagination-bullet-active {
+    background: #d4af37;
+    width: 30px;
+    border-radius: 6px;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .testimonial-area {
+        padding: 60px 0;
+    }
+    
+    .testimonial-item {
+        padding: 20px 18px;
+        min-height: 300px;
+    }
+    
+    .testimonial-image {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 15px;
+    }
+    
+    .testimonial-text p {
+        font-size: 13px;
+        min-height: 100px;
+        -webkit-line-clamp: 5;
+    }
+    
+    .testimonial-author h5 {
+        font-size: 16px;
+    }
+    
+    .testimonial-author span {
+        font-size: 13px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .testimonial-item {
+        min-height: 310px;
+    }
+    
+    .testimonial-image {
+        width: 85px;
+        height: 85px;
+    }
+    
+    .testimonial-text p {
+        font-size: 13px;
+        min-height: 105px;
+    }
+}
+
+@media (min-width: 992px) {
+    .testimonial-slider-container .swiper-wrapper {
+        align-items: stretch;
+    }
+}
+</style>
+
+<script>
+// Initialize Testimonial Slider
+document.addEventListener('DOMContentLoaded', function() {
+    var testimonialSlider = new Swiper('.testimonial-slider-container', {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,
+        autoplay: {
+            delay: 5000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: '.testimonial-slider-container .swiper-pagination',
+            clickable: true,
+        },
+        breakpoints: {
+            992: {
+                slidesPerView: 2,
+            }
+        }
+    });
+});
+</script>
 <!--== Start Newsletter Area ==-->
 <section class="newsletter-area bg-overlay-black2-6 bg-parallax" data-speed="1.136" data-bg-img="assets/img/photos/bg-d4.jpg">
     <div class="container">
