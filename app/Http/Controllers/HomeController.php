@@ -18,6 +18,16 @@ class HomeController extends Controller
             ->limit(3)
             ->get();
 
+        // Fetch sarees with videos for Trending Now section
+        $trendingSarees = Saree::where('is_active', true)
+            ->where('stock_quantity', '>', 0)
+            ->whereNotNull('video_url')
+            ->where('video_url', '!=', '')
+            ->with(['collection', 'images'])
+            ->orderBy('created_at', 'desc')
+            ->limit(6)
+            ->get();
+
         // Fetch bestseller sarees for the Best Sellers section
         $bestSellers = Saree::where('is_active', true)
             ->where('stock_quantity', '>', 0)
@@ -32,25 +42,6 @@ class HomeController extends Controller
                 ->where('stock_quantity', '>', 0)
                 ->with(['collection', 'images'])
                 ->inRandomOrder()
-                ->limit(6)
-                ->get();
-        }
-
-        // Fetch trending/featured sarees for the trends section
-        $trendingSarees = Saree::where('is_active', true)
-            ->where('is_featured', true)
-            ->where('stock_quantity', '>', 0)
-            ->with(['collection', 'images'])
-            ->orderBy('created_at', 'desc')
-            ->limit(6)
-            ->get();
-
-        // If no featured sarees, get recent sarees
-        if ($trendingSarees->isEmpty()) {
-            $trendingSarees = Saree::where('is_active', true)
-                ->where('stock_quantity', '>', 0)
-                ->with(['collection', 'images'])
-                ->orderBy('created_at', 'desc')
                 ->limit(6)
                 ->get();
         }

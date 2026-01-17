@@ -13,7 +13,7 @@ class Saree extends Model
         'name', 'slug', 'sku', 'description', 'short_description',
         'fabric', 'length', 'blouse_length', 'work_type', 'occasion', 
         'pattern', 'blouse_included', 'price', 'sale_price', 
-        'stock_quantity', 'collection_id', 'featured_image', 
+        'stock_quantity', 'collection_id', 'featured_image','video_url',
         'is_featured', 'is_new_arrival', 'is_bestseller', 'is_active',
         'colors', 'care_instructions', 'views', 'avg_rating', 'total_reviews'
     ];
@@ -113,10 +113,10 @@ class Saree extends Model
         return true;
     }
 
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
+ public function getRouteKeyName()
+{
+    return 'slug';
+}
 
     public function incrementViews()
     {
@@ -155,4 +155,65 @@ class Saree extends Model
     {
         return $query->where('stock_quantity', '>', 0);
     }
+    public function hasVideo()
+{
+    return !empty($this->video_url);
+}
+
+public function getEmbedVideoUrl()
+{
+    if (!$this->hasVideo()) {
+        return null;
+    }
+    
+    $url = $this->video_url;
+    
+    // YouTube formats
+    // Standard: https://www.youtube.com/watch?v=VIDEO_ID
+    if (preg_match('/youtube\.com\/watch\?v=([^\&\?\/]+)/', $url, $matches)) {
+        return 'https://www.youtube.com/embed/' . $matches[1] . '?rel=0';
+    }
+    
+    // Short URL: https://youtu.be/VIDEO_ID
+    if (preg_match('/youtu\.be\/([^\&\?\/]+)/', $url, $matches)) {
+        return 'https://www.youtube.com/embed/' . $matches[1] . '?rel=0';
+    }
+    
+    // YouTube embed already
+    if (preg_match('/youtube\.com\/embed\/([^\&\?\/]+)/', $url, $matches)) {
+        return $url;
+    }
+    
+    // Vimeo formats
+    // Standard: https://vimeo.com/VIDEO_ID
+    if (preg_match('/vimeo\.com\/(\d+)/', $url, $matches)) {
+        return 'https://player.vimeo.com/video/' . $matches[1];
+    }
+    
+    // Vimeo player already
+    if (preg_match('/player\.vimeo\.com\/video\/(\d+)/', $url, $matches)) {
+        return $url;
+    }
+    
+    // If no pattern matches, return null
+    return null;
+}
+
+// Also add this helper to get video platform
+public function getVideoPlatform()
+{
+    if (!$this->hasVideo()) {
+        return null;
+    }
+    
+    if (strpos($this->video_url, 'youtube.com') !== false || strpos($this->video_url, 'youtu.be') !== false) {
+        return 'YouTube';
+    }
+    
+    if (strpos($this->video_url, 'vimeo.com') !== false) {
+        return 'Vimeo';
+    }
+    
+    return 'Other';
+}
 }

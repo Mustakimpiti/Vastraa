@@ -43,6 +43,7 @@ class SareeController extends Controller
             'stock_quantity' => 'required|integer|min:0',
             'collection_id' => 'nullable|exists:collections,id',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'video_url' => 'nullable|url',
             'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_featured' => 'boolean',
             'is_new_arrival' => 'boolean',
@@ -53,7 +54,7 @@ class SareeController extends Controller
         ]);
 
         // Generate slug
-        $validated['slug'] = Str::slug($validated['name']);
+$validated['slug'] = $this->generateUniqueSlug($validated['name']);
 
         // Ensure directories exist
         $this->ensureDirectoriesExist();
@@ -121,6 +122,7 @@ class SareeController extends Controller
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_featured' => 'boolean',
+            'video_url' => 'nullable|url',
             'is_new_arrival' => 'boolean',
             'is_bestseller' => 'boolean',
             'is_active' => 'boolean',
@@ -130,7 +132,7 @@ class SareeController extends Controller
         ]);
 
         // Update slug if name changed
-        $validated['slug'] = Str::slug($validated['name']);
+$validated['slug'] = $this->generateUniqueSlug($validated['name'], $saree->id);
 
         // Ensure directories exist
         $this->ensureDirectoriesExist();
@@ -237,4 +239,28 @@ class SareeController extends Controller
             }
         }
     }
+    private function generateUniqueSlug($name, $id = null)
+{
+    $slug = Str::slug($name);
+    $originalSlug = $slug;
+    $count = 1;
+
+    while (true) {
+        $query = Saree::where('slug', $slug);
+        
+        // Exclude current record when updating
+        if ($id) {
+            $query->where('id', '!=', $id);
+        }
+        
+        if (!$query->exists()) {
+            break;
+        }
+        
+        $slug = $originalSlug . '-' . $count;
+        $count++;
+    }
+
+    return $slug;
+}
 }
