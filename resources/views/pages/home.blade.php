@@ -267,6 +267,7 @@
     </div>
 </section>
 <!--== End Blog Area Wrapper ==-->
+
 <!--== Start Newsletter Area ==-->
 <section class="newsletter-area bg-overlay-black2-6 bg-parallax" data-speed="1.136" data-bg-img="assets/img/photos/bg-d4.jpg">
     <div class="container">
@@ -275,38 +276,6 @@
                 <div class="newsletter-content content-style3" data-aos="fade-up" data-aos-duration="1000">
                     <h1 class="title">Stay in the loop</h1>
                     <p>Sign up for our newsletter to be updated with the latest products and news.</p>
-                    
-                    {{-- Success Message --}}
-                    @if(session('newsletter_success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="lastudioicon-check-1"></i> {{ session('newsletter_success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
-
-                    {{-- Info Message --}}
-                    @if(session('newsletter_info'))
-                        <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            <i class="lastudioicon-i-information"></i> {{ session('newsletter_info') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
-
-                    {{-- Error Message --}}
-                    @if(session('newsletter_error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="lastudioicon-close"></i> {{ session('newsletter_error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
-
-                    {{-- Validation Errors --}}
-                    @if($errors->has('email'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="lastudioicon-close"></i> {{ $errors->first('email') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
 
                     <form class="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST">
                         @csrf
@@ -326,6 +295,29 @@
 </section>
 <!--== End Newsletter Area -->
 
+<!--== Newsletter Popup Modal ==-->
+<div class="newsletter-popup-modal" id="newsletterModal">
+    <div class="newsletter-popup-overlay" onclick="closeNewsletterModal()"></div>
+    <div class="newsletter-popup-content">
+        <button type="button" class="newsletter-close-btn" onclick="closeNewsletterModal()">
+            <i class="lastudioicon-e-remove"></i>
+        </button>
+        
+        <div class="newsletter-popup-body">
+            <div class="newsletter-icon-wrapper" id="modalIconWrapper">
+                <!-- Icon will be added dynamically -->
+            </div>
+            
+            <h2 class="newsletter-popup-title" id="modalTitle">Thank You!</h2>
+            <p class="newsletter-popup-message" id="modalMessage">Your message will appear here</p>
+            
+            <button type="button" class="btn-theme newsletter-popup-btn" onclick="closeNewsletterModal()">
+                Got it
+            </button>
+        </div>
+    </div>
+</div>
+<!--== End Newsletter Popup Modal ==-->
 
 @endsection
 
@@ -399,11 +391,32 @@ function showQuickView(id, name, image, price, oldPrice, stock, description, sku
         skuSpan.textContent = sku;
     }
     
+    // Update add to cart form with product ID and hide quantity selector
+    const addToCartForm = document.querySelector('.product-quick-view-modal form[action*="cart"]');
+    if (addToCartForm) {
+        const sareeIdInput = addToCartForm.querySelector('input[name="saree_id"]');
+        if (sareeIdInput) {
+            sareeIdInput.value = id;
+        }
+        
+        // Hide quantity selector in quick view
+        const quantityWrapper = addToCartForm.querySelector('.product-quantity-wrapper, .quantity-wrapper, .product-quantity');
+        if (quantityWrapper) {
+            quantityWrapper.style.display = 'none';
+        }
+        
+        // Set quantity to 1 by default
+        const quantityInput = addToCartForm.querySelector('input[name="quantity"]');
+        if (quantityInput) {
+            quantityInput.value = 1;
+        }
+    }
+    
     // Hide add to cart if out of stock
     const addToCartSection = document.querySelector('.product-quick-view-modal .quick-product-action');
     if (addToCartSection) {
         if (stock > 0) {
-            addToCartSection.style.display = 'block';
+            addToCartSection.style.display = 'flex';
         } else {
             addToCartSection.style.display = 'none';
         }
@@ -440,6 +453,60 @@ function showQuickView(id, name, image, price, oldPrice, stock, description, sku
         overlay.classList.add('open');
     }
 }
+
+// Newsletter Modal Functions
+function showNewsletterModal(type, title, message) {
+    const modal = document.getElementById('newsletterModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const iconWrapper = document.getElementById('modalIconWrapper');
+    
+    // Clear previous icon
+    iconWrapper.innerHTML = '';
+    
+    // Set icon based on type
+    let iconHtml = '';
+    if (type === 'success') {
+        iconHtml = '<div class="newsletter-icon newsletter-icon-success"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>';
+    } else if (type === 'error') {
+        iconHtml = '<div class="newsletter-icon newsletter-icon-error"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>';
+    } else if (type === 'info') {
+        iconHtml = '<div class="newsletter-icon newsletter-icon-info"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>';
+    }
+    
+    iconWrapper.innerHTML = iconHtml;
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeNewsletterModal() {
+    const modal = document.getElementById('newsletterModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Show modal if there are session messages
+document.addEventListener('DOMContentLoaded', function() {
+    @if(session('newsletter_success'))
+        showNewsletterModal('success', 'Success!', '{{ session('newsletter_success') }}');
+    @elseif(session('newsletter_info'))
+        showNewsletterModal('info', 'Already Subscribed', '{{ session('newsletter_info') }}');
+    @elseif(session('newsletter_error'))
+        showNewsletterModal('error', 'Oops!', '{{ session('newsletter_error') }}');
+    @elseif($errors->has('email'))
+        showNewsletterModal('error', 'Invalid Email', '{{ $errors->first('email') }}');
+    @endif
+});
+
+// Close modal on ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeNewsletterModal();
+    }
+});
 </script>
 
 <style>
@@ -485,6 +552,181 @@ function showQuickView(id, name, image, price, oldPrice, stock, description, sku
 .product-quick-view-modal .text-danger {
     color: #dc3545;
     font-weight: 600;
+}
+
+/* Newsletter Popup Modal Styles */
+.newsletter-popup-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.newsletter-popup-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.newsletter-popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.newsletter-popup-content {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 90%;
+    padding: 50px 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    z-index: 10;
+}
+
+.newsletter-popup-modal.active .newsletter-popup-content {
+    transform: scale(1);
+}
+
+.newsletter-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #f5f5f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 20px;
+    color: #333;
+}
+
+.newsletter-close-btn:hover {
+    background: #e0e0e0;
+    transform: rotate(90deg);
+}
+
+.newsletter-popup-body {
+    text-align: center;
+}
+
+.newsletter-icon-wrapper {
+    margin-bottom: 25px;
+}
+
+.newsletter-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    animation: scaleIn 0.5s ease;
+}
+
+.newsletter-icon-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+}
+
+.newsletter-icon-error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+}
+
+.newsletter-icon-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+}
+
+.newsletter-popup-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+
+.newsletter-popup-message {
+    font-size: 16px;
+    color: #6b7280;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.newsletter-popup-btn {
+    display: inline-block;
+    padding: 14px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.newsletter-popup-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .newsletter-popup-content {
+        padding: 40px 30px;
+    }
+    
+    .newsletter-popup-title {
+        font-size: 24px;
+    }
+    
+    .newsletter-popup-message {
+        font-size: 14px;
+    }
+    
+    .newsletter-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 35px;
+    }
 }
 </style>
 @endpush
