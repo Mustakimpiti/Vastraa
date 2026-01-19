@@ -203,50 +203,6 @@
     </div>
 </div>
 @endif
-<!-- Product Video -->
-@if($saree->video_url)
-<div class="card mb-4">
-    <div class="card-header bg-white">
-        <h5 class="mb-0">
-            <i class="fa fa-video text-danger"></i> Product Video
-        </h5>
-    </div>
-    <div class="card-body">
-        <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded">
-            <div>
-                <p class="mb-1">
-                    <strong>Video Available</strong>
-                </p>
-                <small class="text-muted">
-                    {{ $saree->getVideoPlatform() ?? 'External Video' }}
-                </small>
-            </div>
-            <a href="{{ $saree->video_url }}" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               class="btn btn-danger">
-                <i class="fa fa-play-circle"></i> Watch Video
-            </a>
-        </div>
-        
-        <div class="mt-3">
-            <label class="form-label text-muted small">Video URL:</label>
-            <div class="input-group">
-                <input type="text" 
-                       class="form-control form-control-sm" 
-                       value="{{ $saree->video_url }}" 
-                       readonly 
-                       id="videoUrlInput">
-                <button class="btn btn-sm btn-outline-secondary" 
-                        type="button"
-                        onclick="copyVideoUrl()">
-                    <i class="fa fa-copy"></i> Copy
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-@endif
 
         <!-- Pricing & Stock -->
         <div class="card mb-4">
@@ -392,28 +348,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-function copyVideoUrl() {
-    const input = document.getElementById('videoUrlInput');
-    input.select();
-    input.setSelectionRange(0, 99999); // For mobile devices
-    
-    navigator.clipboard.writeText(input.value).then(function() {
-        // Show success feedback
-        const btn = event.target.closest('button');
-        const originalHTML = btn.innerHTML;
-        btn.innerHTML = '<i class="fa fa-check"></i> Copied!';
-        btn.classList.remove('btn-outline-secondary');
-        btn.classList.add('btn-success');
-        
-        setTimeout(function() {
-            btn.innerHTML = originalHTML;
-            btn.classList.remove('btn-success');
-            btn.classList.add('btn-outline-secondary');
-        }, 2000);
-    }).catch(function(err) {
-        alert('Failed to copy URL');
-    });
-}
 </script>
 @endpush
 @endsection

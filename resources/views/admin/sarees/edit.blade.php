@@ -335,46 +335,6 @@
         </div>
     </div>
 </div>
-<!-- Video Section -->
-<div class="card mb-4">
-    <div class="card-header bg-white">
-        <h5 class="mb-0">Product Video (Optional)</h5>
-    </div>
-    <div class="card-body">
-        <div class="form-group">
-            <label for="video_url" class="form-label">Video URL</label>
-            <input type="url" 
-                   class="form-control @error('video_url') is-invalid @enderror" 
-                   id="video_url" 
-                   name="video_url" 
-                   value="{{ old('video_url', $saree->video_url) }}"
-                   placeholder="https://www.youtube.com/watch?v=...">
-            <small class="text-muted">
-                Paste YouTube or Vimeo URL
-            </small>
-            @error('video_url')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-        
-        @if($saree->video_url)
-        <div class="mt-3 p-3 bg-light rounded">
-            <p class="mb-2"><strong>Current Video Link:</strong></p>
-            <div class="d-flex align-items-center justify-content-between">
-                <small class="text-muted text-truncate me-2" style="max-width: 70%;">
-                    {{ $saree->video_url }}
-                </small>
-                <a href="{{ $saree->video_url }}" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   class="btn btn-sm btn-danger">
-                    <i class="fa fa-play"></i> Watch
-                </a>
-            </div>
-        </div>
-        @endif
-    </div>
-</div>
 
             <!-- Status Flags -->
             <div class="card mb-4">

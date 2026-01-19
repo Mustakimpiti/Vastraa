@@ -313,48 +313,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Video Section -->
-<div class="card mb-4">
-    <div class="card-header bg-white">
-        <h5 class="mb-0">Product Video (Optional)</h5>
-    </div>
-    <div class="card-body">
-        <div class="form-group">
-            <label for="video_url" class="form-label">Video URL</label>
-            <input type="url" 
-                   class="form-control @error('video_url') is-invalid @enderror" 
-                   id="video_url" 
-                   name="video_url" 
-                   value="{{ old('video_url') }}"
-                   placeholder="https://www.youtube.com/watch?v=...">
-            <small class="text-muted">
-                Paste YouTube or Vimeo URL<br>
-                Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-            </small>
-            @error('video_url')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-        
-        <!-- Video Preview -->
-        <div id="video-preview" class="mt-3" style="display: none;">
-            <label class="form-label"><strong>Preview:</strong></label>
-            <div class="ratio ratio-16x9">
-                <iframe id="video-iframe" 
-                        src="" 
-                        frameborder="0" 
-                        allow="autoplay; encrypted-media" 
-                        allowfullscreen>
-                </iframe>
-            </div>
-            <button type="button" 
-                    class="btn btn-sm btn-danger mt-2" 
-                    onclick="clearVideo()">
-                <i class="fa fa-times"></i> Remove Video
-            </button>
-        </div>
-    </div>
-</div>
+
 
             <!-- Status Flags -->
             <div class="card mb-4">
@@ -569,47 +528,6 @@ document.getElementById('sale_price').addEventListener('blur', function() {
         this.value = '';
     }
 });
-
-// Video URL Preview
-document.getElementById('video_url').addEventListener('input', function(e) {
-    const url = e.target.value.trim();
-    const preview = document.getElementById('video-preview');
-    const iframe = document.getElementById('video-iframe');
-    
-    if (!url) {
-        preview.style.display = 'none';
-        return;
-    }
-    
-    const embedUrl = getEmbedUrl(url);
-    if (embedUrl) {
-        iframe.src = embedUrl;
-        preview.style.display = 'block';
-    } else {
-        preview.style.display = 'none';
-    }
-});
-
-function getEmbedUrl(url) {
-    // YouTube
-    let match = url.match(/youtube\.com\/watch\?v=([^\&\?\/]+)/);
-    if (match) return 'https://www.youtube.com/embed/' + match[1];
-    
-    match = url.match(/youtu\.be\/([^\&\?\/]+)/);
-    if (match) return 'https://www.youtube.com/embed/' + match[1];
-    
-    // Vimeo
-    match = url.match(/vimeo\.com\/(\d+)/);
-    if (match) return 'https://player.vimeo.com/video/' + match[1];
-    
-    return null;
-}
-
-function clearVideo() {
-    document.getElementById('video_url').value = '';
-    document.getElementById('video-preview').style.display = 'none';
-    document.getElementById('video-iframe').src = '';
-}
 </script>
 @endpush
 @endsection

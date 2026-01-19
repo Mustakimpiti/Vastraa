@@ -18,16 +18,6 @@ class HomeController extends Controller
             ->limit(3)
             ->get();
 
-        // Fetch sarees with videos for Trending Now section
-        $trendingSarees = Saree::where('is_active', true)
-            ->where('stock_quantity', '>', 0)
-            ->whereNotNull('video_url')
-            ->where('video_url', '!=', '')
-            ->with(['collection', 'images'])
-            ->orderBy('created_at', 'desc')
-            ->limit(6)
-            ->get();
-
         // Fetch bestseller sarees for the Best Sellers section
         $bestSellers = Saree::where('is_active', true)
             ->where('stock_quantity', '>', 0)
@@ -62,7 +52,6 @@ class HomeController extends Controller
         return view('pages.home', compact(
             'featuredCollections',
             'bestSellers',
-            'trendingSarees',
             'recentBlogs',
             'testimonials'
         ));
