@@ -720,6 +720,115 @@ function showQuickView(id, name, image, price, oldPrice, stock, description, sku
         skuSpan.textContent = sku;
     }
     
+    // Hide the entire "Add to Cart" section (including quantity selector and button)
+    const addToCartSection = document.querySelector('.product-quick-view-modal .quick-product-action');
+    if (addToCartSection) {
+        addToCartSection.style.display = 'none';
+    }
+    
+    // Also hide any other add to cart forms
+    const addToCartForms = document.querySelectorAll('.product-quick-view-modal form[action*="cart"]');
+    addToCartForms.forEach(form => {
+        form.style.display = 'none';
+    });
+    
+    // Hide wishlist and compare buttons
+    const actionBottom = document.querySelector('.product-quick-view-modal .action-bottom');
+    if (actionBottom) {
+        actionBottom.style.display = 'none';
+    }
+    
+    // Update "View Full Details" button link
+    const viewDetailsBtn = document.querySelector('.product-quick-view-modal .btn-theme');
+    if (viewDetailsBtn) {
+        viewDetailsBtn.href = productUrl;
+    }
+    
+    // Update all other product links
+    const productLinks = document.querySelectorAll('.product-quick-view-modal a[href*="shop-single-product"]');
+    productLinks.forEach(link => {
+        if (!link.classList.contains('btn-close') && !link.classList.contains('btn-theme')) {
+            link.href = productUrl;
+        }
+    });
+    
+    // Show modal
+    const modal = document.querySelector('.product-quick-view-modal');
+    const overlay = document.querySelector('.canvas-overlay');
+    
+    if (modal) {
+        modal.classList.add('open');
+    }
+    if (overlay) {
+        overlay.classList.add('open');
+    }
+}    // Update product image
+    const modalImage = document.querySelector('.product-quick-view-modal .thumb img');
+    if (modalImage) {
+        modalImage.src = image;
+        modalImage.alt = name;
+    }
+    
+    // Update product title
+    const modalTitle = document.querySelector('.product-quick-view-modal .title');
+    if (modalTitle) {
+        modalTitle.textContent = name;
+    }
+    
+    // Update rating
+    const ratingDiv = document.querySelector('.product-quick-view-modal .ratting-icons');
+    if (ratingDiv) {
+        let ratingHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                ratingHtml += '<i class="lastudioicon-star-rate-1"></i>';
+            } else {
+                ratingHtml += '<i class="lastudioicon-star-rate-2"></i>';
+            }
+        }
+        ratingDiv.innerHTML = ratingHtml;
+    }
+    
+    // Update review count
+    const reviewLink = document.querySelector('.product-quick-view-modal .review a');
+    if (reviewLink) {
+        reviewLink.textContent = '(' + totalReviews + ' customer ' + (totalReviews == 1 ? 'review' : 'reviews') + ')';
+        reviewLink.href = productUrl + '#productReview';
+    }
+    
+    // Update stock info
+    const stockInfo = document.querySelector('.product-quick-view-modal .review p');
+    if (stockInfo) {
+        if (stock > 0) {
+            stockInfo.innerHTML = '<span></span>' + stock + ' in stock';
+        } else {
+            stockInfo.innerHTML = '<span class="text-danger">Out of stock</span>';
+        }
+    }
+    
+    // Update prices with discount badge
+    const pricesDiv = document.querySelector('.product-quick-view-modal .prices');
+    if (pricesDiv) {
+        if (oldPrice && discount) {
+            pricesDiv.innerHTML = '<span class="price-old">₹' + oldPrice + '</span><span class="price">₹' + price + '</span><span class="badge badge-sale">-' + discount + '%</span>';
+        } else {
+            pricesDiv.innerHTML = '<span class="price">₹' + price + '</span>';
+        }
+    }
+    
+    // Update description
+    const descDiv = document.querySelector('.product-quick-view-modal .product-desc');
+    if (descDiv) {
+        const shortDesc = description.length > 200 ? description.substring(0, 200) + '...' : description;
+        descDiv.textContent = shortDesc;
+    }
+    
+    // Update SKU
+    const skuSpan = document.querySelector('.product-quick-view-modal .product-sku span');
+    if (skuSpan) {
+        skuSpan.textContent = sku;
+    }
+    
     // Update add to cart form with product ID and hide quantity selector
     const addToCartForm = document.querySelector('.product-quick-view-modal form[action*="cart"]');
     if (addToCartForm) {
@@ -1057,6 +1166,31 @@ document.addEventListener('keydown', function(e) {
         height: 70px;
         font-size: 35px;
     }
+}
+/* Hide Add to Cart in Quick View */
+.product-quick-view-modal .quick-product-action {
+    display: none !important;
+}
+
+.product-quick-view-modal form[action*="cart"] {
+    display: none !important;
+}
+
+.product-quick-view-modal .product-quantity-wrapper,
+.product-quick-view-modal .quantity-wrapper,
+.product-quick-view-modal .product-quantity {
+    display: none !important;
+}
+
+/* Hide wishlist and compare in quick view */
+.product-quick-view-modal .action-bottom {
+    display: none !important;
+}
+
+/* Make sure "View Full Details" button is prominent */
+.product-quick-view-modal .btn-theme {
+    margin-top: 20px;
+    display: inline-block;
 }
 </style>
 @endpush

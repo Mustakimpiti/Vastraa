@@ -113,7 +113,7 @@
                         @if($saree->hasDiscount())
                             <span class="price-old">₹{{ number_format($saree->price, 2) }}</span>
                             <span class="price">₹{{ number_format($saree->sale_price, 2) }}</span>
-                            <span class="badge badge-sale">-{{ $saree->getDiscountPercentage() }}%</span>
+                            <span class="badge">-{{ $saree->getDiscountPercentage() }}%</span>
                         @else
                             <span class="price">₹{{ number_format($saree->price, 2) }}</span>
                         @endif
@@ -126,12 +126,8 @@
                         <form action="{{ route('cart.add') }}" method="post">
                             @csrf
                             <input type="hidden" name="saree_id" value="{{ $saree->id }}">
+                            <input type="hidden" name="quantity" value="1">
                             <div class="action-top">
-                                <div class="pro-qty-area">
-                                    <div class="pro-qty">
-                                        <input type="text" id="quantity1" name="quantity" title="Quantity" value="1" />
-                                    </div>
-                                </div>
                                 <button type="submit" class="btn-theme btn-black">Add to cart</button>
                             </div>
                         </form>
@@ -298,16 +294,13 @@
                                     @endif
 
                                     @auth
-                                    <div class="rating-input-wrapper">
+                                    <div class="rating">
                                         <span class="rating-title">Your rating *</span>
-                                        <div class="rating-stars" id="rating-stars">
-                                            <span class="star lastudioicon-star-rate-2" data-rating="1"></span>
-                                            <span class="star lastudioicon-star-rate-2" data-rating="2"></span>
-                                            <span class="star lastudioicon-star-rate-2" data-rating="3"></span>
-                                            <span class="star lastudioicon-star-rate-2" data-rating="4"></span>
-                                            <span class="star lastudioicon-star-rate-2" data-rating="5"></span>
-                                        </div>
-                                        <span class="rating-label" id="rating-label">Please select a rating</span>
+                                        <span class="star lastudioicon-star-rate-2" data-rating="1"></span>
+                                        <span class="star lastudioicon-star-rate-2" data-rating="2"></span>
+                                        <span class="star lastudioicon-star-rate-2" data-rating="3"></span>
+                                        <span class="star lastudioicon-star-rate-2" data-rating="4"></span>
+                                        <span class="star lastudioicon-star-rate-2" data-rating="5"></span>
                                     </div>
 
                                     <form action="{{ route('product.review', $saree->slug) }}" method="post" id="reviewForm">
@@ -319,14 +312,13 @@
                                                     <div class="form-group">
                                                         <label for="reviewFormTextarea">Your review *</label>
                                                         <textarea class="form-control" id="reviewFormTextarea" name="comment" rows="7" placeholder="Write your review here..." required>{{ old('comment') }}</textarea>
-                                                        <small class="form-text text-muted">Minimum 10 characters</small>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
-                                                        <button class="btn btn-theme btn-black" type="submit">Submit Review</button>
+                                                        <button class="btn btn-theme btn-black" type="submit">Submit</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -341,13 +333,15 @@
 
                         @if($saree->care_instructions && count($saree->care_instructions) > 0)
                         <div class="tab-pane fade" id="productCare" role="tabpanel" aria-labelledby="product-care-tab">
-                            <div class="product-care">
-                                <h4>Care Instructions</h4>
-                                <ul>
-                                    @foreach($saree->care_instructions as $instruction)
-                                    <li>{{ $instruction }}</li>
-                                    @endforeach
-                                </ul>
+                            <div class="product-desc">
+                                <div class="product-content">
+                                    <h4>Care Instructions</h4>
+                                    <ul>
+                                        @foreach($saree->care_instructions as $instruction)
+                                        <li>{{ $instruction }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         @endif
@@ -460,66 +454,68 @@
 </section>
 <!--== End Products Area Wrapper ==-->
 
+@push('styles')
+<style>
+/* Minimal custom styling for price and discount */
+.prices {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.prices .price-old {
+    text-decoration: line-through;
+}
+
+.prices .badge {
+    background: #d4af37;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+</style>
+@endpush
+
 @push('scripts')
 <script>
 // Star rating functionality
 document.addEventListener('DOMContentLoaded', function() {
-    const stars = document.querySelectorAll('#rating-stars .star');
+    const stars = document.querySelectorAll('.rating .star');
     const ratingInput = document.getElementById('rating-value');
-    const ratingLabel = document.getElementById('rating-label');
     const reviewForm = document.getElementById('reviewForm');
     
     if (stars.length > 0 && ratingInput) {
-        const ratingLabels = [
-            'Please select a rating',
-            'Poor',
-            'Fair',
-            'Good',
-            'Very Good',
-            'Excellent'
-        ];
-        
         // Click handler for stars
-        stars.forEach((star, index) => {
+        stars.forEach((star) => {
             star.addEventListener('click', function() {
                 const rating = parseInt(this.getAttribute('data-rating'));
                 ratingInput.value = rating;
-                
-                // Update star display
                 updateStars(rating);
-                
-                // Update label
-                ratingLabel.textContent = ratingLabels[rating];
-                ratingLabel.style.color = '#d4af37';
             });
             
             // Hover effect
             star.addEventListener('mouseenter', function() {
                 const rating = parseInt(this.getAttribute('data-rating'));
-                updateStars(rating, true);
+                updateStars(rating);
             });
         });
         
         // Reset to selected rating on mouse leave
-        document.getElementById('rating-stars').addEventListener('mouseleave', function() {
+        document.querySelector('.rating').addEventListener('mouseleave', function() {
             const currentRating = parseInt(ratingInput.value) || 0;
             updateStars(currentRating);
         });
         
-        function updateStars(rating, isHover = false) {
-            stars.forEach((star, index) => {
+        function updateStars(rating) {
+            stars.forEach((star) => {
                 const starRating = parseInt(star.getAttribute('data-rating'));
                 
                 if (starRating <= rating) {
                     star.classList.remove('lastudioicon-star-rate-2');
                     star.classList.add('lastudioicon-star-rate-1');
-                    if (isHover) {
-                        star.classList.add('hover');
-                    } else {
-                        star.classList.remove('hover');
-                    }
                 } else {
-                    star.classList.remove('lastudioicon-star-rate-1', 'hover');
+                    star.classList.remove('lastudioicon-star-rate-1');
                     star.classList.add('lastudioicon-star-rate-2');
                 }
             });
@@ -531,324 +527,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!ratingInput.value) {
                     e.preventDefault();
                     alert('Please select a rating before submitting your review.');
-                    ratingLabel.textContent = 'Please select a rating';
-                    ratingLabel.style.color = '#dc3545';
                     return false;
                 }
             });
         }
     }
 });
-
-// Custom Quantity Controls
-document.addEventListener('DOMContentLoaded', function() {
-    const quantityInput = document.getElementById('quantity1');
-    const proQty = document.querySelector('.pro-qty');
-    
-    if (proQty && quantityInput) {
-        // Remove any existing increment/decrement buttons and clear content
-        proQty.innerHTML = '';
-        
-        // Create custom buttons
-        const decrementBtn = document.createElement('button');
-        decrementBtn.type = 'button';
-        decrementBtn.className = 'dec qtybtn';
-        decrementBtn.innerHTML = '-';
-        
-        const incrementBtn = document.createElement('button');
-        incrementBtn.type = 'button';
-        incrementBtn.className = 'inc qtybtn';
-        incrementBtn.innerHTML = '+';
-        
-        // Set input attributes
-        quantityInput.type = 'text';
-        quantityInput.readOnly = false;
-        
-        // Insert buttons in correct order: - [input] +
-        proQty.appendChild(decrementBtn);
-        proQty.appendChild(quantityInput);
-        proQty.appendChild(incrementBtn);
-        
-        // Decrement handler
-        decrementBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            let currentValue = parseInt(quantityInput.value) || 1;
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-            }
-        });
-        
-        // Increment handler
-        incrementBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            let currentValue = parseInt(quantityInput.value) || 1;
-            const maxStock = {{ $saree->stock_quantity }};
-            if (currentValue < maxStock) {
-                quantityInput.value = currentValue + 1;
-            }
-        });
-        
-        // Prevent manual entry of invalid values
-        quantityInput.addEventListener('input', function() {
-            let value = parseInt(this.value) || 1;
-            const maxStock = {{ $saree->stock_quantity }};
-            
-            if (value < 1) {
-                this.value = 1;
-            } else if (value > maxStock) {
-                this.value = maxStock;
-            } else {
-                this.value = value;
-            }
-        });
-        
-        // Prevent non-numeric input
-        quantityInput.addEventListener('keypress', function(e) {
-            if (e.which < 48 || e.which > 57) {
-                e.preventDefault();
-            }
-        });
-    }
-});
 </script>
 @endpush
 
 @endsection
-
-<style>
-.prices {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.price-old {
-    text-decoration: line-through;
-    color: #999;
-    font-size: 18px;
-    font-weight: 400;
-}
-
-.price {
-    color: #000;
-    font-size: 28px;
-    font-weight: 600;
-}
-
-.badge-sale {
-    background: linear-gradient(135deg, #d4af37 0%, #f9d77e 50%, #d4af37 100%);
-    color: #ffffff !important;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 700;
-    display: inline-block;
-    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-/* Product Description Image Size Control */
-.product-desc .product-thumb {
-    max-width: 300px;
-    margin-right: 30px;
-    flex-shrink: 0;
-}
-
-.product-desc .product-thumb img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-.product-desc .product-desc-row {
-    display: flex;
-    gap: 30px;
-    align-items: flex-start;
-}
-
-.product-desc .product-content {
-    flex: 1;
-}
-
-@media (max-width: 768px) {
-    .product-desc .product-desc-row {
-        flex-direction: column;
-    }
-    
-    .product-desc .product-thumb {
-        max-width: 100%;
-        margin-right: 0;
-        margin-bottom: 20px;
-    }
-}
-
-/* Review Star Rating Styles */
-.rating-input-wrapper {
-    margin-bottom: 20px;
-}
-
-.rating-title {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 600;
-    color: #333;
-}
-
-.rating-stars {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 8px;
-}
-
-.rating-stars .star {
-    font-size: 24px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: #ddd;
-}
-
-.rating-stars .star:hover,
-.rating-stars .star.hover {
-    transform: scale(1.1);
-}
-
-.rating-stars .star.lastudioicon-star-rate-1 {
-    color: #d4af37;
-}
-
-.rating-label {
-    display: block;
-    font-size: 14px;
-    color: #666;
-    font-style: italic;
-}
-
-.alert {
-    margin-bottom: 20px;
-}
-
-.form-control:focus {
-    border-color: #d4af37;
-    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
-}
-
-.product-review-form .form-group {
-    margin-bottom: 20px;
-}
-
-.product-review-form label {
-    font-weight: 600;
-    margin-bottom: 8px;
-    display: block;
-}
-
-.product-review-comments .comment-item {
-    margin-bottom: 30px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid #eee;
-}
-
-.product-review-comments .comment-item:last-child {
-    border-bottom: none;
-}
-
-/* Custom Quantity Controls */
-.pro-qty {
-    display: inline-flex !important;
-    flex-direction: row !important;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    overflow: hidden;
-    background: #fff;
-    width: auto !important;
-    height: auto !important;
-}
-
-.pro-qty input[type="text"] {
-    width: 60px;
-    height: 45px;
-    border: none;
-    text-align: center;
-    font-size: 16px;
-    font-weight: 600;
-    padding: 0;
-    margin: 0;
-    background: transparent;
-}
-
-.pro-qty input[type="text"]:focus {
-    outline: none;
-    box-shadow: none;
-}
-
-.pro-qty .qtybtn {
-    width: 40px;
-    height: 45px;
-    border: none;
-    background: #f5f5f5;
-    color: #333;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-}
-
-.pro-qty .qtybtn:hover {
-    background: #d4af37;
-    color: #fff;
-}
-
-.pro-qty .qtybtn:active {
-    transform: scale(0.95);
-}
-
-.pro-qty .dec {
-    border-right: 1px solid #ddd;
-}
-
-.pro-qty .inc {
-    border-left: 1px solid #ddd;
-}
-
-/* Disable text selection on buttons */
-.pro-qty .qtybtn {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-/* Responsive adjustments */
-@media (max-width: 576px) {
-    .pro-qty input[type="text"] {
-        width: 50px;
-        height: 40px;
-        font-size: 14px;
-    }
-    
-    .pro-qty .qtybtn {
-        width: 35px;
-        height: 40px;
-        font-size: 16px;
-    }
-}
-
-/* Fix parent container */
-.pro-qty-area {
-    display: inline-block;
-}
-
-.action-top {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-</style>

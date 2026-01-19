@@ -89,10 +89,10 @@
                     </div>
                 </div>
 
-                <div class="row row-gutter-60 product-items-style4">
+                <!-- Updated Product Grid - Same Style as Home Page -->
+                <div class="row row-gutter-60">
                     @forelse($sarees as $saree)
-                    <div class="col-sm-6 col-md-4">
-                        <!-- Start Product Item -->
+                    <div class="col-sm-6 col-lg-4">
                         <div class="product-item">
                             <div class="product-thumb">
                                 <a href="{{ route('product.show', $saree->slug) }}">
@@ -104,18 +104,21 @@
                                     <img src="{{ $imageUrl }}" alt="{{ $saree->name }}">
                                     <span class="thumb-overlay"></span>
                                 </a>
-                                <div class="product-action action-style3">
-                                    <a class="action-cart ht-tooltip" data-tippy-content="Add to cart" href="{{ route('product.show', $saree->slug) }}" title="Add to cart">
-                                        <i class="lastudioicon-shopping-cart-3"></i>
-                                    </a>
-                                    <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View" 
-                                       onclick="showQuickView({{ $saree->id }}, '{{ $saree->name }}', '{{ $imageUrl }}', '{{ $saree->hasDiscount() ? number_format($saree->sale_price, 2) : number_format($saree->price, 2) }}', '{{ $saree->hasDiscount() ? number_format($saree->price, 2) : '' }}', '{{ $saree->stock_quantity }}', '{{ addslashes($saree->short_description ?? $saree->description) }}', '{{ $saree->sku ?? 'N/A' }}', '{{ route('product.show', $saree->slug) }}', '{{ $saree->hasDiscount() ? $saree->getDiscountPercentage() : '' }}')">
+                                @if($saree->hasDiscount())
+                                <span class="badge">-{{ $saree->getDiscountPercentage() }}%</span>
+                                @endif
+                                @if($saree->is_new_arrival)
+                                <span class="badge badge-new">NEW</span>
+                                @endif
+                                <div class="product-action">
+                                    <a class="action-quick-view ht-tooltip" data-tippy-content="Quick View" href="javascript:void(0);" title="Quick View"
+                                       onclick="showQuickView({{ $saree->id }}, '{{ addslashes($saree->name) }}', '{{ $imageUrl }}', '{{ $saree->hasDiscount() ? number_format($saree->sale_price, 2) : number_format($saree->price, 2) }}', '{{ $saree->hasDiscount() ? number_format($saree->price, 2) : '' }}', '{{ $saree->stock_quantity }}', '{{ addslashes($saree->short_description ?? $saree->description) }}', '{{ $saree->sku ?? 'N/A' }}', '{{ route('product.show', $saree->slug) }}', '{{ $saree->hasDiscount() ? $saree->getDiscountPercentage() : '' }}', {{ $saree->avg_rating ?? 0 }}, {{ $saree->total_reviews ?? 0 }})">
                                         <i class="lastudioicon-search-zoom-in"></i>
                                     </a>
                                 </div>
                             </div>
-                            <div class="product-info info-style2">
-                                <div class="content-inner">                  
+                            <div class="product-info">
+                                <div class="content-inner">
                                     <h4 class="title"><a href="{{ route('product.show', $saree->slug) }}">{{ $saree->name }}</a></h4>
                                     <div class="prices">
                                         @if($saree->hasDiscount())
@@ -125,10 +128,30 @@
                                             <span class="price">₹{{ number_format($saree->price, 2) }}</span>
                                         @endif
                                     </div>
+                                    @if($saree->avg_rating > 0)
+                                    <div class="rating">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= $saree->avg_rating)
+                                            <i class="lastudioicon-star-rate"></i>
+                                            @else
+                                            <i class="lastudioicon-star-rate-empty"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="product-info-action">
+                                    <form action="{{ route('cart.add') }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <input type="hidden" name="saree_id" value="{{ $saree->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="action-cart ht-tooltip" data-tippy-content="Add to cart" title="Add to cart" style="background: none; border: none; cursor: pointer;">
+                                            <i class="lastudioicon-bag-3"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                        <!-- End Product Item -->
                     </div>
                     @empty
                     <div class="col-md-12 text-center py-5">
@@ -186,29 +209,79 @@
 
 @push('scripts')
 <script>
-function showQuickView(id, name, image, price, oldPrice, stock, description, sku, productUrl, discount) {
+function showQuickView(id, name, image, price, oldPrice, stock, description, sku, productUrl, discount, rating, totalReviews) {
     // Update product image
-    document.querySelector('.product-quick-view-modal .thumb img').src = image;
+    const modalImage = document.querySelector('.product-quick-view-modal .thumb img');
+    if (modalImage) {
+        modalImage.src = image;
+        modalImage.alt = name;
+    }
     
     // Update product title
-    document.querySelector('.product-quick-view-modal .title').textContent = name;
+    const modalTitle = document.querySelector('.product-quick-view-modal .title');
+    if (modalTitle) {
+        modalTitle.textContent = name;
+    }
+    
+    // Update rating
+    const ratingDiv = document.querySelector('.product-quick-view-modal .ratting-icons');
+    if (ratingDiv) {
+        let ratingHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                ratingHtml += '<i class="lastudioicon-star-rate-1"></i>';
+            } else {
+                ratingHtml += '<i class="lastudioicon-star-rate-2"></i>';
+            }
+        }
+        ratingDiv.innerHTML = ratingHtml;
+    }
+    
+    // Update review count
+    const reviewLink = document.querySelector('.product-quick-view-modal .review a');
+    if (reviewLink) {
+        reviewLink.textContent = '(' + totalReviews + ' customer ' + (totalReviews == 1 ? 'review' : 'reviews') + ')';
+        reviewLink.href = productUrl + '#productReview';
+    }
     
     // Update stock info
-    document.querySelector('.product-quick-view-modal .review p').innerHTML = '<span></span>' + stock + ' in stock';
+    const stockInfo = document.querySelector('.product-quick-view-modal .review p');
+    if (stockInfo) {
+        if (stock > 0) {
+            stockInfo.innerHTML = '<span></span>' + stock + ' in stock';
+        } else {
+            stockInfo.innerHTML = '<span class="text-danger">Out of stock</span>';
+        }
+    }
     
     // Update prices with discount badge
     const pricesDiv = document.querySelector('.product-quick-view-modal .prices');
-    if (oldPrice && discount) {
-        pricesDiv.innerHTML = '<span class="price-old">₹' + oldPrice + '</span><span class="price">₹' + price + '</span><span class="badge badge-sale">-' + discount + '%</span>';
-    } else {
-        pricesDiv.innerHTML = '<span class="price">₹' + price + '</span>';
+    if (pricesDiv) {
+        if (oldPrice && discount) {
+            pricesDiv.innerHTML = '<span class="price-old">₹' + oldPrice + '</span><span class="price">₹' + price + '</span><span class="badge badge-sale">-' + discount + '%</span>';
+        } else {
+            pricesDiv.innerHTML = '<span class="price">₹' + price + '</span>';
+        }
     }
     
     // Update description
-    document.querySelector('.product-quick-view-modal .product-desc').textContent = description.substring(0, 200) + '...';
+    const descDiv = document.querySelector('.product-quick-view-modal .product-desc');
+    if (descDiv) {
+        const shortDesc = description.length > 200 ? description.substring(0, 200) + '...' : description;
+        descDiv.textContent = shortDesc;
+    }
     
     // Update SKU
-    document.querySelector('.product-quick-view-modal .product-sku span').textContent = sku;
+    const skuSpan = document.querySelector('.product-quick-view-modal .product-sku span');
+    if (skuSpan) {
+        skuSpan.textContent = sku;
+    }
+    
+    // Hide the entire "Add to Cart" section
+    const addToCartSection = document.querySelector('.product-quick-view-modal .quick-product-action');
+    if (addToCartSection) {
+        addToCartSection.style.display = 'none';
+    }
     
     // Hide wishlist and compare buttons
     const actionBottom = document.querySelector('.product-quick-view-modal .action-bottom');
@@ -216,17 +289,30 @@ function showQuickView(id, name, image, price, oldPrice, stock, description, sku
         actionBottom.style.display = 'none';
     }
     
-    // Update all links to product page
-    const links = document.querySelectorAll('.product-quick-view-modal a[href*="shop-single-product"], .product-quick-view-modal a.btn-theme');
-    links.forEach(link => {
-        if (!link.classList.contains('btn-close')) {
+    // Update "View Full Details" button link
+    const viewDetailsBtn = document.querySelector('.product-quick-view-modal .btn-theme');
+    if (viewDetailsBtn) {
+        viewDetailsBtn.href = productUrl;
+    }
+    
+    // Update all other product links
+    const productLinks = document.querySelectorAll('.product-quick-view-modal a[href*="shop-single-product"]');
+    productLinks.forEach(link => {
+        if (!link.classList.contains('btn-close') && !link.classList.contains('btn-theme')) {
             link.href = productUrl;
         }
     });
     
     // Show modal
-    document.querySelector('.product-quick-view-modal').classList.add('open');
-    document.querySelector('.canvas-overlay').classList.add('open');
+    const modal = document.querySelector('.product-quick-view-modal');
+    const overlay = document.querySelector('.canvas-overlay');
+    
+    if (modal) {
+        modal.classList.add('open');
+    }
+    if (overlay) {
+        overlay.classList.add('open');
+    }
 }
 </script>
 
@@ -264,9 +350,20 @@ function showQuickView(id, name, image, price, oldPrice, stock, description, sku
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
+/* Hide Add to Cart in Quick View */
+.product-quick-view-modal .quick-product-action {
+    display: none !important;
+}
+
 /* Hide wishlist and compare in quick view */
 .product-quick-view-modal .action-bottom {
     display: none !important;
+}
+
+/* Out of stock styling */
+.product-quick-view-modal .text-danger {
+    color: #dc3545;
+    font-weight: 600;
 }
 </style>
 @endpush

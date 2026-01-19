@@ -84,54 +84,6 @@
                                     </div>
                                 </div>
 
-                                <div class="comments-area">
-                                    <h2>Leave a Reply</h2>
-                                    <div class="comments-form-wrap">
-                                        <div class="clearfix"></div>
-                                        <form action="#" method="post">
-                                            @csrf
-                                            <div class="comments-form-content">
-                                                <div class="row row-gutter-20">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <textarea class="form-control textarea" name="comment" rows="5" placeholder="Your Comment Here..." required=""></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <input class="form-control" type="text" name="name" placeholder="Name (required)" required="">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <input class="form-control" type="email" name="email" placeholder="Email" required="">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <input class="form-control" type="text" name="website" placeholder="Website">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <div class="comment-form-cookies">
-                                                                <input id="comment-cookies" name="comment-cookies" type="checkbox" value="yes">
-                                                                <label for="comment-cookies">Save my name, email, and website in this browser for the next time I comment.</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <button class="btn-theme btn btn-black" type="submit">Post Comment</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -160,7 +112,7 @@
                 <div class="post-item {{ $loop->index > 0 ? 'mt-xs-30' : '' }} {{ $loop->index > 1 ? 'mt-sm-30' : '' }}">
                     <div class="thumb">
                         <a href="{{ route('blog.show', $related->slug) }}">
-                            <img class="w-100" src="{{ $related->featured_image ? asset($related->featured_image) : asset('assets/img/blog/b1.jpg') }}" alt="{{ $related->title }}">
+                            <img class="w-100" src="{{ $related->featured_image ? asset($related->featured_image) : asset('assets/img/blog/b1.jpg') }}" alt="{{ $related->title }}" style="height: 250px; object-fit: cover;">
                         </a>
                     </div>
                     <div class="content">
@@ -177,4 +129,21 @@
 </section>
 @endif
 <!--== End Blog Area Wrapper ==-->
+
+<style>
+    .blog-related-area .post-item .thumb {
+        overflow: hidden;
+        border-radius: 4px;
+    }
+    
+    .blog-related-area .post-item .thumb img {
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .blog-related-area .post-item .thumb:hover img {
+        transform: scale(1.05);
+    }
+</style>
 @endsection
