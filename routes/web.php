@@ -220,3 +220,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('/newsletter-subscribers/{id}', [App\Http\Controllers\Admin\NewsletterController::class, 'destroy'])->name('newsletter.destroy');
     Route::post('/newsletter-subscribers/export', [App\Http\Controllers\Admin\NewsletterController::class, 'export'])->name('newsletter.export');
 });
+// Admin Video Management
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::resource('videos', App\Http\Controllers\Admin\VideoController::class);
+    Route::post('/videos/{video}/toggle-active', [App\Http\Controllers\Admin\VideoController::class, 'toggleActive'])->name('videos.toggle-active');
+});

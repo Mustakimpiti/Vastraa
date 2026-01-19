@@ -100,7 +100,47 @@
     </div>
 </section>
 <!--== End Collection Slider Area Wrapper ==-->
-
+<section class="category-area category-trending-area">
+   <div class="container">
+      <div class="row">
+         <div class="col-md-8 m-auto">
+            <div class="section-title text-center" data-aos="fade-up" data-aos-duration="1000">
+               <h2 class="title">Trending Now</h2>
+            </div>
+         </div>
+      </div>
+   </div>
+<div class="saree-video">
+   @forelse($trendingVideos as $video)
+   <a href="#">
+      <video playsinline autoplay loop muted preload="metadata">
+         <source src="{{ asset($video->video_path) }}" type="video/mp4">
+         <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="{{ $video->title }}">
+      </video>
+   </a>
+   @empty
+   <!-- Fallback if no videos -->
+   <a href="#">
+      <video playsinline autoplay loop muted preload="metadata">
+         <source src="{{ asset('assets/img/Video-720.mp4') }}" type="video/mp4">
+         <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="Video">
+      </video>
+   </a>
+   <a href="#">
+      <video playsinline autoplay loop muted preload="metadata">
+         <source src="{{ asset('assets/img/Video-653.mp4') }}" type="video/mp4">
+         <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="Video">
+      </video>
+   </a>
+   <a href="#">
+      <video playsinline autoplay loop muted preload="metadata">
+         <source src="{{ asset('assets/img/Video-720.mp4') }}" type="video/mp4">
+         <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="Video">
+      </video>
+   </a>
+   @endforelse
+</div>
+</section>
 <!--== Start Products Area Wrapper (Best Sellers) ==-->
 <section class="product-area new-product-area">
     <div class="container">

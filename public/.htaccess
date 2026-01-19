@@ -19,3 +19,57 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# PHP Configuration for Large File Uploads
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 200M
+    php_value post_max_size 200M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
+</IfModule>
+
+<IfModule mod_php8.c>
+    php_value upload_max_filesize 200M
+    php_value post_max_size 200M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
+</IfModule>
+
+# For PHP-FPM users (if above doesn't work)
+<IfModule mod_fcgid.c>
+    FcgidMaxRequestLen 209715200
+</IfModule>
+
+# Video MIME Types - CRITICAL FOR CHROME
+<IfModule mod_mime.c>
+    AddType video/mp4 .mp4 .m4v
+    AddType video/ogg .ogv
+    AddType video/webm .webm
+    AddType video/x-msvideo .avi
+    AddType video/quicktime .mov
+    AddType video/x-ms-wmv .wmv
+</IfModule>
+
+# Enable CORS for videos (helps with cross-origin issues)
+<IfModule mod_headers.c>
+    <FilesMatch "\.(mp4|m4v|ogv|webm|avi|mov|wmv)$">
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, OPTIONS"
+        Header set Access-Control-Allow-Headers "Content-Type"
+        Header set Cache-Control "max-age=2592000, public"
+    </FilesMatch>
+</IfModule>
+
+# Enable Range Requests for Video Seeking (IMPORTANT FOR CHROME)
+<IfModule mod_headers.c>
+    <FilesMatch "\.(mp4|m4v|ogv|webm|avi|mov|wmv)$">
+        Header set Accept-Ranges "bytes"
+    </FilesMatch>
+</IfModule>
+
+# Prevent video files from being compressed (can cause playback issues)
+<IfModule mod_deflate.c>
+    SetEnvIfNoCase Request_URI \.(?:mp4|m4v|ogv|webm|avi|mov|wmv)$ no-gzip dont-vary
+</IfModule>

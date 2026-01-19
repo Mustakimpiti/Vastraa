@@ -6,6 +6,7 @@ use App\Models\Saree;
 use App\Models\Collection;
 use App\Models\Blog;
 use App\Models\Testimonial;
+use App\Models\Video;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -48,12 +49,20 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
+        // Fetch active videos for trending section
+        $trendingVideos = Video::where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         // Single return statement with all variables
         return view('pages.home', compact(
             'featuredCollections',
             'bestSellers',
             'recentBlogs',
-            'testimonials'
+            'testimonials',
+            'trendingVideos'
         ));
     }
 }

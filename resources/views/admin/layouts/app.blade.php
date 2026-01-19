@@ -119,6 +119,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ Request::is('admin/videos*') ? 'active' : '' }}" 
+                               href="{{ route('admin.videos.index') }}">
+                                <i class="fa fa-video-camera"></i> Videos
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ Request::is('admin/reviews*') ? 'active' : '' }}" 
                                href="{{ route('admin.reviews.index') }}">
                                 <i class="fa fa-star"></i> Reviews
