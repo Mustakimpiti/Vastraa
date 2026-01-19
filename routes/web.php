@@ -41,6 +41,7 @@ Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 // Contact Page
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact-submit', [ContactController::class, 'submit'])->name('contact.submit');
+Route::get('/videos', [App\Http\Controllers\VideoController::class, 'viewer'])->name('videos.viewer');
 
 /*
 |--------------------------------------------------------------------------

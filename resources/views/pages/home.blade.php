@@ -110,36 +110,36 @@
          </div>
       </div>
    </div>
-<div class="saree-video">
-   @forelse($trendingVideos as $video)
-   <a href="#">
-      <video playsinline autoplay loop muted preload="metadata">
-         <source src="{{ asset($video->video_path) }}" type="video/mp4">
-         <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="{{ $video->title }}">
-      </video>
-   </a>
-   @empty
-   <!-- Fallback if no videos -->
-   <a href="#">
-      <video playsinline autoplay loop muted preload="metadata">
-         <source src="{{ asset('assets/img/Video-720.mp4') }}" type="video/mp4">
-         <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="Video">
-      </video>
-   </a>
-   <a href="#">
-      <video playsinline autoplay loop muted preload="metadata">
-         <source src="{{ asset('assets/img/Video-653.mp4') }}" type="video/mp4">
-         <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="Video">
-      </video>
-   </a>
-   <a href="#">
-      <video playsinline autoplay loop muted preload="metadata">
-         <source src="{{ asset('assets/img/Video-720.mp4') }}" type="video/mp4">
-         <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="Video">
-      </video>
-   </a>
-   @endforelse
-</div>
+   <div class="saree-video">
+      @forelse($trendingVideos as $video)
+      <a href="{{ route('videos.viewer') }}#video-{{ $loop->index }}" class="video-item">
+         <video playsinline="true" autoplay="autoplay" loop="loop" muted="muted" preload="metadata">
+            <source src="{{ asset($video->video_path) }}" type="video/mp4">
+            <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="{{ $video->title }}">
+         </video>
+      </a>
+      @empty
+      <!-- Fallback if no videos -->
+      <a href="#" class="video-item">
+         <video playsinline="true" autoplay="autoplay" loop="loop" muted="muted" preload="metadata">
+            <source src="{{ asset('assets/img/Video-720.mp4') }}" type="video/mp4">
+            <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="Video">
+         </video>
+      </a>
+      <a href="#" class="video-item">
+         <video playsinline="true" autoplay="autoplay" loop="loop" muted="muted" preload="metadata">
+            <source src="{{ asset('assets/img/Video-653.mp4') }}" type="video/mp4">
+            <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="Video">
+         </video>
+      </a>
+      <a href="#" class="video-item">
+         <video playsinline="true" autoplay="autoplay" loop="loop" muted="muted" preload="metadata">
+            <source src="{{ asset('assets/img/Video-720.mp4') }}" type="video/mp4">
+            <img src="{{ asset('assets/img/shop/1.jpg') }}" alt="Video">
+         </video>
+      </a>
+      @endforelse
+   </div>
 </section>
 <!--== Start Products Area Wrapper (Best Sellers) ==-->
 <section class="product-area new-product-area">
@@ -836,6 +836,7 @@ document.addEventListener('keydown', function(e) {
         closeNewsletterModal();
     }
 });
+
 </script>
 
 <style>
