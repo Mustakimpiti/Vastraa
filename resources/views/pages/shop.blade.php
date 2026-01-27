@@ -207,6 +207,8 @@
     </div>
 </section>
 
+@endsection
+
 @push('scripts')
 <script>
 function showQuickView(id, name, image, price, oldPrice, stock, description, sku, productUrl, discount, rating, totalReviews) {
@@ -277,31 +279,75 @@ function showQuickView(id, name, image, price, oldPrice, stock, description, sku
         skuSpan.textContent = sku;
     }
     
-    // Hide the entire "Add to Cart" section
+    // Hide original add to cart section and other action buttons
     const addToCartSection = document.querySelector('.product-quick-view-modal .quick-product-action');
     if (addToCartSection) {
         addToCartSection.style.display = 'none';
     }
     
-    // Hide wishlist and compare buttons
     const actionBottom = document.querySelector('.product-quick-view-modal .action-bottom');
     if (actionBottom) {
         actionBottom.style.display = 'none';
     }
     
-    // Update "View Full Details" button link
-    const viewDetailsBtn = document.querySelector('.product-quick-view-modal .btn-theme');
-    if (viewDetailsBtn) {
-        viewDetailsBtn.href = productUrl;
+    // Find or create button container after product description
+    let buttonContainer = document.querySelector('.product-quick-view-modal .quick-view-custom-buttons');
+    
+    if (!buttonContainer) {
+        buttonContainer = document.createElement('div');
+        buttonContainer.className = 'quick-view-custom-buttons';
+        
+        // Try multiple locations to insert buttons
+        const productDesc = document.querySelector('.product-quick-view-modal .product-desc');
+        const productInfo = document.querySelector('.product-quick-view-modal .product-info');
+        const singleProductInfo = document.querySelector('.product-quick-view-modal .single-product-info');
+        const contentWrap = document.querySelector('.product-quick-view-modal .content-wrap');
+        const modalContent = document.querySelector('.product-quick-view-modal .modal-content');
+        
+        if (productDesc && productDesc.parentNode) {
+            productDesc.parentNode.insertBefore(buttonContainer, productDesc.nextSibling);
+        } else if (singleProductInfo) {
+            singleProductInfo.appendChild(buttonContainer);
+        } else if (productInfo) {
+            productInfo.appendChild(buttonContainer);
+        } else if (contentWrap) {
+            contentWrap.appendChild(buttonContainer);
+        } else if (modalContent) {
+            modalContent.appendChild(buttonContainer);
+        }
     }
     
-    // Update all other product links
-    const productLinks = document.querySelectorAll('.product-quick-view-modal a[href*="shop-single-product"]');
-    productLinks.forEach(link => {
-        if (!link.classList.contains('btn-close') && !link.classList.contains('btn-theme')) {
-            link.href = productUrl;
-        }
-    });
+    // Clear existing buttons
+    buttonContainer.innerHTML = '';
+    
+    // Create buttons HTML
+    let buttonsHtml = '';
+    
+    if (stock > 0) {
+        // Add to Cart Button
+        buttonsHtml += `
+            <form action="{{ route('cart.add') }}" method="POST" style="display: inline-block; flex: 1; min-width: 200px;">
+                @csrf
+                <input type="hidden" name="saree_id" value="${id}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn-theme btn-black" style="width: 100%;">
+                    <i class="lastudioicon-bag-3"></i> Add to Cart
+                </button>
+            </form>
+        `;
+    }
+    
+    // View Details Button
+    buttonsHtml += `
+        <a href="${productUrl}" class="btn-theme btn-border btn-black" style="flex: 1; min-width: 200px;">
+            <i class="lastudioicon-search-zoom-in"></i> View Details
+        </a>
+    `;
+    
+    buttonContainer.innerHTML = buttonsHtml;
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.visibility = 'visible';
+    buttonContainer.style.opacity = '1';
     
     // Show modal
     const modal = document.querySelector('.product-quick-view-modal');
@@ -350,14 +396,92 @@ function showQuickView(id, name, image, price, oldPrice, stock, description, sku
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-/* Hide Add to Cart in Quick View */
+/* Hide original add to cart and action sections */
 .product-quick-view-modal .quick-product-action {
     display: none !important;
 }
 
-/* Hide wishlist and compare in quick view */
 .product-quick-view-modal .action-bottom {
     display: none !important;
+}
+
+/* Custom Quick View Buttons Container - FORCE DISPLAY */
+.quick-view-custom-buttons {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    gap: 15px;
+    margin-top: 30px !important;
+    padding-top: 25px;
+    border-top: 1px solid #e5e5e5;
+    flex-wrap: wrap;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.quick-view-custom-buttons form {
+    flex: 1;
+    min-width: 200px;
+    display: inline-block !important;
+    margin: 0;
+}
+
+.quick-view-custom-buttons a {
+    flex: 1;
+    min-width: 200px;
+    display: inline-flex !important;
+}
+
+.quick-view-custom-buttons .btn-theme {
+    width: 100%;
+    padding: 14px 30px;
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 2px solid #000;
+    text-decoration: none;
+    cursor: pointer;
+    line-height: 1.5;
+}
+
+.quick-view-custom-buttons .btn-black {
+    background-color: #000;
+    color: #fff !important;
+}
+
+.quick-view-custom-buttons .btn-black:hover {
+    background-color: #fff;
+    color: #000 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.quick-view-custom-buttons .btn-border {
+    background-color: transparent;
+    color: #000 !important;
+}
+
+.quick-view-custom-buttons .btn-border:hover {
+    background-color: #000;
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.quick-view-custom-buttons i {
+    font-size: 16px;
+}
+
+.quick-view-custom-buttons button[type="submit"] {
+    cursor: pointer;
 }
 
 /* Out of stock styling */
@@ -365,6 +489,30 @@ function showQuickView(id, name, image, price, oldPrice, stock, description, sku
     color: #dc3545;
     font-weight: 600;
 }
+
+/* Responsive Styles */
+@media (max-width: 767px) {
+    .quick-view-custom-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .quick-view-custom-buttons form,
+    .quick-view-custom-buttons a {
+        min-width: 100%;
+    }
+    
+    .quick-view-custom-buttons .btn-theme {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .quick-view-custom-buttons .btn-theme {
+        padding: 13px 25px;
+        font-size: 14px;
+    }
+}
 </style>
 @endpush
-@endsection
