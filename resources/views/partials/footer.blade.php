@@ -9,7 +9,7 @@
                         <a href="{{ route('home') }}">
                             <img class="logo-main" src="{{ asset('assets/img/logo.png') }}" alt="Logo" />
                         </a>
-                        <p>His verterem consectetuer consequuntur ne, no virtute atomoru molestie</p>
+                        <p>Where tradition meets elegance, draped in timeless beauty</p>                    
                     </div>
                 </div>
 

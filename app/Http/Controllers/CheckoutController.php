@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\OrderConfirmation;
 
 class CheckoutController extends Controller
 {
@@ -237,6 +240,20 @@ class CheckoutController extends Controller
             Session::forget(['coupon_code', 'coupon_discount']);
 
             DB::commit();
+
+            // Send confirmation email to customer
+            try {
+                // Load order with items for email
+                $order->load('items.saree');
+
+                // Send confirmation email to customer
+                Mail::to($order->email)
+                    ->send(new OrderConfirmation($order));
+
+            } catch (\Exception $e) {
+                Log::error('Order confirmation email error: ' . $e->getMessage());
+                // Don't fail the order if email fails
+            }
 
             return redirect()->route('order.success', $order->order_number)
                 ->with('success', 'Order placed successfully!');
